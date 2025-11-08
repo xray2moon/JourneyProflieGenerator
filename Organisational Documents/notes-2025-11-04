@@ -1,0 +1,6 @@
+- Bi-weekly status/progress presentation.
+- Primary communication for questions will be via email.
+- Project documentation will be hosted in GitLab.
+- Deadlines/milestones are defined by date only (no specific time required).
+- Simulation will use synthetic data (no reliance on live train data).
+- The AG will provide the required JSON format specification.
