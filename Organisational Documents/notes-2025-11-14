@@ -1,0 +1,10 @@
+- We reviewed and updated the specification sheet.
+- Over the next two weeks, we will begin work on the software itself.
+- Discussion of driving strategies:
+    - Strategies vary depending on speed limits along different track sections.
+    - Examples include always maximizing acceleration to maintain highest possible speed, or strategically avoiding acceleration on short segments where it offers little benefit.
+- Discrete integration using the median of velocity values is acceptable for our calculations.
+- Only one train will be modeled.
+- Timing points are (correctly) defined as locations where the train can stop without constraints.
+- Documentation status: ISDP has been uploaded.
+- Agenda items for the next meeting will be prepared.
