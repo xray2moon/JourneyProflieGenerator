@@ -1,0 +1,41 @@
+Important Documentation Notes
+
+Nodes and links are important. Documentation should specify which information they contain (e.g., hash ID, name).
+Nodes represent switches and contain information about their connected links.
+
+Access to the screenshot/document database: not available or unspecified.
+
+Own JSON Documentation:
+
+Core components are correct.
+Speed constraints are not necessary.
+Trains can stop at any timing point (no train stations are used).
+
+Segment profiles: Correct.
+
+A segment is always longer than the switch distance.
+
+The target node of a segment is a switch.
+
+Timing points: Correct.
+
+Virtual nodes/tracks:
+
+Should not be included.
+
+DPS groups: Do not need to appear in the GUI and can be ignored.
+
+HandoverGate: Mostly correct.
+
+Infrastructure Requirements
+-No stations, but node names should still be displayed.
+-Tracks with resting trains are optional.
+-Tracks must be modeled realistically.
+-Curves should be modeled; a simple polygonal approximation is sufficient.
+-Timing points must be included.
+-Shaping points should simply be connected.
+-No intersecting tracks.
+-The infrastructure should be displayed as a graph.
+
+AI
+No issues.
