@@ -28,3 +28,4 @@ class TimingPoint:
         self.distanceToTargetNodeInMeters = float(distanceToTargetNodeInMeters)
         self.stoppingLocationId = stoppingLocationId
         self.segmentProfileId = int(segmentProfileId)
+
