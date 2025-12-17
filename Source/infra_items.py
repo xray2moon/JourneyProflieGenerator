@@ -1,0 +1,264 @@
+from __future__ import annotations
+
+from typing import Optional
+
+from PyQt6.QtCore import Qt, QPointF
+from PyQt6.QtGui import QBrush, QColor, QPainterPath, QPen
+from PyQt6.QtWidgets import (
+    QGraphicsEllipseItem,
+    QGraphicsItem,
+    QGraphicsPathItem,
+    QGraphicsSimpleTextItem,
+)
+
+from Source.infra_models import Node, TimingPoint
+
+
+class NodeItem(QGraphicsEllipseItem):
+    """
+    Infrastructure nodes (switches, handover gates, etc.).
+    Used for route selection.
+    """
+
+    def __init__(
+        self,
+        node: Node,
+        *,
+        radius: float = 6.0,
+        brush: Qt.GlobalColor = Qt.GlobalColor.red,
+    ):
+        super().__init__(-radius, -radius, 2 * radius, 2 * radius)
+        self.node = node
+        self.setPos(QPointF(node.x, node.y))
+        self.setAcceptHoverEvents(True)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, True)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemSendsScenePositionChanges, True)
+
+        self._default_pen = QPen(Qt.GlobalColor.black)
+        self._default_pen.setWidthF(1.0)
+        self._default_brush = QBrush(brush)
+        self.setPen(self._default_pen)
+        self.setBrush(self._default_brush)
+        self.setZValue(10)
+
+    def hoverEnterEvent(self, event):
+        name = f"Node {self.node.numeric_id}" if self.node.numeric_id is not None else "Node"
+        self.setToolTip(f"{name}\n{self.node.id}")
+        super().hoverEnterEvent(event)
+
+    def set_highlight(self, enabled: bool) -> None:
+        if enabled:
+            pen = QPen(Qt.GlobalColor.black)
+            pen.setWidthF(2.5)
+            self.setPen(pen)
+        else:
+            self.setPen(self._default_pen)
+
+    def set_theme(self, theme: str) -> None:
+        if theme == "dark":
+            self._default_pen = QPen(Qt.GlobalColor.white)
+        else:
+            self._default_pen = QPen(Qt.GlobalColor.black)
+        self._default_pen.setWidthF(1.0)
+        self.setPen(self._default_pen)
+
+
+class TimingPointItem(QGraphicsEllipseItem):
+    """
+    Timing points live on tracks, not necessarily at infrastructure nodes.
+    Used for timing constraints input.
+    """
+
+    def __init__(self, tp: TimingPoint, pos: QPointF, radius: float = 5.0):
+        super().__init__(-radius, -radius, 2 * radius, 2 * radius)
+        self.tp = tp
+        self.setPos(pos)
+        self.setAcceptHoverEvents(True)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, True)
+
+        self._base_pen = QPen(Qt.GlobalColor.black)
+        self._base_pen.setWidthF(1.0)
+        self._base_brush = QBrush(Qt.GlobalColor.blue)
+        self.setPen(self._base_pen)
+        self.setBrush(self._base_brush)
+        self.setZValue(20)
+
+        self._has_constraint = False
+
+    def hoverEnterEvent(self, event):
+        self.setToolTip(
+            f"TimingPoint {self.tp.id}\ntrack={self.tp.track_id}\n"
+            f"targetNode={self.tp.target_node_id}\ndistToTarget(m)={self.tp.distance_to_target_m:.3f}"
+        )
+        super().hoverEnterEvent(event)
+
+    def set_constraint_point_type(self, point_type: Optional[str]) -> None:
+        self._has_constraint = point_type is not None
+        pen = QPen(Qt.GlobalColor.black)
+        pen.setWidthF(2.5 if point_type == "STOP" else 1.0)
+        self.setPen(pen)
+
+    def set_theme(self, theme: str) -> None:
+        if theme == "dark":
+            self._base_pen = QPen(Qt.GlobalColor.white)
+        else:
+            self._base_pen = QPen(Qt.GlobalColor.black)
+        self._base_pen.setWidthF(1.0)
+        if not self._has_constraint:
+            self.setPen(self._base_pen)
+
+
+class StoppingLocationItem(QGraphicsEllipseItem):
+    def __init__(self, sl_id: str, pos: QPointF, label: str, radius: float = 4.0):
+        super().__init__(-radius, -radius, 2 * radius, 2 * radius)
+        self.sl_id = sl_id
+        self.setPos(pos)
+        self.setAcceptHoverEvents(True)
+
+        pen = QPen(Qt.GlobalColor.black)
+        pen.setWidthF(1.0)
+        self.setPen(pen)
+        self.setBrush(QBrush(Qt.GlobalColor.darkRed))
+        self.setZValue(15)
+
+        self._label_item = QGraphicsSimpleTextItem(label)
+        self._label_item.setPos(pos + QPointF(6.0, -14.0))
+        self._label_item.setZValue(16)
+
+    def label_item(self) -> QGraphicsSimpleTextItem:
+        return self._label_item
+
+    def hoverEnterEvent(self, event):
+        self.setToolTip(f"StoppingLocation\n{self.sl_id}")
+        super().hoverEnterEvent(event)
+
+    def set_theme(self, theme: str) -> None:
+        if theme == "dark":
+            pen = QPen(Qt.GlobalColor.white)
+            self._label_item.setBrush(QBrush(Qt.GlobalColor.white))
+        else:
+            pen = QPen(Qt.GlobalColor.black)
+            self._label_item.setBrush(QBrush(Qt.GlobalColor.black))
+        pen.setWidthF(1.0)
+        self.setPen(pen)
+
+
+class TrackItem(QGraphicsPathItem):
+    """
+    Draws a track as a 'double line' by painting a thicker dark path and then a thinner
+    white path on top (gives two rails at the edges on a white background).
+    """
+
+    def __init__(self, track_id: str, path: QPainterPath):
+        super().__init__(path)
+        self.track_id = track_id
+        self.setZValue(1)
+        self.setAcceptHoverEvents(True)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+
+        self._hovered = False
+        self._timing_points_visible = False
+
+        self._outer_pen_default = QPen(Qt.GlobalColor.darkGray)
+        self._outer_pen_default.setWidthF(6.0)
+        self._outer_pen_default.setCapStyle(Qt.PenCapStyle.RoundCap)
+        self._outer_pen_default.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
+
+        self._outer_pen_visible = QPen(Qt.GlobalColor.darkBlue)
+        self._outer_pen_visible.setWidthF(6.0)
+        self._outer_pen_visible.setCapStyle(Qt.PenCapStyle.RoundCap)
+        self._outer_pen_visible.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
+
+        self._outer_pen_hover = QPen(QColor(30, 144, 255))  # dodger blue
+        self._outer_pen_hover.setWidthF(7.0)
+        self._outer_pen_hover.setCapStyle(Qt.PenCapStyle.RoundCap)
+        self._outer_pen_hover.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
+
+        self._inner_pen = QPen(Qt.GlobalColor.white)
+        self._inner_pen.setWidthF(2.0)
+        self._inner_pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+        self._inner_pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
+
+        # We draw outer by default; inner is drawn as a separate overlay item
+        self._update_outer_pen()
+        self.setData(0, track_id)
+
+        self._inner_overlay = QGraphicsPathItem(path)
+        self._inner_overlay.setPen(self._inner_pen)
+        self._inner_overlay.setZValue(2)
+        self._inner_overlay.setAcceptedMouseButtons(Qt.MouseButton.NoButton)
+        self._inner_overlay.setData(0, track_id)
+
+        # Route highlight overlay (optional)
+        self._route_overlay = QGraphicsPathItem(path)
+        pen = QPen(Qt.GlobalColor.cyan)
+        pen.setWidthF(3.0)
+        pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+        pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
+        self._route_overlay.setPen(pen)
+        self._route_overlay.setZValue(3)
+        self._route_overlay.setVisible(False)
+        self._route_overlay.setAcceptedMouseButtons(Qt.MouseButton.NoButton)
+        self._route_overlay.setData(0, track_id)
+
+    def inner_overlay(self) -> QGraphicsPathItem:
+        return self._inner_overlay
+
+    def route_overlay(self) -> QGraphicsPathItem:
+        return self._route_overlay
+
+    def set_route_highlight(self, enabled: bool) -> None:
+        self._route_overlay.setVisible(enabled)
+
+    def set_timing_points_visible(self, enabled: bool) -> None:
+        self._timing_points_visible = bool(enabled)
+        self._update_outer_pen()
+
+    def set_theme(self, theme: str) -> None:
+        if theme == "dark":
+            self._outer_pen_default.setColor(Qt.GlobalColor.lightGray)
+            self._inner_pen.setColor(QColor(34, 34, 34))
+        else:
+            self._outer_pen_default.setColor(Qt.GlobalColor.darkGray)
+            self._inner_pen.setColor(Qt.GlobalColor.white)
+        self._inner_overlay.setPen(self._inner_pen)
+        self._update_outer_pen()
+
+    def set_outer_pens(
+        self,
+        *,
+        default: Optional[QPen] = None,
+        visible: Optional[QPen] = None,
+        hover: Optional[QPen] = None,
+        inner: Optional[QPen] = None,
+    ) -> None:
+        if default is not None:
+            self._outer_pen_default = QPen(default)
+        if visible is not None:
+            self._outer_pen_visible = QPen(visible)
+        if hover is not None:
+            self._outer_pen_hover = QPen(hover)
+        if inner is not None:
+            self._inner_pen = QPen(inner)
+            self._inner_overlay.setPen(self._inner_pen)
+        self._update_outer_pen()
+
+    def set_hover_highlight(self, enabled: bool) -> None:
+        self._hovered = bool(enabled)
+        self._update_outer_pen()
+
+    def _update_outer_pen(self) -> None:
+        if self._hovered:
+            self.setPen(self._outer_pen_hover)
+        elif self._timing_points_visible:
+            self.setPen(self._outer_pen_visible)
+        else:
+            self.setPen(self._outer_pen_default)
+
+    def hoverEnterEvent(self, event):
+        self.set_hover_highlight(True)
+        super().hoverEnterEvent(event)
+
+    def hoverLeaveEvent(self, event):
+        self.set_hover_highlight(False)
+        super().hoverLeaveEvent(event)
