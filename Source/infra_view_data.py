@@ -25,7 +25,7 @@ from PyQt6.QtWidgets import (
 )
 
 from Source.infra_items import NodeItem, TrackItem, TimingPointItem, StoppingLocationItem
-from Source.infra_models import Node, Track, TimingPoint, StoppingLocation, SchematicSegment
+from Source.infra_models import Node, Track, TimingPoint, StoppingLocation
 from Source.infra_ui import TimingConstraintDialog
 
 

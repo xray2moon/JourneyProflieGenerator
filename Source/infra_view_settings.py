@@ -26,7 +26,7 @@ from PyQt6.QtWidgets import (
 )
 
 from Source.infra_items import NodeItem, TrackItem, TimingPointItem, StoppingLocationItem
-from Source.infra_models import Node, Track, TimingPoint, StoppingLocation, SchematicSegment
+from Source.infra_models import Node, Track, TimingPoint, StoppingLocation
 from Source.infra_ui import TimingConstraintDialog
 
 
@@ -49,6 +49,8 @@ class InfrastructureViewSettingsMixin:
                     self._keep_selection = settings.get("keep_selection", False)
                     self._show_legend = settings.get("show_legend", True)
                     self._default_view = settings.get("default_view", "Geographic")
+                    if self._default_view not in {"Geographic", "Schematic"}:
+                        self._default_view = "Geographic"
                     
                     # Apply settings to UI
                     self._settings_view._theme_combo.setCurrentText(self._current_theme.capitalize())
@@ -132,28 +134,16 @@ class InfrastructureViewSettingsMixin:
     def _update_legend_text(self) -> None:
         if getattr(self, "_legend", None) is None:
             return
-        if self._layout_mode in {"topological", "plan"}:
-            self._legend.setText(
-                "<b>Legende</b><br>"
-                "<span style='color:#000'>■</span> Gleis&nbsp;&nbsp;"
-                "<span style='color:#00BCD4'>■</span> Route<br>"
-                "<span style='color:#D32F2F'>●</span> Bahnhof<br><br>"
-                "<b>Routenplanung</b><br>"
-                "Klick: Start → Ziel (berechnet Route)<br>"
-                "Shift+Klick: Zwischenhalt (Waypoint)<br>"
-                "Klick nach fertiger Route: neue Route"
-            )
-        else:
-            self._legend.setText(
-                "<b>Legende</b><br>"
-                "<span style='color:#606060'>■</span> Gleis&nbsp;&nbsp;"
-                "<span style='color:#00008B'>■</span> Gleis (TPs an)&nbsp;&nbsp;"
-                "<span style='color:#00BCD4'>■</span> Route<br>"
-                "<span style='color:#1E90FF'>■</span> Hover&nbsp;&nbsp;"
-                "<span style='color:#D32F2F'>●</span> Bahnhof/Node&nbsp;&nbsp;"
-                "<span style='color:#1976D2'>●</span> Timing point&nbsp;&nbsp;"
-                "<span style='color:#8B0000'>●</span> Halt"
-            )
+        self._legend.setText(
+            "<b>Legende</b><br>"
+            "<span style='color:#606060'>■</span> Gleis&nbsp;&nbsp;"
+            "<span style='color:#00008B'>■</span> Gleis (TPs an)&nbsp;&nbsp;"
+            "<span style='color:#00BCD4'>■</span> Route<br>"
+            "<span style='color:#1E90FF'>■</span> Hover&nbsp;&nbsp;"
+            "<span style='color:#D32F2F'>●</span> Bahnhof/Node&nbsp;&nbsp;"
+            "<span style='color:#1976D2'>●</span> Timing point&nbsp;&nbsp;"
+            "<span style='color:#8B0000'>●</span> Halt"
+        )
         self._position_overlay_widgets()
 
     def resizeEvent(self, event):

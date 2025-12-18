@@ -25,16 +25,13 @@ from PyQt6.QtWidgets import (
 )
 
 from Source.infra_items import NodeItem, TrackItem, TimingPointItem, StoppingLocationItem
-from Source.infra_models import Node, Track, TimingPoint, StoppingLocation, SchematicSegment
-from Source.infra_ui import TimingConstraintDialog
+from Source.infra_models import Node, Track, TimingPoint, StoppingLocation
 
 
 class InfrastructureViewSceneMixin:
     def _on_layout_mode_changed(self, mode_text: str) -> None:
         lowered = mode_text.lower().strip()
-        if lowered.startswith("plan"):
-            mode = "plan"
-        elif lowered.startswith("schem") or lowered.startswith("topo"):
+        if lowered.startswith("schem") or lowered.startswith("topo"):
             mode = "topological"
         else:
             mode = "geographic"
@@ -59,13 +56,9 @@ class InfrastructureViewSceneMixin:
         self._tp_track_map.clear()
         self._track_render_paths.clear()
         self._track_render_polylines.clear()
-        self._schem_station_items = []
 
         if self._layout_mode == "topological":
             self._rebuild_schematic_scene()
-            return
-        if self._layout_mode == "plan":
-            self._rebuild_plan_scene()
             return
 
         self._node_positions = self._compute_node_positions()
@@ -161,177 +154,13 @@ class InfrastructureViewSceneMixin:
 
     def _rebuild_schematic_scene(self) -> None:
         """
-        Schematic view:
-        - Contract degree-2 nodes into segments (reduces clutter)
-        - Lay out a backbone path (y=0) and attach branches above/below
-        - Render contracted segments and a reduced node set
+        Schematic view is intentionally disabled.
+
+        This project currently only supports the geographic rendering mode.
         """
-        self._topo_route_item = None
-        self._station_rect_items = {}
-        self._topo_station_layout = []
-        self._topo_node_index = {}
-        self._topo_track_offset_y = {}
-        self._node_to_station = {}
-        self._station_rep_node_id = {}
-
-        self._build_schematic_graph()
-        self._node_positions = self._compute_schematic_positions()
-
-        # Segments first
-        for seg in self._schem_segments.values():
-            path = self._schematic_segment_path(seg)
-            if path is None:
-                continue
-            item = TrackItem(seg.id, path)
-            item.set_theme(self._current_theme)
-            item.setAcceptHoverEvents(False)
-            tip = f"Segment\nlen≈{seg.length_m:.0f} m\ntracks={len(seg.track_ids)}"
-            item.setToolTip(tip)
-            item.inner_overlay().setToolTip(tip)
-            item.route_overlay().setToolTip(tip)
-            item.inner_overlay().setAcceptHoverEvents(False)
-            item.route_overlay().setAcceptHoverEvents(False)
-            item.setAcceptedMouseButtons(Qt.MouseButton.NoButton)
-            item.inner_overlay().setAcceptedMouseButtons(Qt.MouseButton.NoButton)
-            item.route_overlay().setAcceptedMouseButtons(Qt.MouseButton.NoButton)
-
-            dimmed = seg.id not in self._schem_tree_segment_ids
-            opacity = 0.12 if dimmed else 1.0
-            item.setOpacity(opacity)
-            item.inner_overlay().setOpacity(opacity)
-
-            self._scene.addItem(item)
-            self._scene.addItem(item.inner_overlay())
-            self._scene.addItem(item.route_overlay())
-            self._track_items[seg.id] = item
-
-        # Kept nodes only
-        for node_id in sorted(self._schem_keep_nodes, key=self._node_sort_key):
-            node = self._nodes.get(node_id)
-            if node is None:
-                continue
-            pos = self._node_positions.get(node_id)
-            if pos is None:
-                continue
-            ni = NodeItem(node, radius=4.0, brush=Qt.GlobalColor.darkGray)
-            ni.set_theme(self._current_theme)
-            ni.setPos(pos)
-            self._scene.addItem(ni)
-            self._node_items[node_id] = ni
-
-        self._add_schematic_station_markers()
-
+        self._node_positions = {}
+        self._scene.setSceneRect(QRectF(-1000.0, -1000.0, 2000.0, 2000.0))
         self._scene.installEventFilter(self)
-        self._update_route_highlights()
-
-    def _rebuild_plan_scene(self) -> None:
-        """
-        Plan view:
-        Purpose-built "track plan" rendering:
-        - emphasize stations (blocks) and main connections
-        - draw bundled/parallel tracks as multiple rails
-        - route segments with orthogonal + 45° corners for readability
-        """
-        self._topo_route_item = None
-        self._station_rect_items = {}
-        self._topo_station_layout = []
-        self._topo_node_index = {}
-        self._topo_track_offset_y = {}
-        self._node_to_station = {}
-        self._station_rep_node_id = {}
-
-        self._build_schematic_graph()
-        self._node_positions = self._compute_plan_positions()
-
-        track_spacing = 10.0
-        station_block_len = 140.0
-
-        # Parallel-track count between original node pairs.
-        pair_parallel: Dict[Tuple[str, str], int] = {}
-        for tr in self._tracks.values():
-            if tr.source not in self._nodes or tr.target not in self._nodes:
-                continue
-            a, b = (tr.source, tr.target)
-            if a > b:
-                a, b = b, a
-            pair_parallel[(a, b)] = pair_parallel.get((a, b), 0) + 1
-
-        def segment_parallel_tracks(seg: SchematicSegment) -> int:
-            counts: List[int] = []
-            for u, v in zip(seg.node_path[:-1], seg.node_path[1:]):
-                a, b = (u, v)
-                if a > b:
-                    a, b = b, a
-                counts.append(max(1, int(pair_parallel.get((a, b), 1))))
-            return max(counts) if counts else 1
-
-        endpoint_overrides, station_blocks = self._plan_build_station_blocks(
-            pair_parallel=pair_parallel,
-            segment_parallel_tracks=segment_parallel_tracks,
-            track_spacing=track_spacing,
-            block_len=station_block_len,
-        )
-
-        # Segments first (station blocks are drawn above).
-        for seg in self._schem_segments.values():
-            # Internal station wiring is represented by the station block itself.
-            s_station = self._node_to_station.get(seg.source)
-            t_station = self._node_to_station.get(seg.target)
-            if s_station and s_station == t_station:
-                continue
-
-            p0 = endpoint_overrides.get((seg.id, seg.source)) or self._node_positions.get(seg.source)
-            p1 = endpoint_overrides.get((seg.id, seg.target)) or self._node_positions.get(seg.target)
-            if p0 is None or p1 is None:
-                continue
-
-            n_tracks = max(1, min(6, segment_parallel_tracks(seg)))
-            path = self._plan_segment_path(p0, p1, n_tracks=n_tracks, track_spacing=track_spacing)
-            item = TrackItem(seg.id, path)
-            item.set_theme(self._current_theme)
-            item.setAcceptHoverEvents(False)
-
-            plan_outer = QPen(Qt.GlobalColor.black)
-            plan_outer.setWidthF(7.0)
-            plan_outer.setCapStyle(Qt.PenCapStyle.RoundCap)
-            plan_outer.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
-            plan_hover = QPen(Qt.GlobalColor.darkBlue)
-            plan_hover.setWidthF(8.0)
-            plan_hover.setCapStyle(Qt.PenCapStyle.RoundCap)
-            plan_hover.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
-            plan_inner = QPen(Qt.GlobalColor.white)
-            plan_inner.setWidthF(2.4)
-            plan_inner.setCapStyle(Qt.PenCapStyle.RoundCap)
-            plan_inner.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
-
-            item.set_outer_pens(default=plan_outer, visible=plan_outer, hover=plan_hover, inner=plan_inner)
-            tip = f"Segment\nlen≈{seg.length_m:.0f} m\nGleise≈{n_tracks}"
-            item.setToolTip(tip)
-            item.inner_overlay().setToolTip(tip)
-            item.route_overlay().setToolTip(tip)
-            item.route_overlay().setAcceptHoverEvents(False)
-            item.setAcceptedMouseButtons(Qt.MouseButton.NoButton)
-            item.inner_overlay().setAcceptedMouseButtons(Qt.MouseButton.NoButton)
-            item.route_overlay().setAcceptedMouseButtons(Qt.MouseButton.NoButton)
-            # Single-line plan look: keep only the thick "outer" stroke; no inner white stroke.
-            item.inner_overlay().setVisible(False)
-            # Make the route overlay a bit more visible over thick black tracks.
-            route_pen = QPen(item.route_overlay().pen())
-            route_pen.setWidthF(4.2)
-            item.route_overlay().setPen(route_pen)
-
-            self._scene.addItem(item)
-            self._scene.addItem(item.route_overlay())
-            self._track_items[seg.id] = item
-
-        self._plan_draw_station_blocks(
-            station_blocks,
-            track_spacing=track_spacing,
-            block_len=station_block_len,
-        )
-
-        self._scene.installEventFilter(self)
-        self._update_route_highlights()
 
     def _fit_to_scene(self) -> None:
         """Fit the view so the whole infrastructure is visible.
@@ -345,7 +174,7 @@ class InfrastructureViewSceneMixin:
         if items_rect.isNull():
             return
 
-        if self._layout_mode in {"topological", "plan"}:
+        if self._layout_mode == "topological":
             # In schematic view, keep the baseline around y=0 visually centered and
             # give some extra scroll room so panning works even when zoomed out.
             pad_x = max(items_rect.width() * 0.06, 220.0)

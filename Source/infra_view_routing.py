@@ -6,27 +6,7 @@ small and focused.
 
 from __future__ import annotations
 
-import json
-import math
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
-
-from PyQt6.QtCore import Qt, QPointF, QRectF, QTimer, QEvent
-from PyQt6.QtGui import QBrush, QColor, QPainterPath, QPen
-from PyQt6.QtWidgets import (
-    QDialog,
-    QGraphicsEllipseItem,
-    QGraphicsItem,
-    QGraphicsPathItem,
-    QGraphicsRectItem,
-    QGraphicsSimpleTextItem,
-    QGraphicsView,
-    QMessageBox,
-)
-
-from Source.infra_items import NodeItem, TrackItem, TimingPointItem, StoppingLocationItem
-from Source.infra_models import Node, Track, TimingPoint, StoppingLocation, SchematicSegment
-from Source.infra_ui import TimingConstraintDialog
+from typing import Dict, List, Tuple
 
 
 class InfrastructureViewRoutingMixin:
@@ -85,107 +65,6 @@ class InfrastructureViewRoutingMixin:
         nodes.reverse()
         tracks.reverse()
         return nodes, tracks
-
-    # -----------
-    # Scene build
-    # -----------
-
-    def _station_label_for_node(self, node_id: str) -> str:
-        name = self._node_to_station.get(node_id)
-        if name:
-            return name
-        node = self._nodes.get(node_id)
-        if node and node.numeric_id is not None:
-            return f"Node {node.numeric_id}"
-        return "Node"
-
-    def _update_planning_status_labels(self) -> None:
-        if not hasattr(self, "_start_status"):
-            return
-        if self._route_plan_start:
-            self._start_status.setText(f"Start: {self._station_label_for_node(self._route_plan_start)}")
-        else:
-            self._start_status.setText("Start: -")
-        if self._route_plan_goal:
-            self._goal_status.setText(f"Ziel: {self._station_label_for_node(self._route_plan_goal)}")
-        else:
-            self._goal_status.setText("Ziel: -")
-
-    def _set_planned_route_points(self, *, start: Optional[str], goal: Optional[str], waypoints: List[str]) -> None:
-        self._route_plan_start = start
-        self._route_plan_goal = goal
-        self._route_plan_waypoints = list(waypoints or [])
-        self._update_planning_status_labels()
-
-    def _compute_planned_route(self) -> None:
-        start = self._route_plan_start
-        if not start or start not in self._nodes:
-            self._route_node_ids = []
-            self._route_track_ids = []
-            self._update_route_highlights()
-            self.routeChanged.emit(list(self._route_node_ids))
-            return
-
-        points: List[str] = [start]
-        points += [p for p in self._route_plan_waypoints if p in self._nodes and p != points[-1]]
-        if self._route_plan_goal and self._route_plan_goal in self._nodes and self._route_plan_goal != points[-1]:
-            points.append(self._route_plan_goal)
-
-        if len(points) == 1:
-            self._route_node_ids = [start]
-            self._route_track_ids = []
-            self._update_route_highlights()
-            self.routeChanged.emit(list(self._route_node_ids))
-            return
-
-        route_nodes: List[str] = []
-        route_tracks: List[str] = []
-        for a, b in zip(points[:-1], points[1:]):
-            node_path, track_path = self._shortest_path(a, b)
-            if len(node_path) <= 1:
-                continue
-            if not route_nodes:
-                route_nodes.extend(node_path)
-            else:
-                route_nodes.extend(node_path[1:])
-            route_tracks.extend(track_path)
-
-        self._route_node_ids = route_nodes
-        self._route_track_ids = route_tracks
-        self._update_route_highlights()
-        self.routeChanged.emit(list(self._route_node_ids))
-
-    def _handle_planning_station_click(self, node_id: str, *, modifiers: Qt.KeyboardModifier) -> None:
-        if node_id not in self._nodes:
-            return
-
-        shift = bool(modifiers & Qt.KeyboardModifier.ShiftModifier)
-
-        # Shift-click adds waypoints (Zwischenhalte).
-        if shift:
-            if not self._route_plan_start:
-                self._set_planned_route_points(start=node_id, goal=None, waypoints=[])
-            elif self._route_plan_goal:
-                wps = [w for w in self._route_plan_waypoints if w != node_id]
-                wps.append(node_id)
-                self._set_planned_route_points(start=self._route_plan_start, goal=self._route_plan_goal, waypoints=wps)
-            else:
-                wps = [w for w in self._route_plan_waypoints if w != node_id]
-                wps.append(node_id)
-                self._set_planned_route_points(start=self._route_plan_start, goal=None, waypoints=wps)
-            self._compute_planned_route()
-            return
-
-        # Normal click: start -> goal, then reset to new start after route is done.
-        if not self._route_plan_start or (self._route_plan_start and self._route_plan_goal):
-            self._set_planned_route_points(start=node_id, goal=None, waypoints=[])
-            self._compute_planned_route()
-            return
-
-        if self._route_plan_start and not self._route_plan_goal:
-            self._set_planned_route_points(start=self._route_plan_start, goal=node_id, waypoints=self._route_plan_waypoints)
-            self._compute_planned_route()
-            return
 
     def _extend_route_with_node(self, node_id: str) -> None:
         if node_id not in self._nodes:

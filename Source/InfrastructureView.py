@@ -60,7 +60,7 @@ if __package__ in (None, ""):
     sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from Source.infra_items import NodeItem, TrackItem, TimingPointItem, StoppingLocationItem
-from Source.infra_models import Node, Track, TimingPoint, StoppingLocation, SchematicSegment
+from Source.infra_models import Node, Track, TimingPoint, StoppingLocation
 from Source.infra_ui import ParameterView, TimingConstraintDialog, PanZoomGraphicsView, SettingsView
 from Source.infra_view_data import InfrastructureViewDataMixin
 from Source.infra_view_interaction import InfrastructureViewInteractionMixin
@@ -134,20 +134,14 @@ class InfrastructureView(
         # Small toolbar area (optional but useful)
         self._clear_route_btn = QPushButton("Clear route")
         self._clear_route_btn.clicked.connect(self.clear_route)
-        self._start_status = QLabel("Start: -")
-        self._goal_status = QLabel("Ziel: -")
         self._layout_combo = QComboBox()
-        self._layout_combo.addItems(["Geographic", "Schematic", "Plan"])
+        self._layout_combo.addItems(["Geographic", "Schematic"])
         self._layout_combo.currentTextChanged.connect(self._on_layout_mode_changed)
         layout_label = QLabel("Layout:")
         layout_label.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight)
 
         toolbar = QHBoxLayout()
         toolbar.addWidget(self._clear_route_btn)
-        toolbar.addSpacing(10)
-        toolbar.addWidget(self._start_status)
-        toolbar.addSpacing(6)
-        toolbar.addWidget(self._goal_status)
         toolbar.addSpacing(12)
         toolbar.addWidget(layout_label)
         toolbar.addWidget(self._layout_combo)
@@ -182,23 +176,8 @@ class InfrastructureView(
         self._initial_fit_done = False
         self._layout_mode = "geographic"
         self._node_positions: Dict[str, QPointF] = {}
-        # Schematic rendering helpers (populated on demand / rebuild)
-        self._topo_node_index: Dict[str, int] = {}
-        self._topo_track_offset_y: Dict[str, float] = {}
         self._track_render_paths: Dict[str, QPainterPath] = {}
         self._track_render_polylines: Dict[str, List[QPointF]] = {}
-        self._topo_station_layout: List[Tuple[str, float, float, int]] = []  # (stationName, x0, x1, component)
-        self._node_to_station: Dict[str, str] = {}  # nodeId -> stationName
-        self._station_rep_node_id: Dict[str, str] = {}  # stationName -> nodeId (for routing)
-        self._station_rect_items: Dict[str, QGraphicsRectItem] = {}
-        self._topo_route_item: Optional[QGraphicsPathItem] = None
-        self._schem_keep_nodes: set[str] = set()
-        self._schem_segments: Dict[str, SchematicSegment] = {}
-        self._schem_adj: Dict[str, List[Tuple[str, str, float]]] = {}  # nodeId -> (neighborId, segmentId, weight)
-        self._schem_track_to_segment: Dict[str, str] = {}  # trackId -> segmentId
-        self._schem_segment_parallel_offset_y: Dict[str, float] = {}  # segmentId -> small y offset for parallel edges
-        self._schem_tree_segment_ids: set[str] = set()
-        self._schem_station_items: List[QGraphicsItem] = []
 
         # Model caches
         self._nodes: Dict[str, Node] = {}
@@ -223,9 +202,6 @@ class InfrastructureView(
         # Current state
         self._route_node_ids: List[str] = []
         self._route_track_ids: List[str] = []
-        self._route_plan_start: Optional[str] = None
-        self._route_plan_goal: Optional[str] = None
-        self._route_plan_waypoints: List[str] = []
         self._hover_track_id: Optional[str] = None
         # timingPointId -> constraint dict
         self._timing_constraints: Dict[int, dict] = {}
@@ -241,7 +217,6 @@ class InfrastructureView(
 
         # Scene interaction
         self._scene.selectionChanged.connect(self._on_selection_changed)
-        self._update_planning_status_labels()
         self._update_legend_text()
 
         if json_path:

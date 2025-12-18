@@ -26,7 +26,7 @@ from PyQt6.QtWidgets import (
 )
 
 from Source.infra_items import NodeItem, TrackItem, TimingPointItem, StoppingLocationItem
-from Source.infra_models import Node, Track, TimingPoint, StoppingLocation, SchematicSegment
+from Source.infra_models import Node, Track, TimingPoint, StoppingLocation
 from Source.infra_ui import TimingConstraintDialog
 
 
@@ -46,13 +46,7 @@ class InfrastructureViewInteractionMixin:
         self._hover_track_id = track_id
 
     def _can_start_background_pan(self, scene_pos: QPointF) -> bool:
-        if self._layout_mode in {"topological", "plan"}:
-            for cand in self._scene.items(scene_pos):
-                if cand.data(2) == "station":
-                    return False
-                top = cand.topLevelItem()
-                if isinstance(top, NodeItem):
-                    return False
+        if self._layout_mode == "topological":
             return True
 
         for cand in self._scene.items(scene_pos):
@@ -141,15 +135,6 @@ class InfrastructureViewInteractionMixin:
                     self._set_hovered_track(hovered)
 
             if event.type() == QEvent.Type.GraphicsSceneMousePress:
-                if self._layout_mode in {"topological", "plan"} and event.button() == Qt.MouseButton.LeftButton:
-                    for cand in self._scene.items(event.scenePos()):
-                        if cand.data(2) != "station":
-                            continue
-                        rep = cand.data(1)
-                        if isinstance(rep, str):
-                            self._handle_planning_station_click(rep, modifiers=event.modifiers())
-                            return True
-
                 item: Optional[QGraphicsItem] = None
                 for cand in self._scene.items(event.scenePos()):
                     top = cand.topLevelItem()
@@ -169,8 +154,7 @@ class InfrastructureViewInteractionMixin:
                 # Route selection
                 if isinstance(item, NodeItem):
                     if event.button() == Qt.MouseButton.LeftButton:
-                        # In plan/topological mode we plan station-to-station via click targets.
-                        if self._layout_mode in {"topological", "plan"}:
+                        if self._layout_mode != "geographic":
                             return False
                         self._extend_route_with_node(item.node.id)
                         return True
@@ -180,7 +164,7 @@ class InfrastructureViewInteractionMixin:
                 else:
                     track_id = None
 
-                if self._layout_mode not in {"topological", "plan"} and track_id and event.button() == Qt.MouseButton.LeftButton:
+                if self._layout_mode == "geographic" and track_id and event.button() == Qt.MouseButton.LeftButton:
                     self._toggle_track_timing_points(track_id)
                     return True
 
@@ -215,11 +199,7 @@ class InfrastructureViewInteractionMixin:
     def clear_route(self) -> None:
         self._route_node_ids = []
         self._route_track_ids = []
-        self._route_plan_start = None
-        self._route_plan_goal = None
-        self._route_plan_waypoints = []
         self._update_route_highlights()
-        self._update_planning_status_labels()
         self.routeChanged.emit(list(self._route_node_ids))
 
     def _update_route_highlights(self) -> None:
@@ -230,49 +210,8 @@ class InfrastructureViewInteractionMixin:
             item.set_highlight(nid in route_nodes)
 
         for tid, item in self._track_items.items():
-            if self._layout_mode in {"topological", "plan"}:
-                seg = self._schem_segments.get(tid)
-                enabled = bool(seg) and any(orig_tid in route_tracks for orig_tid in seg.track_ids)
-            else:
-                enabled = tid in route_tracks
+            enabled = tid in route_tracks
             item.set_route_highlight(enabled)
-
-    def _update_topological_route_overlay(self) -> None:
-        default_pen = QPen(Qt.GlobalColor.lightGray)
-        default_pen.setWidthF(1.0)
-        default_pen.setStyle(Qt.PenStyle.DashLine)
-        highlight_pen = QPen(Qt.GlobalColor.darkCyan)
-        highlight_pen.setWidthF(2.0)
-        highlight_pen.setStyle(Qt.PenStyle.SolidLine)
-
-        for rect in self._station_rect_items.values():
-            rect.setPen(default_pen)
-
-        route_stations: List[str] = []
-        for nid in self._route_node_ids:
-            s = self._node_to_station.get(nid)
-            if not s:
-                continue
-            if not route_stations or route_stations[-1] != s:
-                route_stations.append(s)
-
-        for s in route_stations:
-            rect = self._station_rect_items.get(s)
-            if rect:
-                rect.setPen(highlight_pen)
-
-        if self._topo_route_item is None:
-            return
-
-        centers = {name: (x0 + x1) / 2.0 for (name, x0, x1, _) in self._topo_station_layout}
-        pts = [QPointF(centers[s], 0.0) for s in route_stations if s in centers]
-        if len(pts) < 2:
-            self._topo_route_item.setPath(QPainterPath())
-            return
-
-        pts = self._axis_polyline_with_45deg_corners(pts, bevel=24.0)
-        path = self._path_from_points(pts)
-        self._topo_route_item.setPath(path)
 
     def _restore_timing_point_markers(self) -> None:
         for tp_id, constraint in self._timing_constraints.items():
