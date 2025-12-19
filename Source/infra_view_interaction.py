@@ -6,7 +6,7 @@ small and focused.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from PyQt6.QtCore import Qt, QPointF, QEvent
 from PyQt6.QtWidgets import (
@@ -194,13 +194,50 @@ class InfrastructureViewInteractionMixin:
     def _update_route_highlights(self) -> None:
         route_nodes = set(self._route_node_ids)
         route_tracks = set(self._route_track_ids)
+        start_id = self._route_node_ids[0] if self._route_node_ids else None
+        end_id = self._route_node_ids[-1] if self._route_node_ids else None
 
         for nid, item in self._node_items.items():
             item.set_highlight(nid in route_nodes)
+            if start_id is not None and start_id == end_id and nid == start_id:
+                role = "start"
+            elif nid == start_id:
+                role = "start"
+            elif nid == end_id:
+                role = "end"
+            else:
+                role = None
+            item.set_route_role(role)
 
         for tid, item in self._track_items.items():
             enabled = tid in route_tracks
             item.set_route_highlight(enabled)
+
+        self._update_route_status_labels()
+
+    def _format_route_node_label(self, node_id: Optional[str]) -> Tuple[str, str]:
+        if not node_id:
+            return "-", "No node selected"
+        node = self._nodes.get(node_id)
+        if node and node.numeric_id is not None:
+            return str(node.numeric_id), f"Node {node.numeric_id}\n{node.id}"
+        return node_id, node_id
+
+    def _update_route_status_labels(self) -> None:
+        start_label = getattr(self, "_route_start_label", None)
+        end_label = getattr(self, "_route_end_label", None)
+        if start_label is None or end_label is None:
+            return
+
+        start_id = self._route_node_ids[0] if self._route_node_ids else None
+        end_id = self._route_node_ids[-1] if self._route_node_ids else None
+        start_text, start_tip = self._format_route_node_label(start_id)
+        end_text, end_tip = self._format_route_node_label(end_id)
+
+        start_label.setText(f"Start: {start_text}")
+        start_label.setToolTip(start_tip)
+        end_label.setText(f"End: {end_text}")
+        end_label.setToolTip(end_tip)
 
     def _restore_timing_point_markers(self) -> None:
         for tp_id, constraint in self._timing_constraints.items():

@@ -37,6 +37,14 @@ class NodeItem(QGraphicsEllipseItem):
         self._default_pen = QPen(Qt.GlobalColor.black)
         self._default_pen.setWidthF(1.0)
         self._default_brush = QBrush(brush)
+        self._route_selected = False
+        self._route_role: Optional[str] = None
+        self._route_pen = QPen(Qt.GlobalColor.black)
+        self._route_pen.setWidthF(2.5)
+        self._start_pen = QPen(QColor(46, 125, 50))
+        self._start_pen.setWidthF(3.0)
+        self._end_pen = QPen(QColor(245, 124, 0))
+        self._end_pen.setWidthF(3.0)
         self.setPen(self._default_pen)
         self.setBrush(self._default_brush)
         self.setZValue(10)
@@ -47,12 +55,14 @@ class NodeItem(QGraphicsEllipseItem):
         super().hoverEnterEvent(event)
 
     def set_highlight(self, enabled: bool) -> None:
-        if enabled:
-            pen = QPen(Qt.GlobalColor.black)
-            pen.setWidthF(2.5)
-            self.setPen(pen)
-        else:
-            self.setPen(self._default_pen)
+        self._route_selected = bool(enabled)
+        self._apply_route_style()
+
+    def set_route_role(self, role: Optional[str]) -> None:
+        if role not in {None, "start", "end"}:
+            role = None
+        self._route_role = role
+        self._apply_route_style()
 
     def set_theme(self, theme: str) -> None:
         if theme == "dark":
@@ -60,7 +70,17 @@ class NodeItem(QGraphicsEllipseItem):
         else:
             self._default_pen = QPen(Qt.GlobalColor.black)
         self._default_pen.setWidthF(1.0)
-        self.setPen(self._default_pen)
+        self._apply_route_style()
+
+    def _apply_route_style(self) -> None:
+        if self._route_role == "start":
+            self.setPen(self._start_pen)
+        elif self._route_role == "end":
+            self.setPen(self._end_pen)
+        elif self._route_selected:
+            self.setPen(self._route_pen)
+        else:
+            self.setPen(self._default_pen)
 
 
 class TimingPointItem(QGraphicsEllipseItem):

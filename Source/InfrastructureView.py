@@ -108,7 +108,9 @@ class InfrastructureView(
             "<span style='color:#1E90FF'>■</span> Hover&nbsp;&nbsp;"
             "<span style='color:#D32F2F'>●</span> Bahnhof/Node&nbsp;&nbsp;"
             "<span style='color:#1976D2'>●</span> Timing point&nbsp;&nbsp;"
-            "<span style='color:#8B0000'>●</span> Halt"
+            "<span style='color:#8B0000'>●</span> Halt<br>"
+            "<span style='color:#2E7D32'>●</span> Start&nbsp;&nbsp;"
+            "<span style='color:#F57C00'>●</span> Ende"
         )
         self._legend.adjustSize()
         self._legend.move(12, 12)
@@ -122,6 +124,10 @@ class InfrastructureView(
         self._layout_combo.currentTextChanged.connect(self._on_layout_mode_changed)
         layout_label = QLabel("Layout:")
         layout_label.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight)
+        self._route_start_label = QLabel("Start: -")
+        self._route_start_label.setToolTip("No start node selected")
+        self._route_end_label = QLabel("End: -")
+        self._route_end_label.setToolTip("No end node selected")
 
         toolbar = QHBoxLayout()
         toolbar.addWidget(self._clear_route_btn)
@@ -129,6 +135,9 @@ class InfrastructureView(
         toolbar.addWidget(layout_label)
         toolbar.addWidget(self._layout_combo)
         toolbar.addStretch(1)
+        toolbar.addWidget(self._route_start_label)
+        toolbar.addSpacing(12)
+        toolbar.addWidget(self._route_end_label)
 
         infra_tab = QWidget()
         infra_layout = QVBoxLayout(infra_tab)

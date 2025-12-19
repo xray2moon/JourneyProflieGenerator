@@ -126,7 +126,9 @@ class InfrastructureViewSettingsMixin:
             "<span style='color:#1E90FF'>■</span> Hover&nbsp;&nbsp;"
             "<span style='color:#D32F2F'>●</span> Bahnhof/Node&nbsp;&nbsp;"
             "<span style='color:#1976D2'>●</span> Timing point&nbsp;&nbsp;"
-            "<span style='color:#8B0000'>●</span> Halt"
+            "<span style='color:#8B0000'>●</span> Halt<br>"
+            "<span style='color:#2E7D32'>●</span> Start&nbsp;&nbsp;"
+            "<span style='color:#F57C00'>●</span> Ende"
         )
         self._position_overlay_widgets()
 
