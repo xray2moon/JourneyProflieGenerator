@@ -6,10 +6,29 @@ small and focused.
 
 from __future__ import annotations
 
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
+
+from PyQt6.QtWidgets import QMessageBox
 
 
 class InfrastructureViewRoutingMixin:
+    def _is_transition_allowed(self, node_id: str, incoming_track_id: Optional[str], outgoing_track_id: str) -> bool:
+        """
+        Returns whether we may switch from incoming_track_id to outgoing_track_id at node_id.
+
+        For nodes without a simplePoint definition, all transitions are allowed.
+        For simple points, only the declared connection pairs are allowed (bidirectional).
+        A U-turn (leaving via the same track you arrived on) is not allowed.
+        """
+        if incoming_track_id is None:
+            return True
+        if incoming_track_id == outgoing_track_id:
+            return False
+        allowed = self._simple_point_connections.get(node_id)
+        if not allowed:
+            return True
+        return frozenset((incoming_track_id, outgoing_track_id)) in allowed
+
     def _build_graph(self) -> None:
         """
         Undirected graph (physical tracks) with edge weight = track length.
@@ -22,46 +41,55 @@ class InfrastructureViewRoutingMixin:
             self._graph[tr.source].append((tr.target, tr.id, w))
             self._graph[tr.target].append((tr.source, tr.id, w))
 
-    def _shortest_path(self, start: str, goal: str) -> Tuple[List[str], List[str]]:
+    def _shortest_path(
+        self, start: str, goal: str, *, start_incoming_track_id: Optional[str] = None
+    ) -> Tuple[List[str], List[str]]:
         """
-        Dijkstra over nodes, returning (node_path, track_path).
+        Dijkstra over (node, incomingTrack) states, returning (node_path, track_path).
         node_path includes both endpoints.
         """
         if start == goal:
             return [start], []
 
         import heapq
-        dist: Dict[str, float] = {start: 0.0}
-        prev: Dict[str, Tuple[str, str]] = {}  # node -> (prevNode, trackId)
-        pq = [(0.0, start)]
+        start_state = (start, start_incoming_track_id)  # (nodeId, incomingTrackId)
+        dist: Dict[Tuple[str, Optional[str]], float] = {start_state: 0.0}
+        prev: Dict[Tuple[str, Optional[str]], Tuple[Tuple[str, Optional[str]], str]] = {}
+        pq = [(0.0, start_state)]
         seen = set()
+        end_state: Optional[Tuple[str, Optional[str]]] = None
 
         while pq:
-            d, u = heapq.heappop(pq)
-            if u in seen:
+            d, state = heapq.heappop(pq)
+            if state in seen:
                 continue
-            seen.add(u)
+            seen.add(state)
+            u, incoming_track_id = state
             if u == goal:
+                end_state = state
                 break
             for v, track_id, w in self._graph.get(u, []):
+                if not self._is_transition_allowed(u, incoming_track_id, track_id):
+                    continue
                 nd = d + w
-                if nd < dist.get(v, float("inf")):
-                    dist[v] = nd
-                    prev[v] = (u, track_id)
-                    heapq.heappush(pq, (nd, v))
+                nxt = (v, track_id)
+                if nd < dist.get(nxt, float("inf")):
+                    dist[nxt] = nd
+                    prev[nxt] = (state, track_id)
+                    heapq.heappush(pq, (nd, nxt))
 
-        if goal not in prev and goal != start:
+        if end_state is None:
             return [start], []
 
         # reconstruct
-        nodes = [goal]
-        tracks = []
-        cur = goal
-        while cur != start:
-            pu, tr_id = prev[cur]
+        nodes: List[str] = [goal]
+        tracks: List[str] = []
+        cur = end_state
+        while cur != start_state:
+            pstate, tr_id = prev[cur]
             tracks.append(tr_id)
-            nodes.append(pu)
-            cur = pu
+            nodes.append(pstate[0])
+            cur = pstate
         nodes.reverse()
         tracks.reverse()
         return nodes, tracks
@@ -75,8 +103,23 @@ class InfrastructureViewRoutingMixin:
             self._route_track_ids = []
         else:
             last = self._route_node_ids[-1]
-            node_path, track_path = self._shortest_path(last, node_id)
+            incoming = self._route_track_ids[-1] if self._route_track_ids else None
+            node_path, track_path = self._shortest_path(last, node_id, start_incoming_track_id=incoming)
             if len(node_path) <= 1:
+                res = QMessageBox.question(
+                    self,
+                    "Node not reachable",
+                    "The selected node is not reachable from the current route end "
+                    "(considering simple point connections).\n\n"
+                    "Start a new route at the selected node?",
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                    QMessageBox.StandardButton.No,
+                )
+                if res == QMessageBox.StandardButton.Yes:
+                    self._route_node_ids = [node_id]
+                    self._route_track_ids = []
+                    self._update_route_highlights()
+                    self.routeChanged.emit(list(self._route_node_ids))
                 return
             # append, skipping the first because it's last
             self._route_node_ids.extend(node_path[1:])

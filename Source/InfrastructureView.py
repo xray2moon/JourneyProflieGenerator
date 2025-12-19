@@ -9,7 +9,7 @@ renders it with a QGraphicsScene, and supports:
 
 Layout modes:
 - Geographic: uses the raw node coordinates and shaping points.
-- Schematic: uses a 1D baseline with track "lanes" (railway-style schematic).
+- Schematic: currently intentionally blank (disabled).
 
 Notes:
 - Virtual nodes/tracks are ignored by design.
@@ -24,33 +24,18 @@ Signals:
 
 from __future__ import annotations
 
-import json
-import math
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Tuple
 
-from PyQt6.QtCore import Qt, QPointF, QRectF, pyqtSignal, QTimer, QEvent
-from PyQt6.QtGui import (
-    QBrush,
-    QColor,
-    QPainterPath,
-    QPen,
-)
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import (
+    QApplication,
     QWidget,
     QVBoxLayout,
     QTabWidget,
     QGraphicsScene,
-    QGraphicsView,
-    QGraphicsEllipseItem,
-    QGraphicsPathItem,
-    QGraphicsRectItem,
-    QGraphicsSimpleTextItem,
-    QGraphicsItem,
-    QDialog,
     QComboBox,
-    QMessageBox,
     QHBoxLayout,
     QPushButton,
     QLabel,
@@ -59,9 +44,7 @@ from PyQt6.QtWidgets import (
 if __package__ in (None, ""):
     sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from Source.infra_items import NodeItem, TrackItem, TimingPointItem, StoppingLocationItem
-from Source.infra_models import Node, Track, TimingPoint, StoppingLocation
-from Source.infra_ui import ParameterView, TimingConstraintDialog, PanZoomGraphicsView, SettingsView
+from Source.infra_ui import ParameterView, PanZoomGraphicsView, SettingsView
 from Source.infra_view_data import InfrastructureViewDataMixin
 from Source.infra_view_interaction import InfrastructureViewInteractionMixin
 from Source.infra_view_layouts import InfrastructureViewLayoutsMixin
@@ -198,6 +181,8 @@ class InfrastructureView(
 
         # Routing graph: nodeId -> list of (neighborNodeId, trackId, weight)
         self._graph: Dict[str, List[Tuple[str, str, float]]] = {}
+        # Simple points: nodeId -> allowed track-to-track transitions (unordered pairs)
+        self._simple_point_connections: Dict[str, set[frozenset[str]]] = {}
 
         # Current state
         self._route_node_ids: List[str] = []
@@ -233,9 +218,6 @@ class InfrastructureView(
 # --------------------------
 
 if __name__ == "__main__":
-    import sys
-    from PyQt6.QtWidgets import QApplication
-
     app = QApplication(sys.argv)
 
     # Adjust path as needed:

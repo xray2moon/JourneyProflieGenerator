@@ -7,26 +7,12 @@ small and focused.
 from __future__ import annotations
 
 import json
-import math
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
 
-from PyQt6.QtCore import Qt, QPointF, QRectF, QTimer, QEvent
-from PyQt6.QtGui import QBrush, QColor, QPainterPath, QPen
-from PyQt6.QtWidgets import (
-    QDialog,
-    QGraphicsEllipseItem,
-    QGraphicsItem,
-    QGraphicsPathItem,
-    QGraphicsRectItem,
-    QGraphicsSimpleTextItem,
-    QGraphicsView,
-    QMessageBox,
-)
+from PyQt6.QtCore import QTimer
+from PyQt6.QtWidgets import QMessageBox
 
-from Source.infra_items import NodeItem, TrackItem, TimingPointItem, StoppingLocationItem
 from Source.infra_models import Node, Track, TimingPoint, StoppingLocation
-from Source.infra_ui import TimingConstraintDialog
 
 
 class InfrastructureViewDataMixin:
@@ -76,6 +62,7 @@ class InfrastructureViewDataMixin:
         self._sl_to_group.clear()
         self._visible_tp_tracks.clear()
         self._timing_constraints.clear()
+        self._simple_point_connections.clear()
 
         # Nodes
         for n in raw.get("nodes", []):
@@ -87,6 +74,15 @@ class InfrastructureViewDataMixin:
                 numeric_id=n.get("numericId"),
             )
             self._nodes[node.id] = node
+            sp = n.get("simplePoint") or {}
+            allowed = set()
+            for c in sp.get("connections") or []:
+                a = c.get("trackA")
+                b = c.get("trackB")
+                if a and b:
+                    allowed.add(frozenset((a, b)))
+            if allowed:
+                self._simple_point_connections[node.id] = allowed
 
         # Tracks
         for t in raw.get("tracks", []):

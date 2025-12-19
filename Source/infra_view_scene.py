@@ -6,26 +6,10 @@ small and focused.
 
 from __future__ import annotations
 
-import json
-import math
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
-
-from PyQt6.QtCore import Qt, QPointF, QRectF, QTimer, QEvent
-from PyQt6.QtGui import QBrush, QColor, QPainterPath, QPen
-from PyQt6.QtWidgets import (
-    QDialog,
-    QGraphicsEllipseItem,
-    QGraphicsItem,
-    QGraphicsPathItem,
-    QGraphicsRectItem,
-    QGraphicsSimpleTextItem,
-    QGraphicsView,
-    QMessageBox,
-)
+from PyQt6.QtCore import Qt, QPointF, QRectF, QTimer
+from PyQt6.QtWidgets import QGraphicsView
 
 from Source.infra_items import NodeItem, TrackItem, TimingPointItem, StoppingLocationItem
-from Source.infra_models import Node, Track, TimingPoint, StoppingLocation
 
 
 class InfrastructureViewSceneMixin:
