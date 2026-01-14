@@ -70,26 +70,33 @@ def get_stylesheet(theme="light"):
     }}
 
     QTabWidget::pane {{
-        border: 1px solid {border};
-        top: -1px;
+        border: none;
+        border-top: 1px solid {border};
         background: {surface};
-        border-radius: 8px;
+    }}
+
+    QTabBar {{
+        background-color: transparent;
     }}
 
     QTabBar::tab {{
-        background: {bg};
-        border: 1px solid {border};
-        padding: 8px 16px;
-        margin-right: 4px;
-        border-top-left-radius: 6px;
-        border-top-right-radius: 6px;
+        background: transparent;
+        border: none;
+        padding: 12px 24px;
+        margin-right: 8px;
         color: {text_sec};
+        border-bottom: 3px solid transparent;
+        font-weight: 500;
+        font-size: 14px;
+    }}
+
+    QTabBar::tab:hover {{
+        color: {text};
     }}
 
     QTabBar::tab:selected {{
-        background: {surface};
-        border-bottom-color: {surface};
-        color: {text};
+        color: {primary};
+        border-bottom: 3px solid {primary};
         font-weight: bold;
     }}
 
