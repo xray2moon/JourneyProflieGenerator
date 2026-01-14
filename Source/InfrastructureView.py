@@ -144,7 +144,7 @@ class InfrastructureView(
         self._settings_view.defaultViewChanged.connect(self._on_default_view_changed)
         self._tabs.addTab(self._settings_view, "Settings")
 
-        self._tabs.addTab(QWidget(), "confirm")
+        self._tabs.addTab(QWidget(), "Confirm")
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(8, 8, 8, 8)
