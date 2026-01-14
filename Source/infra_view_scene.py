@@ -54,7 +54,7 @@ class InfrastructureViewSceneMixin:
                 continue
             item = TrackItem(tr.id, path)
             item.set_theme(self._current_theme)
-            item.setAcceptHoverEvents(False)
+            item.setAcceptHoverEvents(True)
             label = f"Track {tr.numeric_id}" if tr.numeric_id is not None else "Track"
             tip = f"{label}\nlen={tr.length_m:.0f} m\n{tr.id}"
             item.setToolTip(tip)

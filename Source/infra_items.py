@@ -12,6 +12,7 @@ from PyQt6.QtWidgets import (
 )
 
 from Source.infra_models import Node, TimingPoint
+from Source.modern_theme import ModernColors
 
 
 class NodeItem(QGraphicsEllipseItem):
@@ -25,7 +26,7 @@ class NodeItem(QGraphicsEllipseItem):
         node: Node,
         *,
         radius: float = 6.0,
-        brush: Qt.GlobalColor = Qt.GlobalColor.red,
+        brush: str = ModernColors.NODE_DEFAULT,
     ):
         super().__init__(-radius, -radius, 2 * radius, 2 * radius)
         self.node = node
@@ -34,16 +35,16 @@ class NodeItem(QGraphicsEllipseItem):
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, True)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemSendsScenePositionChanges, True)
 
-        self._default_pen = QPen(Qt.GlobalColor.black)
+        self._default_pen = QPen(QColor(ModernColors.L_TEXT))
         self._default_pen.setWidthF(1.0)
-        self._default_brush = QBrush(brush)
+        self._default_brush = QBrush(QColor(brush))
         self._route_selected = False
         self._route_role: Optional[str] = None
-        self._route_pen = QPen(Qt.GlobalColor.black)
+        self._route_pen = QPen(QColor(ModernColors.L_TEXT))
         self._route_pen.setWidthF(2.5)
-        self._start_pen = QPen(QColor(46, 125, 50))
+        self._start_pen = QPen(QColor(ModernColors.NODE_START))
         self._start_pen.setWidthF(3.0)
-        self._end_pen = QPen(QColor(245, 124, 0))
+        self._end_pen = QPen(QColor(ModernColors.NODE_END))
         self._end_pen.setWidthF(3.0)
         self.setPen(self._default_pen)
         self.setBrush(self._default_brush)
@@ -66,9 +67,9 @@ class NodeItem(QGraphicsEllipseItem):
 
     def set_theme(self, theme: str) -> None:
         if theme == "dark":
-            self._default_pen = QPen(Qt.GlobalColor.white)
+            self._default_pen.setColor(QColor(ModernColors.D_TEXT))
         else:
-            self._default_pen = QPen(Qt.GlobalColor.black)
+            self._default_pen.setColor(QColor(ModernColors.L_TEXT))
         self._default_pen.setWidthF(1.0)
         self._apply_route_style()
 
@@ -96,9 +97,9 @@ class TimingPointItem(QGraphicsEllipseItem):
         self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, True)
 
-        self._base_pen = QPen(Qt.GlobalColor.black)
+        self._base_pen = QPen(QColor(ModernColors.L_TEXT))
         self._base_pen.setWidthF(1.0)
-        self._base_brush = QBrush(Qt.GlobalColor.blue)
+        self._base_brush = QBrush(QColor(ModernColors.TP_DEFAULT))
         self.setPen(self._base_pen)
         self.setBrush(self._base_brush)
         self.setZValue(20)
@@ -120,9 +121,9 @@ class TimingPointItem(QGraphicsEllipseItem):
 
     def set_theme(self, theme: str) -> None:
         if theme == "dark":
-            self._base_pen = QPen(Qt.GlobalColor.white)
+            self._base_pen.setColor(QColor(ModernColors.D_TEXT))
         else:
-            self._base_pen = QPen(Qt.GlobalColor.black)
+            self._base_pen.setColor(QColor(ModernColors.L_TEXT))
         self._base_pen.setWidthF(1.0)
         if not self._has_constraint:
             self.setPen(self._base_pen)
@@ -154,13 +155,12 @@ class StoppingLocationItem(QGraphicsEllipseItem):
 
     def set_theme(self, theme: str) -> None:
         if theme == "dark":
-            pen = QPen(Qt.GlobalColor.white)
-            self._label_item.setBrush(QBrush(Qt.GlobalColor.white))
+            self.setPen(QPen(QColor(ModernColors.D_TEXT)))
+            self._label_item.setBrush(QBrush(QColor(ModernColors.D_TEXT)))
         else:
-            pen = QPen(Qt.GlobalColor.black)
-            self._label_item.setBrush(QBrush(Qt.GlobalColor.black))
-        pen.setWidthF(1.0)
-        self.setPen(pen)
+            self.setPen(QPen(QColor(ModernColors.L_TEXT)))
+            self._label_item.setBrush(QBrush(QColor(ModernColors.L_TEXT)))
+        self.pen().setWidthF(1.0)
 
 
 class TrackItem(QGraphicsPathItem):
@@ -179,23 +179,23 @@ class TrackItem(QGraphicsPathItem):
         self._hovered = False
         self._timing_points_visible = False
 
-        self._outer_pen_default = QPen(Qt.GlobalColor.darkGray)
-        self._outer_pen_default.setWidthF(6.0)
+        self._outer_pen_default = QPen(QColor(ModernColors.TRACK_DEFAULT_L))
+        self._outer_pen_default.setWidthF(4.0)
         self._outer_pen_default.setCapStyle(Qt.PenCapStyle.RoundCap)
         self._outer_pen_default.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
 
-        self._outer_pen_visible = QPen(Qt.GlobalColor.darkBlue)
-        self._outer_pen_visible.setWidthF(6.0)
+        self._outer_pen_visible = QPen(QColor(ModernColors.TRACK_TP_VISIBLE))
+        self._outer_pen_visible.setWidthF(4.0)
         self._outer_pen_visible.setCapStyle(Qt.PenCapStyle.RoundCap)
         self._outer_pen_visible.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
 
-        self._outer_pen_hover = QPen(QColor(30, 144, 255))  # dodger blue
-        self._outer_pen_hover.setWidthF(7.0)
+        self._outer_pen_hover = QPen(QColor(ModernColors.TRACK_HOVER))
+        self._outer_pen_hover.setWidthF(5.0)
         self._outer_pen_hover.setCapStyle(Qt.PenCapStyle.RoundCap)
         self._outer_pen_hover.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
 
-        self._inner_pen = QPen(Qt.GlobalColor.white)
-        self._inner_pen.setWidthF(2.0)
+        self._inner_pen = QPen(QColor(ModernColors.L_SURFACE))
+        self._inner_pen.setWidthF(1.5)
         self._inner_pen.setCapStyle(Qt.PenCapStyle.RoundCap)
         self._inner_pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
 
@@ -211,8 +211,8 @@ class TrackItem(QGraphicsPathItem):
 
         # Route highlight overlay (optional)
         self._route_overlay = QGraphicsPathItem(path)
-        pen = QPen(Qt.GlobalColor.cyan)
-        pen.setWidthF(3.0)
+        pen = QPen(QColor(ModernColors.TRACK_ROUTE))
+        pen.setWidthF(2.5)
         pen.setCapStyle(Qt.PenCapStyle.RoundCap)
         pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
         self._route_overlay.setPen(pen)
@@ -242,11 +242,11 @@ class TrackItem(QGraphicsPathItem):
 
     def set_theme(self, theme: str) -> None:
         if theme == "dark":
-            self._outer_pen_default.setColor(Qt.GlobalColor.lightGray)
-            self._inner_pen.setColor(QColor(34, 34, 34))
+            self._outer_pen_default.setColor(QColor(ModernColors.TRACK_DEFAULT_D))
+            self._inner_pen.setColor(QColor(ModernColors.D_SURFACE))
         else:
-            self._outer_pen_default.setColor(Qt.GlobalColor.darkGray)
-            self._inner_pen.setColor(Qt.GlobalColor.white)
+            self._outer_pen_default.setColor(QColor(ModernColors.TRACK_DEFAULT_L))
+            self._inner_pen.setColor(QColor(ModernColors.L_SURFACE))
         self._inner_overlay.setPen(self._inner_pen)
         self._update_outer_pen()
 

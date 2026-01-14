@@ -11,7 +11,9 @@ from pathlib import Path
 
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QBrush, QColor
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QWidget, QApplication
+
+from Source.modern_theme import ModernColors, get_stylesheet
 
 
 class InfrastructureViewSettingsMixin:
@@ -69,31 +71,14 @@ class InfrastructureViewSettingsMixin:
         self._current_theme = theme
         self._save_settings()
         
+        # Apply global stylesheet
+        QApplication.instance().setStyleSheet(get_stylesheet(theme))
+        
         # Update view background
         if theme == "dark":
-            self._view.setBackgroundBrush(QBrush(QColor(34, 34, 34)))
-            self._legend.setStyleSheet(
-                "QLabel {"
-                " background: rgba(45, 45, 45, 230);"
-                " border: 1px solid rgba(255, 255, 255, 70);"
-                " border-radius: 6px;"
-                " padding: 6px 8px;"
-                " color: #eee;"
-                " font-size: 11px;"
-                "}"
-            )
+            self._view.setBackgroundBrush(QBrush(QColor(ModernColors.D_BACKGROUND)))
         else:
-            self._view.setBackgroundBrush(QBrush(Qt.GlobalColor.white))
-            self._legend.setStyleSheet(
-                "QLabel {"
-                " background: rgba(255, 255, 255, 230);"
-                " border: 1px solid rgba(0, 0, 0, 70);"
-                " border-radius: 6px;"
-                " padding: 6px 8px;"
-                " color: #111;"
-                " font-size: 11px;"
-                "}"
-            )
+            self._view.setBackgroundBrush(QBrush(QColor(ModernColors.L_BACKGROUND)))
 
         self._rebuild_scene()
 
@@ -118,17 +103,21 @@ class InfrastructureViewSettingsMixin:
     def _update_legend_text(self) -> None:
         if getattr(self, "_legend", None) is None:
             return
+        
+        # Determine track color based on theme
+        track_color = ModernColors.TRACK_DEFAULT_D if self._current_theme == "dark" else ModernColors.TRACK_DEFAULT_L
+
         self._legend.setText(
             "<b>Legende</b><br>"
-            "<span style='color:#606060'>■</span> Gleis&nbsp;&nbsp;"
-            "<span style='color:#00008B'>■</span> Gleis (TPs an)&nbsp;&nbsp;"
-            "<span style='color:#00BCD4'>■</span> Route<br>"
-            "<span style='color:#1E90FF'>■</span> Hover&nbsp;&nbsp;"
-            "<span style='color:#D32F2F'>●</span> Bahnhof/Node&nbsp;&nbsp;"
-            "<span style='color:#1976D2'>●</span> Timing point&nbsp;&nbsp;"
-            "<span style='color:#8B0000'>●</span> Halt<br>"
-            "<span style='color:#2E7D32'>●</span> Start&nbsp;&nbsp;"
-            "<span style='color:#F57C00'>●</span> Ende"
+            f"<span style='color:{track_color}'>■</span> Gleis&nbsp;&nbsp;"
+            f"<span style='color:{ModernColors.TRACK_TP_VISIBLE}'>■</span> Gleis (TPs an)&nbsp;&nbsp;"
+            f"<span style='color:{ModernColors.TRACK_ROUTE}'>■</span> Route<br>"
+            f"<span style='color:{ModernColors.TRACK_HOVER}'>■</span> Hover&nbsp;&nbsp;"
+            f"<span style='color:{ModernColors.NODE_DEFAULT}'>●</span> Bahnhof/Node&nbsp;&nbsp;"
+            f"<span style='color:{ModernColors.TP_DEFAULT}'>●</span> Timing point&nbsp;&nbsp;"
+            f"<span style='color:{ModernColors.SL_DEFAULT}'>●</span> Halt<br>"
+            f"<span style='color:{ModernColors.NODE_START}'>●</span> Start&nbsp;&nbsp;"
+            f"<span style='color:{ModernColors.NODE_END}'>●</span> Ende"
         )
         self._position_overlay_widgets()
 

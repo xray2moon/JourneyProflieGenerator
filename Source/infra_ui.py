@@ -46,6 +46,8 @@ class TimingConstraintDialog(QDialog):
             self._ptype.setCurrentText(existing.get("pointType", "STOP"))
 
         form = QFormLayout()
+        form.setContentsMargins(16, 16, 16, 16)
+        form.setSpacing(12)
         form.addRow("Point type", self._ptype)
         form.addRow("Arrival time", self._arrival)
         form.addRow("Departure time", self._departure)
@@ -57,6 +59,7 @@ class TimingConstraintDialog(QDialog):
         buttons.rejected.connect(self.reject)
 
         layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 16)
         layout.addLayout(form)
         layout.addWidget(buttons)
         self.setLayout(layout)
@@ -83,14 +86,18 @@ class ParameterView(QWidget):
         self._infra_load = QPushButton("Load")
         self._infra_status = QLabel("No infrastructure loaded.")
         self._infra_status.setWordWrap(True)
+        self._infra_status.setStyleSheet("color: #8e8e93; font-style: italic;")
 
         infra_path_row = QHBoxLayout()
+        infra_path_row.setSpacing(8)
         infra_path_row.addWidget(self._infra_path, 1)
         infra_path_row.addWidget(self._infra_browse)
         infra_path_row.addWidget(self._infra_load)
 
         infra_box = QGroupBox("Infrastructure")
         infra_layout = QVBoxLayout(infra_box)
+        infra_layout.setContentsMargins(12, 20, 12, 12)
+        infra_layout.setSpacing(10)
         infra_layout.addLayout(infra_path_row)
         infra_layout.addWidget(self._infra_status)
 
@@ -106,11 +113,15 @@ class ParameterView(QWidget):
 
         params_box = QGroupBox("Parameters")
         params_form = QFormLayout(params_box)
+        params_form.setContentsMargins(12, 20, 12, 12)
+        params_form.setSpacing(12)
         params_form.addRow("Train number", self._train_number)
         params_form.addRow("Train type", self._train_type)
         params_form.addRow("Driving strategy", self._driving_strategy)
 
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(16, 16, 16, 16)
+        layout.setSpacing(16)
         layout.addWidget(infra_box)
         layout.addWidget(params_box)
         layout.addStretch(1)
@@ -203,6 +214,8 @@ class SettingsView(QWidget):
         self._default_view_combo.currentTextChanged.connect(self.defaultViewChanged.emit)
 
         layout = QFormLayout()
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(15)
         layout.addRow("Theme", self._theme_combo)
         layout.addRow("", self._show_all_tp_check)
         layout.addRow("", self._keep_selection_check)
@@ -211,6 +224,7 @@ class SettingsView(QWidget):
 
         # Add some stretch to push it to the top
         main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.addLayout(layout)
         main_layout.addStretch(1)
         self.setLayout(main_layout)
@@ -230,7 +244,7 @@ class PanZoomGraphicsView(QGraphicsView):
         super().__init__(scene, parent)
 
         # Professional look
-        self.setBackgroundBrush(QBrush(Qt.GlobalColor.white))
+        self.setFrameShape(QGraphicsView.Shape.NoFrame)
         self.setRenderHints(
             QPainter.RenderHint.Antialiasing
             | QPainter.RenderHint.TextAntialiasing
