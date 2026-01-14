@@ -18,14 +18,14 @@ class InfrastructureViewRoutingMixin:
 
         For nodes without a simplePoint definition, all transitions are allowed.
         For simple points, only the declared connection pairs are allowed (bidirectional).
-        A U-turn (leaving via the same track you arrived on) is not allowed.
+        U-turns (leaving via the same track you arrived on) are allowed.
         """
         if incoming_track_id is None:
             return True
-        if incoming_track_id == outgoing_track_id:
-            return False
         allowed = self._simple_point_connections.get(node_id)
         if not allowed:
+            return True
+        if incoming_track_id == outgoing_track_id:
             return True
         return frozenset((incoming_track_id, outgoing_track_id)) in allowed
 

@@ -7,6 +7,7 @@ small and focused.
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Tuple
+from collections import Counter
 
 from PyQt6.QtCore import Qt, QPointF, QEvent
 from PyQt6.QtWidgets import (
@@ -193,7 +194,9 @@ class InfrastructureViewInteractionMixin:
 
     def _update_route_highlights(self) -> None:
         route_nodes = set(self._route_node_ids)
-        route_tracks = set(self._route_track_ids)
+        
+        track_counts = Counter(self._route_track_ids)
+        
         start_id = self._route_node_ids[0] if self._route_node_ids else None
         end_id = self._route_node_ids[-1] if self._route_node_ids else None
 
@@ -210,8 +213,8 @@ class InfrastructureViewInteractionMixin:
             item.set_route_role(role)
 
         for tid, item in self._track_items.items():
-            enabled = tid in route_tracks
-            item.set_route_highlight(enabled)
+            count = track_counts.get(tid, 0)
+            item.set_route_highlight(count > 0, is_double=(count > 1))
 
         self._update_route_status_labels()
 

@@ -227,8 +227,14 @@ class TrackItem(QGraphicsPathItem):
     def route_overlay(self) -> QGraphicsPathItem:
         return self._route_overlay
 
-    def set_route_highlight(self, enabled: bool) -> None:
+    def set_route_highlight(self, enabled: bool, is_double: bool = False) -> None:
         self._route_overlay.setVisible(enabled)
+        pen = self._route_overlay.pen()
+        if is_double:
+            pen.setColor(QColor("purple"))
+        else:
+            pen.setColor(Qt.GlobalColor.cyan)
+        self._route_overlay.setPen(pen)
 
     def set_timing_points_visible(self, enabled: bool) -> None:
         self._timing_points_visible = bool(enabled)
