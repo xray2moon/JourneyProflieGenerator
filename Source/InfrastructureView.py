@@ -92,18 +92,7 @@ class InfrastructureView(
         self._legend.setObjectName("legend")
         self._legend.setTextFormat(Qt.TextFormat.RichText)
         self._legend.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
-        self._legend.setText(
-            "<b>Legende</b><br>"
-            "<span style='color:#606060'>■</span> Gleis&nbsp;&nbsp;"
-            "<span style='color:#00008B'>■</span> Gleis (TPs an)&nbsp;&nbsp;"
-            "<span style='color:#00BCD4'>■</span> Route<br>"
-            "<span style='color:#1E90FF'>■</span> Hover&nbsp;&nbsp;"
-            "<span style='color:#D32F2F'>●</span> Bahnhof/Node&nbsp;&nbsp;"
-            "<span style='color:#1976D2'>●</span> Timing point&nbsp;&nbsp;"
-            "<span style='color:#8B0000'>●</span> Halt<br>"
-            "<span style='color:#2E7D32'>●</span> Start&nbsp;&nbsp;"
-            "<span style='color:#F57C00'>●</span> Ende"
-        )
+        # Initial text set by _update_legend_text() later in init
         self._legend.adjustSize()
         self._legend.move(12, 12)
         self._legend.raise_()
@@ -145,7 +134,7 @@ class InfrastructureView(
         self._parameter_view = ParameterView(self)
         self._parameter_view.infrastructureLoadRequested.connect(self._on_infrastructure_load_requested)
         self._parameter_view.parametersChanged.connect(self._on_parameters_changed)
-        self._tabs.addTab(self._parameter_view, "Parameter view")
+        self._tabs.addTab(self._parameter_view, "Parameter View")
         
         self._settings_view = SettingsView(self)
         self._settings_view.themeChanged.connect(self._on_theme_changed)

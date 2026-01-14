@@ -104,8 +104,8 @@ class InfrastructureViewSettingsMixin:
         if getattr(self, "_legend", None) is None:
             return
         
-        # Determine track color based on theme
-        track_color = ModernColors.TRACK_DEFAULT_D if self._current_theme == "dark" else ModernColors.TRACK_DEFAULT_L
+        # Use dark theme track color since legend is now always dark
+        track_color = ModernColors.TRACK_DEFAULT_D
 
         self._legend.setText(
             "<b>Legende</b><br>"

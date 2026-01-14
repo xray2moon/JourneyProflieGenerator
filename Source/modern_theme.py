@@ -216,8 +216,9 @@ def get_stylesheet(theme="light"):
     }}
 
     QLabel#legend {{
-        background-color: {surface}cc;
-        border: 1px solid {border};
+        background-color: {ModernColors.D_SURFACE}cc;
+        border: 1px solid {ModernColors.D_BORDER};
+        color: {"#000000" if theme == "light" else "#ffffff"};
         border-radius: 10px;
         padding: 10px;
         font-size: 12px;
