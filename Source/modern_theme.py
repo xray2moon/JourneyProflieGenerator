@@ -132,17 +132,22 @@ def get_stylesheet(theme="light"):
     QComboBox {{
         background-color: {surface};
         border: 1px solid {border};
-        border-radius: 6px;
-        padding: 4px 24px 4px 8px;
+        border-radius: 8px;
+        padding: 5px 24px 5px 10px;
+        combobox-popup: 0;
     }}
 
     QComboBox::drop-down {{
         subcontrol-origin: padding;
         subcontrol-position: top right;
-        width: 20px;
-        border-left: 1px solid {border};
-        border-top-right-radius: 6px;
-        border-bottom-right-radius: 6px;
+        width: 26px;
+        border-left: none;
+        background: transparent;
+    }}
+
+    QComboBox::down-arrow {{
+        width: 12px;
+        height: 12px;
     }}
 
     QComboBox QAbstractItemView {{
@@ -150,8 +155,19 @@ def get_stylesheet(theme="light"):
         border-radius: 8px;
         background-color: {surface};
         outline: 0px;
-        selection-background-color: {primary};
-        selection-color: {surface};
+        padding: 4px;
+    }}
+
+    QComboBox QAbstractItemView::item {{
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin: 2px;
+        color: {text};
+    }}
+
+    QComboBox QAbstractItemView::item:selected {{
+        background-color: {primary};
+        color: {surface};
     }}
 
     QCheckBox {{
