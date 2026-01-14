@@ -56,6 +56,8 @@ def get_stylesheet(theme="light"):
         border = ModernColors.D_BORDER
         hover = ModernColors.D_HOVER
         check_border = border
+    
+    popup_border = f"1px solid {border}" if theme == "light" else f"1px solid {surface}"
 
     asset_path = str(Path(__file__).parent / "assets" / "checkmark.svg").replace("\\", "/")
 
@@ -150,11 +152,19 @@ def get_stylesheet(theme="light"):
         height: 12px;
     }}
 
+    /* The outer container of the popup - match background to hide rectangular corners */
+    QComboBox QFrame {{
+        background-color: {bg};
+        border: none;
+    }}
+
+    /* The actual list inside the popup */
     QComboBox QAbstractItemView {{
+        background-color: {surface};
         border: 1px solid {border};
         border-radius: 8px;
-        background-color: {surface};
         outline: 0px;
+        margin: 0px;
         padding: 4px;
     }}
 
@@ -178,7 +188,7 @@ def get_stylesheet(theme="light"):
     QCheckBox::indicator {{
         width: 18px;
         height: 18px;
-        border-radius: 2px;
+        border-radius: 5px;
         border: 2px solid {check_border};
         background-color: transparent;
     }}
@@ -208,9 +218,9 @@ def get_stylesheet(theme="light"):
 
     QScrollBar:vertical {{
         border: none;
-        background: {bg};
+        background: {surface};
         width: 10px;
-        margin: 0px 0px 0px 0px;
+        margin: 0px;
     }}
 
     QScrollBar::handle:vertical {{
