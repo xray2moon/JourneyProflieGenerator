@@ -1,6 +1,8 @@
+from pathlib import Path
 from PyQt6.QtGui import QColor
 
 class ModernColors:
+    # ... (keep existing)
     # Light Theme
     L_BACKGROUND = "#f8f9fa"
     L_SURFACE = "#ffffff"
@@ -21,7 +23,7 @@ class ModernColors:
     D_BORDER = "#3a3a3c"
     D_HOVER = "#3a3a3c"
 
-    # Infrastructure Colors (Shared or Theme-specific)
+    # Infrastructure Colors
     TRACK_DEFAULT_L = "#606060"
     TRACK_DEFAULT_D = "#a0a0a0"
     TRACK_HOVER = "#007aff"
@@ -44,6 +46,7 @@ def get_stylesheet(theme="light"):
         text_sec = ModernColors.L_TEXT_SECONDARY
         border = ModernColors.L_BORDER
         hover = ModernColors.L_HOVER
+        check_border = "#8e8e93" # Darker border for light mode checkboxes
     else:
         bg = ModernColors.D_BACKGROUND
         surface = ModernColors.D_SURFACE
@@ -52,6 +55,9 @@ def get_stylesheet(theme="light"):
         text_sec = ModernColors.D_TEXT_SECONDARY
         border = ModernColors.D_BORDER
         hover = ModernColors.D_HOVER
+        check_border = border
+
+    asset_path = str(Path(__file__).parent / "assets" / "checkmark.svg").replace("\\", "/")
 
     return f"""
     QWidget {{
@@ -135,6 +141,45 @@ def get_stylesheet(theme="light"):
         subcontrol-position: top right;
         width: 20px;
         border-left: 1px solid {border};
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+    }}
+
+    QComboBox QAbstractItemView {{
+        border: 1px solid {border};
+        border-radius: 8px;
+        background-color: {surface};
+        outline: 0px;
+        selection-background-color: {primary};
+        selection-color: {surface};
+    }}
+
+    QCheckBox {{
+        spacing: 8px;
+        color: {text};
+    }}
+
+    QCheckBox::indicator {{
+        width: 18px;
+        height: 18px;
+        border-radius: 2px;
+        border: 2px solid {check_border};
+        background-color: transparent;
+    }}
+
+    QCheckBox::indicator:hover {{
+        border-color: #03DAC6;
+    }}
+
+    QCheckBox::indicator:unchecked {{
+        background-color: transparent;
+        border: 2px solid {check_border};
+    }}
+
+    QCheckBox::indicator:checked {{
+        background-color: #03DAC6;
+        border-color: #03DAC6;
+        image: url({asset_path});
     }}
 
     QLabel#legend {{
