@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from typing import List, Optional, Set
 
 from PyQt6.QtCore import Qt, QPointF
@@ -234,42 +235,109 @@ class TrackItem(QGraphicsPathItem):
         self, 
         enabled: bool, 
         is_double: bool = False, 
-        directions: Optional[Set[str]] = None
+        directions: Optional[Set[str]] = None,
+        traversals: Optional[List[str]] = None
     ) -> None:
+        """
+        Highlight the track if it is part of the current route.
+        If traversed multiple times, draw separate offset lines.
+        """
         self._route_overlay.setVisible(enabled)
-        pen = self._route_overlay.pen()
-        color = QColor("purple") if is_double else QColor(ModernColors.TRACK_ROUTE)
-        pen.setColor(color)
-        self._route_overlay.setPen(pen)
-
+        
         # Remove old arrows
         for arrow in self._arrows:
             if arrow.scene():
                 arrow.scene().removeItem(arrow)
         self._arrows.clear()
 
-        if enabled and directions:
-            path = self.path()
-            l = path.length()
-            if l < 1e-3:
-                return
+        if not enabled:
+            return
 
-            percents = [0.5] if l < 150 else [0.3, 0.7]
+        # If we have explicit traversals, use them; otherwise fallback to directions set
+        if traversals is None:
+            if directions:
+                traversals = sorted(list(directions)) # stable order
+            else:
+                traversals = ["forward"] if not is_double else ["forward", "backward"]
+
+        num = len(traversals)
+        color = QColor("purple") if num > 1 else QColor(ModernColors.TRACK_ROUTE)
+        
+        pen = self._route_overlay.pen()
+        pen.setColor(color)
+        self._route_overlay.setPen(pen)
+
+        # Build a composite path with offset lines
+        path = self.path()
+        pts = []
+        for i in range(path.elementCount()):
+            el = path.elementAt(i)
+            pts.append(QPointF(el.x, el.y))
+        
+        composite_path = QPainterPath()
+        spacing = 7.0
+
+        for i, direction in enumerate(traversals):
+            offset = (i - (num - 1) / 2.0) * spacing
+            off_path = self._create_offset_path(pts, offset)
+            composite_path.addPath(off_path)
             
-            is_both = "forward" in directions and "backward" in directions
+            # Arrows for this specific line
+            l = off_path.length()
+            if l > 1e-3:
+                percents = [0.1, 0.9] if l > 20 else [0.5]
+                for p in percents:
+                    pos = off_path.pointAtPercent(p)
+                    angle = off_path.angleAtPercent(p)
+                    if direction == "backward":
+                        angle += 180
+                    self._create_arrow(pos, angle, color)
 
-            for p in percents:
-                pos = path.pointAtPercent(p)
-                angle = path.angleAtPercent(p)
-                
-                if is_both:
-                    # Single bidirectional indicator
-                    self._create_bidirectional_arrow(pos, angle, color)
+        self._route_overlay.setPath(composite_path)
+
+    def _create_offset_path(self, pts: List[QPointF], offset: float) -> QPainterPath:
+        if not pts:
+            return QPainterPath()
+        if len(pts) < 2 or abs(offset) < 1e-4:
+            p = QPainterPath(pts[0])
+            for pt in pts[1:]:
+                p.lineTo(pt)
+            return p
+
+        new_pts = []
+        for i in range(len(pts)):
+            if i == 0:
+                v = pts[1] - pts[0]
+                mag = math.hypot(v.x(), v.y())
+                n = QPointF(-v.y() / mag, v.x() / mag) if mag > 1e-6 else QPointF(0, 0)
+            elif i == len(pts) - 1:
+                v = pts[i] - pts[i-1]
+                mag = math.hypot(v.x(), v.y())
+                n = QPointF(-v.y() / mag, v.x() / mag) if mag > 1e-6 else QPointF(0, 0)
+            else:
+                v1 = pts[i] - pts[i-1]
+                v2 = pts[i+1] - pts[i]
+                mag1 = math.hypot(v1.x(), v1.y())
+                mag2 = math.hypot(v2.x(), v2.y())
+                if mag1 > 1e-6 and mag2 > 1e-6:
+                    n1 = QPointF(-v1.y() / mag1, v1.x() / mag1)
+                    n2 = QPointF(-v2.y() / mag2, v2.x() / mag2)
+                    n = n1 + n2
+                    mag = math.hypot(n.x(), n.y())
+                    if mag > 1e-6:
+                        n /= mag
+                        cos_half_theta = n.x() * n1.x() + n.y() * n1.y()
+                        if cos_half_theta > 0.1:
+                            n /= cos_half_theta
                 else:
-                    if "forward" in directions:
-                        self._create_arrow(pos, angle, color)
-                    if "backward" in directions:
-                        self._create_arrow(pos, angle + 180, color)
+                    n = QPointF(0, 0)
+            
+            new_pts.append(pts[i] + n * offset)
+
+        res = QPainterPath(new_pts[0])
+        for pt in new_pts[1:]:
+            res.lineTo(pt)
+        return res
 
     def _create_arrow(self, pos: QPointF, angle_deg: float, color: QColor) -> None:
         arrow_path = QPainterPath()
@@ -283,7 +351,7 @@ class TrackItem(QGraphicsPathItem):
         trans.translate(pos.x(), pos.y())
         trans.rotate(-angle_deg) 
         
-        arrow_item = QGraphicsPathItem(trans.map(arrow_path), self)
+        arrow_item = QGraphicsPathItem(trans.map(arrow_path), self._route_overlay)
         # Black outline for better visibility when zoomed out
         outline_pen = QPen(Qt.GlobalColor.black)
         outline_pen.setWidthF(1.0)
@@ -313,7 +381,7 @@ class TrackItem(QGraphicsPathItem):
         trans.translate(pos.x(), pos.y())
         trans.rotate(-angle_deg)
         
-        arrow_item = QGraphicsPathItem(trans.map(arrow_path), self)
+        arrow_item = QGraphicsPathItem(trans.map(arrow_path), self._route_overlay)
         outline_pen = QPen(Qt.GlobalColor.black)
         outline_pen.setWidthF(1.0)
         outline_pen.setCosmetic(True)

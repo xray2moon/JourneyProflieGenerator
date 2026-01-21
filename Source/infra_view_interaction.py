@@ -181,11 +181,10 @@ class InfrastructureViewInteractionMixin:
         route_tracks = selection.current_tracks
         
         node_ids_set = set(route_nodes)
-        track_counts = Counter(route_tracks)
         
-        # Calculate directions for each track
-        # track_id -> set of "forward" or "backward"
-        track_directions: Dict[str, Set[str]] = {}
+        # Calculate traversals for each track in order
+        # track_id -> list of "forward" or "backward"
+        track_traversals: Dict[str, List[str]] = {}
         for i in range(len(route_tracks)):
             tid = route_tracks[i]
             if tid not in model.tracks:
@@ -198,13 +197,13 @@ class InfrastructureViewInteractionMixin:
             v = route_nodes[i+1]
             tr = model.tracks[tid]
             
-            if tid not in track_directions:
-                track_directions[tid] = set()
+            if tid not in track_traversals:
+                track_traversals[tid] = []
             
             if u == tr.source and v == tr.target:
-                track_directions[tid].add("forward")
+                track_traversals[tid].append("forward")
             elif u == tr.target and v == tr.source:
-                track_directions[tid].add("backward")
+                track_traversals[tid].append("backward")
 
         start_id = route_nodes[0] if route_nodes else None
         end_id = route_nodes[-1] if route_nodes else None
@@ -218,9 +217,8 @@ class InfrastructureViewInteractionMixin:
             item.set_route_role(role)
 
         for tid, item in self._track_items.items():
-            count = track_counts.get(tid, 0)
-            dirs = track_directions.get(tid)
-            item.set_route_highlight(count > 0, is_double=(count > 1), directions=dirs)
+            traversals = track_traversals.get(tid, [])
+            item.set_route_highlight(len(traversals) > 0, traversals=traversals)
 
         self._update_route_status_labels()
 
