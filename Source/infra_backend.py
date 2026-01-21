@@ -5,10 +5,6 @@ from Source.infra_data_manager import InfrastructureModel, InfrastructureParser
 from Source.infra_selection_model import InfrastructureSelectionModel
 
 class InfrastructureBackend(QObject):
-    """
-    Central backend that holds the infrastructure data and selection state.
-    Acts as the 'Single Source of Truth'.
-    """
     infrastructureLoaded = pyqtSignal()
 
     def __init__(self):
@@ -26,6 +22,8 @@ class InfrastructureBackend(QObject):
 
     def load_infrastructure(self, json_path: str):
         """Loads infrastructure and notifies listeners."""
+        print(f"DEBUG: Backend loading {json_path}", flush=True)
         self._model = InfrastructureParser.parse_file(json_path)
-        self._selection.clear()
+        self._selection.clear_selection()
+        print("DEBUG: Backend emitting infrastructureLoaded", flush=True)
         self.infrastructureLoaded.emit()
