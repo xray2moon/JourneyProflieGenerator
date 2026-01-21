@@ -241,4 +241,27 @@ def get_stylesheet(theme="light"):
         border: none;
         background: none;
     }}
+
+    QScrollBar:horizontal {{
+        border: none;
+        background: {surface};
+        height: 10px;
+        margin: 0px;
+    }}
+
+    QScrollBar::handle:horizontal {{
+        background: {border};
+        min-width: 20px;
+        border-radius: 5px;
+    }}
+
+    QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {{
+        border: none;
+        background: none;
+    }}
+
+    QAbstractScrollArea::corner {{
+        background: {surface};
+        border: none;
+    }}
     """
