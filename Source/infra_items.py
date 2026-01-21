@@ -236,11 +236,13 @@ class TrackItem(QGraphicsPathItem):
         enabled: bool, 
         is_double: bool = False, 
         directions: Optional[Set[str]] = None,
-        traversals: Optional[List[str]] = None
+        traversals: Optional[List[str]] = None,
+        traversal_offsets: Optional[List[Tuple[float, float]]] = None
     ) -> None:
         """
         Highlight the track if it is part of the current route.
         If traversed multiple times, draw separate offset lines.
+        traversal_offsets: List of (start_offset, end_offset) for each traversal.
         """
         self._route_overlay.setVisible(enabled)
         
@@ -277,9 +279,35 @@ class TrackItem(QGraphicsPathItem):
         composite_path = QPainterPath()
         spacing = 7.0
 
+        # Count occurrences to handle multiple traversals of same direction
+        fwd_count = traversals.count("forward")
+        bwd_count = traversals.count("backward")
+        fwd_idx = 0
+        bwd_idx = 0
+
         for i, direction in enumerate(traversals):
-            offset = (i - (num - 1) / 2.0) * spacing
-            off_path = self._create_offset_path(pts, offset)
+            if traversal_offsets and i < len(traversal_offsets):
+                s_off, e_off = traversal_offsets[i]
+                # If backward, the traversal goes from target (pts[-1]) to source (pts[0]).
+                # _create_offset_path expects (offset_at_pts[0], offset_at_pts[-1]).
+                if direction == "backward":
+                    s_off, e_off = e_off, s_off
+            else:
+                # Default logic if no explicit offsets provided
+                if direction == "forward":
+                    if fwd_count == 1:
+                        s_off = e_off = spacing / 2.0
+                    else:
+                        s_off = e_off = spacing / 2.0 + (fwd_idx - (fwd_count - 1) / 2.0) * (spacing / 2.0)
+                    fwd_idx += 1
+                else:
+                    if bwd_count == 1:
+                        s_off = e_off = -spacing / 2.0
+                    else:
+                        s_off = e_off = -spacing / 2.0 + (bwd_idx - (bwd_count - 1) / 2.0) * (spacing / 2.0)
+                    bwd_idx += 1
+
+            off_path = self._create_offset_path(pts, s_off, e_off)
             composite_path.addPath(off_path)
             
             # Arrows for this specific line
@@ -295,17 +323,55 @@ class TrackItem(QGraphicsPathItem):
 
         self._route_overlay.setPath(composite_path)
 
-    def _create_offset_path(self, pts: List[QPointF], offset: float) -> QPainterPath:
+    def _create_offset_path(self, pts: List[QPointF], start_offset: float, end_offset: float) -> QPainterPath:
         if not pts:
             return QPainterPath()
-        if len(pts) < 2 or abs(offset) < 1e-4:
+        
+        # Subdivide segments to allow for a smooth transition curve
+        refined_pts = [pts[0]]
+        max_step = 5.0 
+        for i in range(len(pts) - 1):
+            p1, p2 = pts[i], pts[i+1]
+            dist = math.hypot(p2.x() - p1.x(), p2.y() - p1.y())
+            if dist > max_step:
+                steps = int(dist / max_step)
+                for s in range(1, steps):
+                    refined_pts.append(p1 + (p2 - p1) * (s / steps))
+            refined_pts.append(p2)
+        pts = refined_pts
+
+        if len(pts) < 2:
             p = QPainterPath(pts[0])
             for pt in pts[1:]:
                 p.lineTo(pt)
             return p
 
+        # Calculate total length for interpolation
+        total_len = 0.0
+        segment_lengths = []
+        for i in range(len(pts) - 1):
+            seg_l = math.hypot(pts[i+1].x() - pts[i].x(), pts[i+1].y() - pts[i].y())
+            segment_lengths.append(seg_l)
+            total_len += seg_l
+
         new_pts = []
+        curr_len = 0.0
         for i in range(len(pts)):
+            # Interpolate offset
+            if total_len > 1e-6:
+                p = curr_len / total_len
+                # Cubic interpolation for a "branching" look
+                if start_offset == 0 and end_offset != 0:
+                    t = p * p * p # Branches out late
+                elif start_offset != 0 and end_offset == 0:
+                    t = 1.0 - (1.0 - p)**3 # Branches in early
+                else:
+                    # Smoothstep for non-zero to non-zero
+                    t = p * p * (3 - 2 * p)
+                offset = start_offset + (end_offset - start_offset) * t
+            else:
+                offset = start_offset
+
             if i == 0:
                 v = pts[1] - pts[0]
                 mag = math.hypot(v.x(), v.y())
@@ -333,6 +399,8 @@ class TrackItem(QGraphicsPathItem):
                     n = QPointF(0, 0)
             
             new_pts.append(pts[i] + n * offset)
+            if i < len(segment_lengths):
+                curr_len += segment_lengths[i]
 
         res = QPainterPath(new_pts[0])
         for pt in new_pts[1:]:

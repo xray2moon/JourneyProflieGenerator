@@ -185,6 +185,9 @@ class InfrastructureViewInteractionMixin:
         # Calculate traversals for each track in order
         # track_id -> list of "forward" or "backward"
         track_traversals: Dict[str, List[str]] = {}
+        # Also keep track of the sequence of (track_id, direction) in the route
+        route_traversal_sequence: List[Tuple[str, str]] = []
+
         for i in range(len(route_tracks)):
             tid = route_tracks[i]
             if tid not in model.tracks:
@@ -197,13 +200,54 @@ class InfrastructureViewInteractionMixin:
             v = route_nodes[i+1]
             tr = model.tracks[tid]
             
+            direction = "forward" if (u == tr.source and v == tr.target) else "backward"
+            
             if tid not in track_traversals:
                 track_traversals[tid] = []
+            track_traversals[tid].append(direction)
+            route_traversal_sequence.append((tid, direction))
+
+        # Determine which tracks are "double" in the context of this route
+        # (either traversed both ways, or traversed more than once)
+        is_double_in_route = {tid: len(dirs) > 1 for tid, dirs in track_traversals.items()}
+        
+        # Calculate offsets for each step in the sequence
+        spacing = 7.0
+        sequence_offsets: List[Tuple[float, float]] = [] # list of (start_off, end_off) for each step
+        
+        for i, (tid, direction) in enumerate(route_traversal_sequence):
+            # Target offset for this direction
+            target = (spacing / 2.0) if direction == "forward" else (-spacing / 2.0)
             
-            if u == tr.source and v == tr.target:
-                track_traversals[tid].append("forward")
-            elif u == tr.target and v == tr.source:
-                track_traversals[tid].append("backward")
+            # If it's a double track, it's always at the target offset
+            if is_double_in_route[tid]:
+                s_off = e_off = target
+            else:
+                # It's a single track. Should it taper?
+                s_off = 0.0
+                e_off = 0.0
+                
+                # Check previous step in route
+                if i > 0:
+                    prev_tid, prev_dir = route_traversal_sequence[i-1]
+                    if is_double_in_route[prev_tid]:
+                        s_off = target
+                
+                # Check next step in route
+                if i < len(route_traversal_sequence) - 1:
+                    next_tid, next_dir = route_traversal_sequence[i+1]
+                    if is_double_in_route[next_tid]:
+                        e_off = target
+            
+            sequence_offsets.append((s_off, e_off))
+
+        # Map these back to track_id -> list of (s_off, e_off)
+        track_to_offsets: Dict[str, List[Tuple[float, float]]] = {}
+        counts: Dict[str, int] = {}
+        for (tid, direction), offsets in zip(route_traversal_sequence, sequence_offsets):
+            if tid not in track_to_offsets:
+                track_to_offsets[tid] = []
+            track_to_offsets[tid].append(offsets)
 
         start_id = route_nodes[0] if route_nodes else None
         end_id = route_nodes[-1] if route_nodes else None
@@ -218,7 +262,8 @@ class InfrastructureViewInteractionMixin:
 
         for tid, item in self._track_items.items():
             traversals = track_traversals.get(tid, [])
-            item.set_route_highlight(len(traversals) > 0, traversals=traversals)
+            offsets = track_to_offsets.get(tid, [])
+            item.set_route_highlight(len(traversals) > 0, traversals=traversals, traversal_offsets=offsets)
 
         self._update_route_status_labels()
 
