@@ -176,14 +176,41 @@ class InfrastructureViewInteractionMixin:
 
     def _update_route_highlights_ui(self) -> None:
         selection = self._backend.selection
-        route_nodes = set(selection.current_route)
-        track_counts = Counter(selection.current_tracks)
+        model = self._backend.model
+        route_nodes = selection.current_route
+        route_tracks = selection.current_tracks
         
-        start_id = selection.current_route[0] if selection.current_route else None
-        end_id = selection.current_route[-1] if selection.current_route else None
+        node_ids_set = set(route_nodes)
+        track_counts = Counter(route_tracks)
+        
+        # Calculate directions for each track
+        # track_id -> set of "forward" or "backward"
+        track_directions: Dict[str, Set[str]] = {}
+        for i in range(len(route_tracks)):
+            tid = route_tracks[i]
+            if tid not in model.tracks:
+                continue
+            
+            if i + 1 >= len(route_nodes):
+                break
+                
+            u = route_nodes[i]
+            v = route_nodes[i+1]
+            tr = model.tracks[tid]
+            
+            if tid not in track_directions:
+                track_directions[tid] = set()
+            
+            if u == tr.source and v == tr.target:
+                track_directions[tid].add("forward")
+            elif u == tr.target and v == tr.source:
+                track_directions[tid].add("backward")
+
+        start_id = route_nodes[0] if route_nodes else None
+        end_id = route_nodes[-1] if route_nodes else None
 
         for nid, item in self._node_items.items():
-            item.set_highlight(nid in route_nodes)
+            item.set_highlight(nid in node_ids_set)
             role = None
             if start_id is not None:
                 if nid == start_id: role = "start"
@@ -192,7 +219,8 @@ class InfrastructureViewInteractionMixin:
 
         for tid, item in self._track_items.items():
             count = track_counts.get(tid, 0)
-            item.set_route_highlight(count > 0, is_double=(count > 1))
+            dirs = track_directions.get(tid)
+            item.set_route_highlight(count > 0, is_double=(count > 1), directions=dirs)
 
         self._update_route_status_labels()
 

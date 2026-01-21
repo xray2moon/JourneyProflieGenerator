@@ -106,12 +106,14 @@ class InfrastructureViewSettingsMixin:
             f"<span style='color:{track_color}'>■</span> Gleis&nbsp;&nbsp;"
             f"<span style='color:{ModernColors.TRACK_TP_VISIBLE}'>■</span> Gleis (TPs an)&nbsp;&nbsp;"
             f"<span style='color:{ModernColors.TRACK_ROUTE}'>■</span> Route<br>"
+            f"<span style='color:purple'>■</span> Mehrfache Durchfahrt&nbsp;&nbsp;"
             f"<span style='color:{ModernColors.TRACK_HOVER}'>■</span> Hover&nbsp;&nbsp;"
-            f"<span style='color:{ModernColors.NODE_DEFAULT}'>●</span> Bahnhof/Node&nbsp;&nbsp;"
+            f"<span style='color:{ModernColors.NODE_DEFAULT}'>●</span> Bahnhof/Node<br>"
             f"<span style='color:{ModernColors.TP_DEFAULT}'>●</span> Timing point&nbsp;&nbsp;"
-            f"<span style='color:{ModernColors.SL_DEFAULT}'>●</span> Halt<br>"
+            f"<span style='color:{ModernColors.SL_DEFAULT}'>●</span> Halt&nbsp;&nbsp;"
             f"<span style='color:{ModernColors.NODE_START}'>●</span> Start&nbsp;&nbsp;"
-            f"<span style='color:{ModernColors.NODE_END}'>●</span> Ende"
+            f"<span style='color:{ModernColors.NODE_END}'>●</span> Ende<br>"
+            f"<span style='color:{ModernColors.TRACK_ROUTE}'>▶</span> Fahrtrichtung"
         )
         self._position_overlay_widgets()
 

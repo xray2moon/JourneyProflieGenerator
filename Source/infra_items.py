@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import List, Optional, Set
 
 from PyQt6.QtCore import Qt, QPointF
-from PyQt6.QtGui import QBrush, QColor, QPainterPath, QPen
+from PyQt6.QtGui import QBrush, QColor, QPainterPath, QPen, QTransform
 from PyQt6.QtWidgets import (
     QGraphicsEllipseItem,
     QGraphicsItem,
@@ -221,20 +221,108 @@ class TrackItem(QGraphicsPathItem):
         self._route_overlay.setAcceptedMouseButtons(Qt.MouseButton.NoButton)
         self._route_overlay.setData(0, track_id)
 
+        # Direction arrows
+        self._arrows: List[QGraphicsPathItem] = []
+
     def inner_overlay(self) -> QGraphicsPathItem:
         return self._inner_overlay
 
     def route_overlay(self) -> QGraphicsPathItem:
         return self._route_overlay
 
-    def set_route_highlight(self, enabled: bool, is_double: bool = False) -> None:
+    def set_route_highlight(
+        self, 
+        enabled: bool, 
+        is_double: bool = False, 
+        directions: Optional[Set[str]] = None
+    ) -> None:
         self._route_overlay.setVisible(enabled)
         pen = self._route_overlay.pen()
-        if is_double:
-            pen.setColor(QColor("purple"))
-        else:
-            pen.setColor(Qt.GlobalColor.cyan)
+        color = QColor("purple") if is_double else QColor(ModernColors.TRACK_ROUTE)
+        pen.setColor(color)
         self._route_overlay.setPen(pen)
+
+        # Remove old arrows
+        for arrow in self._arrows:
+            if arrow.scene():
+                arrow.scene().removeItem(arrow)
+        self._arrows.clear()
+
+        if enabled and directions:
+            path = self.path()
+            l = path.length()
+            if l < 1e-3:
+                return
+
+            percents = [0.5] if l < 150 else [0.3, 0.7]
+            
+            is_both = "forward" in directions and "backward" in directions
+
+            for p in percents:
+                pos = path.pointAtPercent(p)
+                angle = path.angleAtPercent(p)
+                
+                if is_both:
+                    # Single bidirectional indicator
+                    self._create_bidirectional_arrow(pos, angle, color)
+                else:
+                    if "forward" in directions:
+                        self._create_arrow(pos, angle, color)
+                    if "backward" in directions:
+                        self._create_arrow(pos, angle + 180, color)
+
+    def _create_arrow(self, pos: QPointF, angle_deg: float, color: QColor) -> None:
+        arrow_path = QPainterPath()
+        # Slightly larger triangle: 10 units long, 8 units wide
+        arrow_path.moveTo(-5, -4)
+        arrow_path.lineTo(5, 0)
+        arrow_path.lineTo(-5, 4)
+        arrow_path.closeSubpath()
+
+        trans = QTransform()
+        trans.translate(pos.x(), pos.y())
+        trans.rotate(-angle_deg) 
+        
+        arrow_item = QGraphicsPathItem(trans.map(arrow_path), self)
+        # Black outline for better visibility when zoomed out
+        outline_pen = QPen(Qt.GlobalColor.black)
+        outline_pen.setWidthF(1.0)
+        outline_pen.setCosmetic(True) # Keeps pen width constant regardless of zoom
+        arrow_item.setPen(outline_pen)
+        arrow_item.setBrush(QBrush(color))
+        arrow_item.setZValue(4)
+        arrow_item.setAcceptedMouseButtons(Qt.MouseButton.NoButton)
+        
+        self._arrows.append(arrow_item)
+
+    def _create_bidirectional_arrow(self, pos: QPointF, angle_deg: float, color: QColor) -> None:
+        # A diamond or double-headed arrow shape
+        arrow_path = QPainterPath()
+        # Head 1 (right)
+        arrow_path.moveTo(1, -4)
+        arrow_path.lineTo(7, 0)
+        arrow_path.lineTo(1, 4)
+        arrow_path.closeSubpath()
+        # Head 2 (left)
+        arrow_path.moveTo(-1, -4)
+        arrow_path.lineTo(-7, 0)
+        arrow_path.lineTo(-1, 4)
+        arrow_path.closeSubpath()
+
+        trans = QTransform()
+        trans.translate(pos.x(), pos.y())
+        trans.rotate(-angle_deg)
+        
+        arrow_item = QGraphicsPathItem(trans.map(arrow_path), self)
+        outline_pen = QPen(Qt.GlobalColor.black)
+        outline_pen.setWidthF(1.0)
+        outline_pen.setCosmetic(True)
+        arrow_item.setPen(outline_pen)
+        arrow_item.setBrush(QBrush(color))
+        arrow_item.setZValue(4)
+        arrow_item.setAcceptedMouseButtons(Qt.MouseButton.NoButton)
+        
+        self._arrows.append(arrow_item)
 
     def set_timing_points_visible(self, enabled: bool) -> None:
         self._timing_points_visible = bool(enabled)
