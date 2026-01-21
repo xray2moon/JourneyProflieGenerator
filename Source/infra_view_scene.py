@@ -32,7 +32,7 @@ class InfrastructureViewSceneMixin:
     # -----------
 
     def _rebuild_scene(self) -> None:
-        self._scene.clear()
+        self._scene_builder.clear()
         self._node_items.clear()
         self._track_items.clear()
         self._tp_items.clear()
@@ -46,91 +46,49 @@ class InfrastructureViewSceneMixin:
             return
 
         self._node_positions = self._compute_node_positions()
-
-        # Tracks first
-        for tr in self._tracks.values():
+        
+        # Prepare data for builder
+        track_paths = {}
+        for tr_id, tr in self._tracks.items():
             path = self._track_to_path(tr)
-            if path is None:
-                continue
-            item = TrackItem(tr.id, path)
-            item.set_theme(self._current_theme)
-            item.setAcceptHoverEvents(True)
-            label = f"Track {tr.numeric_id}" if tr.numeric_id is not None else "Track"
-            tip = f"{label}\nlen={tr.length_m:.0f} m\n{tr.id}"
-            item.setToolTip(tip)
-            item.inner_overlay().setToolTip(tip)
-            item.route_overlay().setToolTip(tip)
-            item.inner_overlay().setAcceptHoverEvents(False)
-            item.route_overlay().setAcceptHoverEvents(False)
-            item.set_timing_points_visible(self._show_all_tp or tr.id in self._visible_tp_tracks)
-            self._scene.addItem(item)
-            self._scene.addItem(item.inner_overlay())
-            self._scene.addItem(item.route_overlay())
-            self._track_items[tr.id] = item
-            self._tp_track_map.setdefault(tr.id, [])
-
-        # Nodes
-        for node in self._nodes.values():
-            pos = self._node_positions.get(node.id, QPointF(node.x, node.y))
-            ni = NodeItem(node)
-            ni.set_theme(self._current_theme)
-            ni.setPos(pos)
-            self._scene.addItem(ni)
-            self._node_items[node.id] = ni
-
-        # Timing points (blue)
-        for tp in self._timing_points.values():
+            if path: track_paths[tr_id] = path
+            
+        tp_positions = {}
+        for tp_id, tp in self._timing_points.items():
             pos = self._timing_point_position(tp)
-            if pos is None:
-                continue
-            tpi = TimingPointItem(tp, pos)
-            tpi.set_theme(self._current_theme)
+            if pos: tp_positions[tp_id] = pos
             
-            # Visibility logic:
-            # 1. Show all TPs if setting is enabled.
-            # 2. Show if track is selected.
-            # 3. Show if it has a 'STOP' constraint (even if track unchecked).
-            # 4. 'PASS' constraint should behave like normal (only visible if track is visible),
-            #    unless show_all_tp is on.
-            
-            has_stop = False
-            if tp.id in self._timing_constraints:
-                c = self._timing_constraints[tp.id]
-                if c.get("pointType") == "STOP":
-                    has_stop = True
-
-            is_visible = (
-                self._show_all_tp 
-                or (tp.track_id in self._visible_tp_tracks) 
-                or has_stop
-            )
-            tpi.setVisible(is_visible)
-            self._scene.addItem(tpi)
-            self._tp_items[tp.id] = tpi
-            self._tp_track_map.setdefault(tp.track_id, []).append(tpi)
-
-        # Stopping locations + labels
-        for sl in self._stopping_locations.values():
+        sl_positions = {}
+        for sl_id, sl in self._stopping_locations.items():
             pos = self._stopping_location_position(sl)
-            if pos is None:
-                continue
+            if pos: sl_positions[sl_id] = pos
 
-            group = self._sl_to_group.get(sl.id, "")
-            suffix = ""
-            if "-SL-" in sl.id:
-                suffix = sl.id.split("-SL-")[-1].strip()
-            label = group if group else sl.id
-            if group and suffix:
-                label = f"{group} {suffix}"
-
-            sli = StoppingLocationItem(sl.id, pos, label)
-            sli.set_theme(self._current_theme)
-            self._scene.addItem(sli)
-            self._scene.addItem(sli.label_item())
-            self._sl_items[sl.id] = sli
+        self._scene_builder.set_theme(self._current_theme)
+        
+        # Build!
+        build_results = self._scene_builder.build_geographic(
+            nodes=self._nodes,
+            tracks=self._tracks,
+            timing_points=self._timing_points,
+            stopping_locations=self._stopping_locations,
+            node_positions=self._node_positions,
+            track_paths=track_paths,
+            tp_positions=tp_positions,
+            sl_positions=sl_positions,
+            sl_to_group=self._sl_to_group,
+            show_all_tp=self._show_all_tp,
+            visible_tp_tracks=self._visible_tp_tracks,
+            timing_constraints=self._timing_constraints
+        )
+        
+        # Store results back to mixin state
+        self._node_items = build_results["node_items"]
+        self._track_items = build_results["track_items"]
+        self._tp_items = build_results["tp_items"]
+        self._sl_items = build_results["sl_items"]
+        self._tp_track_map = build_results["tp_track_map"]
 
         # Hook mouse events by installing a scene event filter
-        # (We route clicks based on item types.)
         self._scene.installEventFilter(self)
 
         self._restore_timing_point_markers()

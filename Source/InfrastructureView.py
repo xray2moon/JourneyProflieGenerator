@@ -44,60 +44,130 @@ if __package__ in (None, ""):
     sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from Source.infra_ui import ParameterView, PanZoomGraphicsView, SettingsView
+
+from Source.infra_scene_builder import InfrastructureSceneBuilder
+
 from Source.infra_view_data import InfrastructureViewDataMixin
+
+
+
 from Source.infra_view_interaction import InfrastructureViewInteractionMixin
+
 from Source.infra_view_layouts import InfrastructureViewLayoutsMixin
+
 from Source.infra_view_routing import InfrastructureViewRoutingMixin
+
 from Source.infra_view_scene import InfrastructureViewSceneMixin
+
 from Source.infra_view_settings import InfrastructureViewSettingsMixin
+
 from Source.modern_theme import get_stylesheet
 
 
+
+
+
 # --------------------------
+
 # Main widget
+
 # --------------------------
+
+
 
 class InfrastructureView(
+
     QWidget,
+
     InfrastructureViewSettingsMixin,
+
     InfrastructureViewDataMixin,
+
     InfrastructureViewRoutingMixin,
+
     InfrastructureViewLayoutsMixin,
+
     InfrastructureViewSceneMixin,
+
     InfrastructureViewInteractionMixin,
+
 ):
+
     """
+
     Top-level QWidget with 3 tabs:
+
     - Infrastructure View (this canvas)
+
     - Parameter view (placeholder)
+
     - confirm (placeholder)
 
+
+
     Core API:
+
     - load_infrastructure(json_path)
+
     - clear_route()
+
     - export_state() -> {"routeNodeIds": [...], "timingConstraints": [...]}
+
     """
+
     routeChanged = pyqtSignal(list)  # list[str]
+
     timingConstraintsChanged = pyqtSignal(list)  # list[dict]
+
     selectionChanged = pyqtSignal(dict)  # for tooltips/sidepanels
 
+
+
     def __init__(self, json_path: Optional[str] = None, parent: Optional[QWidget] = None):
+
         super().__init__(parent)
 
+
+
         self._scene = QGraphicsScene(self)
-        self._view = PanZoomGraphicsView(self._scene, self)
+
+
+
+        self._scene_builder = InfrastructureSceneBuilder(self._scene)
+
+
+
+        gself._view = PanZoomGraphicsView(self._scene, self)
+
+
+
+        
+
         self._view.set_can_start_background_pan(self._can_start_background_pan)
+
         self._legend = QLabel(self._view.viewport())
+
         self._legend.setObjectName("legend")
+
         self._legend.setTextFormat(Qt.TextFormat.RichText)
+
         self._legend.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
+
         # Initial text set by _update_legend_text() later in init
+
         self._legend.adjustSize()
+
         self._legend.move(12, 12)
+
         self._legend.raise_()
 
+
+
         # Small toolbar area (optional but useful)
+
         self._clear_route_btn = QPushButton("Clear route")
+
+
         self._clear_route_btn.clicked.connect(self.clear_route)
         self._layout_combo = QComboBox()
         self._layout_combo.addItems(["Geographic", "Schematic"])

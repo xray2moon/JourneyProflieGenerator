@@ -12,7 +12,7 @@ from pathlib import Path
 from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import QMessageBox
 
-from Source.infra_models import Node, Track, TimingPoint, StoppingLocation
+from Source.infra_data_manager import InfrastructureParser
 
 
 class InfrastructureViewDataMixin:
@@ -32,103 +32,37 @@ class InfrastructureViewDataMixin:
         """
         Load and render infrastructure from JSON file.
         """
-        p = Path(json_path)
-        if not p.exists():
-            raise FileNotFoundError(f"JSON file not found: {p}")
+        try:
+            model = InfrastructureParser.parse_file(json_path)
+        except Exception as e:
+            raise e
 
-        with p.open("r", encoding="utf-8") as f:
-            raw = json.load(f)
+        # Transfer data from model to self for compatibility with other mixins
+        self._nodes = model.nodes
+        self._tracks = model.tracks
+        self._timing_points = model.timing_points
+        self._stopping_locations = model.stopping_locations
+        self._sl_to_group = model.sl_to_group
+        self._simple_point_connections = model.simple_point_connections
+        self._infrastructure_json_path = model.json_path
+        
+        # Reset selection states
+        self._visible_tp_tracks.clear()
+        self._timing_constraints.clear()
 
-        self._parse_raw(raw)
         self._build_graph()
         self._rebuild_scene()
         self.clear_route()
         self._initial_fit_done = False
-        self._infrastructure_json_path = str(p)
+        
         self._parameter_view.set_infrastructure_summary(
-            str(p),
+            json_path,
             nodes=len(self._nodes),
             tracks=len(self._tracks),
             timing_points=len(self._timing_points),
             stopping_locations=len(self._stopping_locations),
         )
         QTimer.singleShot(0, self._fit_to_scene)
-
-    def _parse_raw(self, raw: dict) -> None:
-        self._nodes.clear()
-        self._tracks.clear()
-        self._timing_points.clear()
-        self._stopping_locations.clear()
-        self._sl_to_group.clear()
-        self._visible_tp_tracks.clear()
-        self._timing_constraints.clear()
-        self._simple_point_connections.clear()
-
-        # Nodes
-        for n in raw.get("nodes", []):
-            coord = n.get("coordinate") or {}
-            node = Node(
-                id=n["id"],
-                x=float(coord.get("x", 0.0)),
-                y=float(coord.get("y", 0.0)),
-                numeric_id=n.get("numericId"),
-            )
-            self._nodes[node.id] = node
-            sp = n.get("simplePoint") or {}
-            allowed = set()
-            for c in sp.get("connections") or []:
-                a = c.get("trackA")
-                b = c.get("trackB")
-                if a and b:
-                    allowed.add(frozenset((a, b)))
-            if allowed:
-                self._simple_point_connections[node.id] = allowed
-
-        # Tracks
-        for t in raw.get("tracks", []):
-            shaping = [(float(p["x"]), float(p["y"])) for p in (t.get("shapingPoints") or [])]
-            track = Track(
-                id=t["id"],
-                source=t["sourceNodeId"],
-                target=t["targetNodeId"],
-                shaping_points=shaping,
-                length_m=float(t.get("lengthMeter", 0.0)),
-                numeric_id=t.get("numericId"),
-            )
-            self._tracks[track.id] = track
-
-        # Timing points
-        for tp in raw.get("timingPoints", []):
-            timing_point = TimingPoint(
-                id=int(tp["id"]),
-                track_id=tp["trackId"],
-                target_node_id=tp["targetNodeId"],
-                distance_to_target_m=float(tp["distanceToTargetNodeInMeters"]),
-                stopping_location_id=tp.get("stoppingLocationId", ""),
-                segment_profile_id=int(tp.get("segmentProfileId", 0)),
-            )
-            self._timing_points[timing_point.id] = timing_point
-
-        # Stopping location groups -> mapping
-        for g in raw.get("stoppingLocationGroups", []):
-            gname = g.get("id", "")
-            for entry in g.get("stoppingLocations", []):
-                sl_id = entry.get("stoppingLocationId")
-                if sl_id:
-                    self._sl_to_group[sl_id] = gname
-
-        # Stopping locations
-        for sl in raw.get("stoppingLocations", []):
-            pos = sl.get("position") or {}
-            stopping_location = StoppingLocation(
-                id=sl["id"],
-                track_id=pos.get("trackId", ""),
-                reference_node_id=pos.get("referenceNodeId", ""),
-                distance_from_ref_m=float(pos.get("distanceFromRefNode", 0.0)),
-                target_direction_node_id=sl.get("targetDirectionNodeId", ""),
-                platform_id=sl.get("platformId", ""),
-            )
-            self._stopping_locations[stopping_location.id] = stopping_location
 
     # -----------
     # Graph & routing
