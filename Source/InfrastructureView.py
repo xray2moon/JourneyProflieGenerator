@@ -100,6 +100,7 @@ class InfrastructureView(
         self._parameter_view = ParameterView(self)
         self._parameter_view.infrastructureLoadRequested.connect(self.load_infrastructure)
         self._parameter_view.parametersChanged.connect(self._on_parameters_changed)
+        self._parameter_view.journeyProfileGenerationRequested.connect(self._on_journey_profile_generation_requested)
         self._tabs.addTab(self._parameter_view, "Parameter View")
         
         self._settings_view = SettingsView(self)
@@ -192,6 +193,20 @@ class InfrastructureView(
 
     def _on_parameters_changed(self, params: dict) -> None:
         self._parameters = dict(params or {})
+
+    def _on_journey_profile_generation_requested(self, file_path: str, parameters: dict) -> None:
+        if not self._backend.selection.current_route:
+            from PyQt6.QtWidgets import QMessageBox
+            QMessageBox.warning(self, "No route", "Please select a route first.")
+            return
+        
+        try:
+            self._backend.generate_journey_profile(file_path, parameters)
+            from PyQt6.QtWidgets import QMessageBox
+            QMessageBox.information(self, "Success", f"Journey Profile generated:\n{file_path}")
+        except Exception as exc:
+            from PyQt6.QtWidgets import QMessageBox
+            QMessageBox.critical(self, "Generation failed", str(exc))
 
     def export_state(self) -> dict:
         return self._exporter.export_to_dict(self._parameters)

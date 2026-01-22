@@ -75,6 +75,7 @@ class TimingConstraintDialog(QDialog):
 class ParameterView(QWidget):
     infrastructureLoadRequested = pyqtSignal(str)
     parametersChanged = pyqtSignal(dict)
+    journeyProfileGenerationRequested = pyqtSignal(str, dict)
 
     def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
@@ -111,6 +112,13 @@ class ParameterView(QWidget):
         self._driving_strategy = QComboBox()
         self._driving_strategy.addItems(["Fastest", "Energy-efficient", "Coasting"])
 
+        self._start_time = QLineEdit()
+        from datetime import datetime, timezone
+        self._start_time.setText(datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
+
+        self._dwell_time = QLineEdit()
+        self._dwell_time.setText("20")
+
         params_box = QGroupBox("Parameters")
         params_form = QFormLayout(params_box)
         params_form.setContentsMargins(12, 20, 12, 12)
@@ -118,21 +126,30 @@ class ParameterView(QWidget):
         params_form.addRow("Train number", self._train_number)
         params_form.addRow("Train type", self._train_type)
         params_form.addRow("Driving strategy", self._driving_strategy)
+        params_form.addRow("Start time", self._start_time)
+        params_form.addRow("Dwell time (s)", self._dwell_time)
+
+        self._generate_btn = QPushButton("Generate Journey Profile")
+        self._generate_btn.setStyleSheet("font-weight: bold; padding: 8px;")
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(16, 16, 16, 16)
         layout.setSpacing(16)
         layout.addWidget(infra_box)
         layout.addWidget(params_box)
+        layout.addWidget(self._generate_btn)
         layout.addStretch(1)
         self.setLayout(layout)
 
         self._infra_browse.clicked.connect(self._browse_infra_json)
         self._infra_load.clicked.connect(self._request_load)
+        self._generate_btn.clicked.connect(self._request_generation)
 
         self._train_number.textChanged.connect(self._emit_parameters_changed)
         self._train_type.currentTextChanged.connect(self._emit_parameters_changed)
         self._driving_strategy.currentTextChanged.connect(self._emit_parameters_changed)
+        self._start_time.textChanged.connect(self._emit_parameters_changed)
+        self._dwell_time.textChanged.connect(self._emit_parameters_changed)
 
     def set_infrastructure_summary(
         self,
@@ -158,6 +175,8 @@ class ParameterView(QWidget):
             "trainNumber": self._train_number.text().strip(),
             "trainType": self._train_type.currentText(),
             "drivingStrategy": self._driving_strategy.currentText(),
+            "startTime": self._start_time.text().strip(),
+            "dwellTime": self._dwell_time.text().strip(),
         }
 
     def _emit_parameters_changed(self) -> None:
@@ -182,6 +201,17 @@ class ParameterView(QWidget):
             QMessageBox.information(self, "No file selected", "Please select an infrastructure JSON file.")
             return
         self.infrastructureLoadRequested.emit(path)
+
+    def _request_generation(self) -> None:
+        path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save Journey Profile",
+            "",
+            "JSON files (*.json);;All files (*)",
+        )
+        if not path:
+            return
+        self.journeyProfileGenerationRequested.emit(path, self.parameters())
 
 
 class SettingsView(QWidget):

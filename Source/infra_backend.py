@@ -27,3 +27,9 @@ class InfrastructureBackend(QObject):
         self._selection.clear_selection()
         print("DEBUG: Backend emitting infrastructureLoaded", flush=True)
         self.infrastructureLoaded.emit()
+
+    def generate_journey_profile(self, file_path: str, parameters: dict):
+        """Generates and saves a journey profile."""
+        from Source.journey_profile_exporter import JourneyProfileExporter
+        exporter = JourneyProfileExporter(self)
+        exporter.export_to_file(file_path, parameters)
