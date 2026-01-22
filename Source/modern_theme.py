@@ -209,13 +209,19 @@ def get_stylesheet(theme="light"):
         border: 2px solid {check_border};
     }}
 
+
+
     QCheckBox::indicator:checked {{
-        background-color: #03DAC6;
-        border-color: #03DAC6;
+
+        background-color: {primary};
+
+        border-color: {primary};
+
         image: url({asset_path});
+
     }}
 
-    QLabel#legend {{
+        QLabel#legend {{
         background-color: {ModernColors.D_SURFACE}cc;
         border: 1px solid {ModernColors.D_BORDER};
         color: {"#000000" if theme == "light" else "#ffffff"};

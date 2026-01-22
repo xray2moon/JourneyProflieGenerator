@@ -169,8 +169,10 @@ class JourneyProfileExporter:
                     v = selection.current_route[t_idx+1]
                     
                     if track.source == u: # Nominal direction
+                        if tp.target_node_id != track.target: continue
                         local_pos = track.length_m - tp.distance_to_target_m
                     else: # Reverse direction
+                        if tp.target_node_id != track.source: continue
                         local_pos = tp.distance_to_target_m
                         
                     route_pos = track_start_pos[tp.track_id] + local_pos
