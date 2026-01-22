@@ -44,26 +44,40 @@ class JourneyProfileExporter:
         for i, (tp, route_pos) in enumerate(ordered_tps_with_pos):
             distance_delta = route_pos - last_pos
             
+            # 2a. Check for user-defined constraints
+            user_c = selection.timing_constraints.get(tp.id)
+            if user_c:
+                is_stop = (user_c.get("pointType") == "STOP")
+            else:
+                is_stop = bool(tp.stopping_location_id)
+            
             # Determine if we should decelerate
             # Simple heuristic: if this TP or one soon after is a STOP, consider deceleration
-            # In a real system, we'd calculate braking distance.
             mode = "accel"
-            is_stop = bool(tp.stopping_location_id)
-            
-            # If current TP is a stop, we definitely need to arrive at ~0 velocity
-            # Or if it's the last TP.
             if is_stop or i == len(ordered_tps_with_pos) - 1:
-                # To simulate deceleration properly, we should have started it earlier.
-                # Here we just switch mode for this segment if it ends in a stop.
                 mode = "decel" if i > 0 else "accel" 
 
             travel_time = simulate_travel(train_type, distance_delta, train_state, mode=mode)
             current_time += timedelta(seconds=travel_time)
             
+            # If user provided a specific arrival time, use it to override/align the simulation
+            arrival_ts_str = None
+            if user_c and user_c.get("arrivalTime"):
+                try:
+                    # Expecting HH:MM:SS or HH:MM
+                    user_time_str = user_c["arrivalTime"]
+                    fmt = "%H:%M:%S" if user_time_str.count(":") == 2 else "%H:%M"
+                    user_t = datetime.strptime(user_time_str, fmt).time()
+                    current_time = datetime.combine(current_time.date(), user_t).replace(tzinfo=current_time.tzinfo)
+                except ValueError:
+                    pass # Fallback to simulated time
+            
+            arrival_ts_str = current_time.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+
             tp_constraint = {
                 "tpType": "STOP" if is_stop else "PASS",
                 "timingPointId": tp.id,
-                "latestArrivalTimestamp": current_time.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
+                "latestArrivalTimestamp": arrival_ts_str,
                 "arrivalWindow": 0,
                 "alignment": "FRONT",
                 "endOfJourney": i == len(ordered_tps_with_pos) - 1,
@@ -71,7 +85,22 @@ class JourneyProfileExporter:
             }
             
             if is_stop:
-                current_time += timedelta(seconds=dwell_time_s)
+                # Handle departure/dwell
+                dep_ts_str = None
+                if user_c and user_c.get("departureTime"):
+                    try:
+                        user_time_str = user_c["departureTime"]
+                        fmt = "%H:%M:%S" if user_time_str.count(":") == 2 else "%H:%M"
+                        user_t = datetime.strptime(user_time_str, fmt).time()
+                        current_time = datetime.combine(current_time.date(), user_t).replace(tzinfo=current_time.tzinfo)
+                        dep_ts_str = current_time.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+                    except ValueError:
+                        pass
+
+                if not dep_ts_str:
+                    current_time += timedelta(seconds=dwell_time_s)
+                    dep_ts_str = current_time.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+
                 # After a stop, we reset indices to start accelerating from 0 again
                 train_state.accel_idx = 0
                 train_state.decel_idx = 0
@@ -82,7 +111,7 @@ class JourneyProfileExporter:
                 tp_constraint["relaxedCoupler"] = False
                 tp_constraint["stoppingPointDepartureDetails"] = {
                     "trainHold": False,
-                    "departureTimestamp": current_time.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
+                    "departureTimestamp": dep_ts_str,
                     "minimumDwellTime": int(dwell_time_s),
                     "automaticDoorClosing": False
                 }
