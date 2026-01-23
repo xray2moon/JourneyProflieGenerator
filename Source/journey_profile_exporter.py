@@ -52,7 +52,12 @@ class JourneyProfileExporter:
                     # Search backwards for the last TP event
                     for j in range(len(events) - 1, -1, -1):
                         if events[j][0] == "TP":
-                            etype_last, tp_last, pos_last, dir_last = events[j]
+                            # Unpack (check len for robustness if mixed)
+                            if len(events[j]) == 5:
+                                etype_last, tp_last, pos_last, dir_last, seg_last = events[j]
+                            else:
+                                etype_last, tp_last, pos_last, dir_last = events[j]
+
                             # If the last TP was at the reversal node, mark it as a stop
                             if abs(pos_last - curr_route_pos) < 1.0: # Increased tolerance
                                 reversal_tp_ids.add(tp_last.id)
@@ -60,25 +65,79 @@ class JourneyProfileExporter:
                             break
                 
                 if not found_tp_at_u:
-                    events.append(("REVERSAL", u, curr_route_pos, curr_track_dir))
+                    events.append(("REVERSAL", u, curr_route_pos, curr_track_dir, 0))
             
-            # TPs on this track moving towards v
-            track_tps = []
+            # TPs on this track (Deduplication Logic)
+            # 1. Collect all candidates
+            candidates = []
             for tp in tps_by_track.get(tid, []):
-                # Timing point is relevant if its target node is the one we are moving towards
+                local_pos = None
                 if tp.target_node_id == v:
                     local_pos = track.length_m - tp.distance_to_target_m
-                    track_tps.append(("TP", tp, curr_route_pos + local_pos, curr_track_dir))
+                elif tp.target_node_id == u:
+                    local_pos = tp.distance_to_target_m
+                
+                if local_pos is not None:
+                    candidates.append((local_pos, tp))
             
+            # 2. Group by position (epsilon 0.1m)
+            candidates.sort(key=lambda x: x[0])
+            grouped_candidates = []
+            if candidates:
+                current_group = [candidates[0]]
+                for i in range(1, len(candidates)):
+                    pos, tp = candidates[i]
+                    last_pos, last_tp = current_group[-1]
+                    if abs(pos - last_pos) < 0.1:
+                        current_group.append((pos, tp))
+                    else:
+                        grouped_candidates.append(current_group)
+                        current_group = [(pos, tp)]
+                grouped_candidates.append(current_group)
+            
+            # 3. Select representative for each group
+            track_tps = []
+            for group in grouped_candidates:
+                selected_tp = None
+                selected_pos = group[0][0] # Use position of first element
+                
+                # Priority: Target == Track Target (Nominal Direction)
+                for pos, tp in group:
+                    if tp.target_node_id == track.target:
+                        selected_tp = tp
+                        selected_pos = pos
+                        break
+                
+                if selected_tp is None:
+                    # Fallback: Just pick the first one (lowest ID usually if sorted by ID? No, sorted by Pos)
+                    selected_tp = group[0][1]
+                    selected_pos = group[0][0]
+                
+                track_tps.append(("TP", selected_tp, curr_route_pos + selected_pos, curr_track_dir))
+
             track_tps.sort(key=lambda x: x[2])
-            events.extend(track_tps)
+            
+            # Determine representative Segment Profile ID for this track traversal
+            # We use the ID of the first TP encountered in this direction
+            forced_seg_id = 0
+            if track_tps:
+                # track_tps[0] is ("TP", tp, pos, dir)
+                forced_seg_id = track_tps[0][1].segment_profile_id
+            
+            # Augment track_tps with forced_seg_id
+            # New structure: ("TP", tp, abs_pos, track_dir, forced_seg_id)
+            track_tps_aug = []
+            for t in track_tps:
+                track_tps_aug.append(t + (forced_seg_id,))
+            
+            events.extend(track_tps_aug)
             
             curr_route_pos += track.length_m
             last_track_dir = curr_track_dir
 
         # Ensure we simulate until the very end of the route
         if not events or events[-1][2] < curr_route_pos - 0.1:
-            events.append(("END", None, curr_route_pos, last_track_dir))
+            events.append(("END", None, curr_route_pos, last_track_dir, 0))
 
         # 2. Physics Simulation
         start_time_str = parameters.get("startTime", datetime.now(timezone.utc).isoformat())
@@ -103,7 +162,14 @@ class JourneyProfileExporter:
 
         # Identify all stop positions for look-ahead braking
         stop_positions = []
-        for i, (etype, edata, abs_pos, edir) in enumerate(events):
+        for i, event in enumerate(events):
+            # Unpack event (handle potential 4 or 5 items for robustness, though we aim for 5)
+            if len(event) == 5:
+                etype, edata, abs_pos, edir, forced_seg_id = event
+            else:
+                etype, edata, abs_pos, edir = event
+                forced_seg_id = 0
+
             is_stop = False
             if etype == "REVERSAL" or etype == "END":
                 is_stop = True
@@ -118,7 +184,13 @@ class JourneyProfileExporter:
             if is_stop:
                 stop_positions.append(abs_pos)
 
-        for i, (etype, edata, abs_pos, edir) in enumerate(events):
+        for i, event in enumerate(events):
+            if len(event) == 5:
+                etype, edata, abs_pos, edir, forced_seg_id = event
+            else:
+                etype, edata, abs_pos, edir = event
+                forced_seg_id = 0
+
             distance_delta = abs_pos - last_pos
             if distance_delta < 0:
                 distance_delta = 0.0
@@ -204,12 +276,14 @@ class JourneyProfileExporter:
                         "automaticDoorClosing": False
                     }
                 
+                # Check if we can continue the current segment
+                # Now using forced_seg_id instead of tp.segment_profile_id
                 if not profile_segments or \
-                   profile_segments[-1]["segmentProfileId"] != tp.segment_profile_id or \
+                   profile_segments[-1]["segmentProfileId"] != forced_seg_id or \
                    profile_segments[-1]["direction"] != edir:
                     profile_segments.append({
                         "countryId": 0,
-                        "segmentProfileId": tp.segment_profile_id,
+                        "segmentProfileId": forced_seg_id,
                         "version": 0,
                         "direction": edir,
                         "timingPointConstraints": []

@@ -1,12 +1,12 @@
 {
   "meta": {
-    "eventId": "JP.83c175ff-a37e-4e85-8883-56fe1dead869",
+    "eventId": "JP.345a4380-77ec-4953-b943-e40ab073aecd",
     "eventType": "JourneyProfile",
-    "createdAt": "2026-01-22T19:21:21.571Z",
+    "createdAt": "2026-01-23T14:47:05.582Z",
     "createdBy": "JourneyProfileGenerator-CLI",
     "correlation": [
-      "67f30b22-163c-4208-aa88-22c383cc96a4",
-      "98276841-7d97-4f60-b02d-c3768ed33088"
+      "0d52acfd-5729-47d1-b5ef-ff8257b24793",
+      "c79f3211-24fb-409c-99fd-76b4936bd2d5"
     ]
   },
   "tmsHeader": {
@@ -21,19 +21,216 @@
     "nidOperational": "FFFFFFF1"
   },
   "status": "VALID",
-  "dataId": "FFFFFFF1.2026-01-22",
-  "operatingDay": "2026-01-22",
+  "dataId": "FFFFFFF1.2026-01-23",
+  "operatingDay": "2026-01-23",
   "segmentProfileReferences": [
     {
       "countryId": 0,
-      "segmentProfileId": 197,
+      "segmentProfileId": 198,
+      "version": 0,
+      "direction": "REVERSE",
+      "timingPointConstraints": [
+        {
+          "tpType": "PASS",
+          "timingPointId": 2742,
+          "latestArrivalTimestamp": "2026-01-23T14:46:56.147Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2741,
+          "latestArrivalTimestamp": "2026-01-23T14:46:58.453Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2740,
+          "latestArrivalTimestamp": "2026-01-23T14:47:00.041Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2739,
+          "latestArrivalTimestamp": "2026-01-23T14:47:01.348Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2738,
+          "latestArrivalTimestamp": "2026-01-23T14:47:02.479Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2737,
+          "latestArrivalTimestamp": "2026-01-23T14:47:03.493Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2736,
+          "latestArrivalTimestamp": "2026-01-23T14:47:04.419Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2735,
+          "latestArrivalTimestamp": "2026-01-23T14:47:05.279Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2734,
+          "latestArrivalTimestamp": "2026-01-23T14:47:06.088Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2733,
+          "latestArrivalTimestamp": "2026-01-23T14:47:06.851Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2732,
+          "latestArrivalTimestamp": "2026-01-23T14:47:07.578Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2731,
+          "latestArrivalTimestamp": "2026-01-23T14:47:08.307Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2730,
+          "latestArrivalTimestamp": "2026-01-23T14:47:09.075Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2729,
+          "latestArrivalTimestamp": "2026-01-23T14:47:09.887Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2728,
+          "latestArrivalTimestamp": "2026-01-23T14:47:10.755Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2727,
+          "latestArrivalTimestamp": "2026-01-23T14:47:11.688Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2726,
+          "latestArrivalTimestamp": "2026-01-23T14:47:12.706Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2725,
+          "latestArrivalTimestamp": "2026-01-23T14:47:13.840Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2724,
+          "latestArrivalTimestamp": "2026-01-23T14:47:15.135Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2723,
+          "latestArrivalTimestamp": "2026-01-23T14:47:16.675Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 2722,
+          "latestArrivalTimestamp": "2026-01-23T14:47:18.720Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        }
+      ]
+    },
+    {
+      "countryId": 0,
+      "segmentProfileId": 198,
       "version": 0,
       "direction": "NOMINAL",
       "timingPointConstraints": [
         {
           "tpType": "PASS",
-          "timingPointId": 2701,
-          "latestArrivalTimestamp": "2026-01-22T19:20:23.977Z",
+          "timingPointId": 2722,
+          "latestArrivalTimestamp": "2026-01-23T14:47:43.375Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -41,8 +238,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2702,
-          "latestArrivalTimestamp": "2026-01-22T19:20:24.497Z",
+          "timingPointId": 2723,
+          "latestArrivalTimestamp": "2026-01-23T14:47:45.681Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -50,8 +247,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2703,
-          "latestArrivalTimestamp": "2026-01-22T19:20:25.009Z",
+          "timingPointId": 2724,
+          "latestArrivalTimestamp": "2026-01-23T14:47:47.269Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -59,8 +256,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2704,
-          "latestArrivalTimestamp": "2026-01-22T19:20:25.514Z",
+          "timingPointId": 2725,
+          "latestArrivalTimestamp": "2026-01-23T14:47:48.576Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -68,8 +265,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2705,
-          "latestArrivalTimestamp": "2026-01-22T19:20:26.012Z",
+          "timingPointId": 2726,
+          "latestArrivalTimestamp": "2026-01-23T14:47:49.706Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -77,8 +274,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2706,
-          "latestArrivalTimestamp": "2026-01-22T19:20:26.504Z",
+          "timingPointId": 2727,
+          "latestArrivalTimestamp": "2026-01-23T14:47:50.720Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -86,8 +283,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2707,
-          "latestArrivalTimestamp": "2026-01-22T19:20:26.990Z",
+          "timingPointId": 2728,
+          "latestArrivalTimestamp": "2026-01-23T14:47:51.647Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -95,8 +292,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2708,
-          "latestArrivalTimestamp": "2026-01-22T19:20:27.472Z",
+          "timingPointId": 2729,
+          "latestArrivalTimestamp": "2026-01-23T14:47:52.507Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -104,8 +301,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2709,
-          "latestArrivalTimestamp": "2026-01-22T19:20:27.949Z",
+          "timingPointId": 2730,
+          "latestArrivalTimestamp": "2026-01-23T14:47:53.316Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -113,8 +310,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2710,
-          "latestArrivalTimestamp": "2026-01-22T19:20:28.422Z",
+          "timingPointId": 2731,
+          "latestArrivalTimestamp": "2026-01-23T14:47:54.079Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -122,8 +319,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2711,
-          "latestArrivalTimestamp": "2026-01-22T19:20:28.889Z",
+          "timingPointId": 2732,
+          "latestArrivalTimestamp": "2026-01-23T14:47:54.806Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -131,8 +328,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2712,
-          "latestArrivalTimestamp": "2026-01-22T19:20:29.353Z",
+          "timingPointId": 2733,
+          "latestArrivalTimestamp": "2026-01-23T14:47:55.535Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -140,8 +337,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2713,
-          "latestArrivalTimestamp": "2026-01-22T19:20:29.812Z",
+          "timingPointId": 2734,
+          "latestArrivalTimestamp": "2026-01-23T14:47:56.303Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -149,8 +346,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2714,
-          "latestArrivalTimestamp": "2026-01-22T19:20:30.267Z",
+          "timingPointId": 2735,
+          "latestArrivalTimestamp": "2026-01-23T14:47:57.115Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -158,8 +355,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2715,
-          "latestArrivalTimestamp": "2026-01-22T19:20:30.719Z",
+          "timingPointId": 2736,
+          "latestArrivalTimestamp": "2026-01-23T14:47:57.983Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -167,8 +364,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2716,
-          "latestArrivalTimestamp": "2026-01-22T19:20:31.166Z",
+          "timingPointId": 2737,
+          "latestArrivalTimestamp": "2026-01-23T14:47:58.916Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -176,8 +373,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2717,
-          "latestArrivalTimestamp": "2026-01-22T19:20:31.610Z",
+          "timingPointId": 2738,
+          "latestArrivalTimestamp": "2026-01-23T14:47:59.934Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -185,8 +382,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2718,
-          "latestArrivalTimestamp": "2026-01-22T19:20:32.050Z",
+          "timingPointId": 2739,
+          "latestArrivalTimestamp": "2026-01-23T14:48:01.067Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -194,8 +391,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2719,
-          "latestArrivalTimestamp": "2026-01-22T19:20:32.487Z",
+          "timingPointId": 2740,
+          "latestArrivalTimestamp": "2026-01-23T14:48:02.363Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -203,8 +400,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2720,
-          "latestArrivalTimestamp": "2026-01-22T19:20:32.920Z",
+          "timingPointId": 2741,
+          "latestArrivalTimestamp": "2026-01-23T14:48:03.903Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -212,8 +409,8 @@
         },
         {
           "tpType": "PASS",
-          "timingPointId": 2721,
-          "latestArrivalTimestamp": "2026-01-22T19:20:37.771Z",
+          "timingPointId": 2742,
+          "latestArrivalTimestamp": "2026-01-23T14:48:05.948Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": true,
