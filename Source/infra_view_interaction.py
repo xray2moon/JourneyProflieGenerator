@@ -10,7 +10,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from Source.infra_items import NodeItem, TrackItem, TimingPointItem
+from Source.infra_items import NodeItem, TrackItem, TimingPointItem, StoppingLocationItem
 from Source.infra_ui import TimingConstraintDialog
 
 
@@ -122,7 +122,7 @@ class InfrastructureViewInteractionMixin:
                 item: Optional[QGraphicsItem] = None
                 for cand in self._scene.items(event.scenePos()):
                     top = cand.topLevelItem()
-                    if isinstance(top, (TimingPointItem, NodeItem)):
+                    if isinstance(top, (TimingPointItem, NodeItem, StoppingLocationItem)):
                         item = top
                         break
 
@@ -134,11 +134,22 @@ class InfrastructureViewInteractionMixin:
                         self._remove_timing_constraint(item.tp.id)
                         return True
 
+                if isinstance(item, StoppingLocationItem):
+                    if event.button() == Qt.MouseButton.LeftButton:
+                        if self._layout_mode != "geographic":
+                            return False
+                        sl = self._backend.model.stopping_locations.get(item.sl_id)
+                        if sl and sl.target_direction_node_id:
+                            self._extend_route_with_node(sl.target_direction_node_id)
+                            self._backend.selection.set_selected_stopping_point(item.sl_id)
+                        return True
+
                 if isinstance(item, NodeItem):
                     if event.button() == Qt.MouseButton.LeftButton:
                         if self._layout_mode != "geographic":
                             return False
                         self._extend_route_with_node(item.node.id)
+                        self._backend.selection.set_selected_stopping_point(None)
                         return True
 
                 if event.button() == Qt.MouseButton.LeftButton:
@@ -251,19 +262,24 @@ class InfrastructureViewInteractionMixin:
 
         start_id = route_nodes[0] if route_nodes else None
         end_id = route_nodes[-1] if route_nodes else None
+        selected_sp_id = selection.selected_stopping_point_id
 
         for nid, item in self._node_items.items():
             item.set_highlight(nid in node_ids_set)
             role = None
             if start_id is not None:
                 if nid == start_id: role = "start"
-                elif nid == end_id: role = "end"
+                elif nid == end_id and not selected_sp_id: role = "end"
             item.set_route_role(role)
 
         for tid, item in self._track_items.items():
             traversals = track_traversals.get(tid, [])
             offsets = track_to_offsets.get(tid, [])
             item.set_route_highlight(len(traversals) > 0, traversals=traversals, traversal_offsets=offsets)
+
+        for sl_id, item in self._sl_items.items():
+            role = "end" if sl_id == selected_sp_id else None
+            item.set_route_role(role)
 
         self._update_route_status_labels()
 

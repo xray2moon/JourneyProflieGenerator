@@ -12,6 +12,7 @@ class InfrastructureSelectionModel(QObject):
     timingConstraintsChanged = pyqtSignal(dict)
     visibleTpTracksChanged = pyqtSignal(set)
     selectionChanged = pyqtSignal(dict)  # for tooltips/sidepanels
+    selectedStoppingPointChanged = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -19,6 +20,7 @@ class InfrastructureSelectionModel(QObject):
         self._current_tracks: List[str] = []
         self._timing_constraints: Dict[int, dict] = {}
         self._visible_tp_tracks: Set[str] = set()
+        self._selected_stopping_point_id: Optional[str] = None
 
     @property
     def current_route(self) -> List[str]:
@@ -53,12 +55,22 @@ class InfrastructureSelectionModel(QObject):
         self._visible_tp_tracks = tracks
         self.visibleTpTracksChanged.emit(self._visible_tp_tracks)
 
+    @property
+    def selected_stopping_point_id(self) -> Optional[str]:
+        return self._selected_stopping_point_id
+
+    def set_selected_stopping_point(self, sl_id: Optional[str]):
+        self._selected_stopping_point_id = sl_id
+        self.selectedStoppingPointChanged.emit(sl_id or "")
+
     def clear_selection(self):
         self._current_route = []
         self._current_tracks = []
         self._timing_constraints = {}
         self._visible_tp_tracks = set()
+        self._selected_stopping_point_id = None
         self.routeChanged.emit([])
         self.tracksChanged.emit([])
         self.timingConstraintsChanged.emit({})
         self.visibleTpTracksChanged.emit(set())
+        self.selectedStoppingPointChanged.emit("")

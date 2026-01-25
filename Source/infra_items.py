@@ -137,9 +137,17 @@ class StoppingLocationItem(QGraphicsEllipseItem):
         self.setPos(pos)
         self.setAcceptHoverEvents(True)
 
-        pen = QPen(Qt.GlobalColor.black)
-        pen.setWidthF(1.0)
-        self.setPen(pen)
+        self._route_selected = False
+        self._route_role: Optional[str] = None
+
+        self._default_pen = QPen(Qt.GlobalColor.black)
+        self._default_pen.setWidthF(1.0)
+        self._route_pen = QPen(QColor(ModernColors.L_TEXT))
+        self._route_pen.setWidthF(2.5)
+        self._end_pen = QPen(QColor(ModernColors.NODE_END))
+        self._end_pen.setWidthF(3.0)
+
+        self.setPen(self._default_pen)
         self.setBrush(QBrush(Qt.GlobalColor.darkRed))
         self.setZValue(15)
 
@@ -154,14 +162,35 @@ class StoppingLocationItem(QGraphicsEllipseItem):
         self.setToolTip(f"StoppingLocation\n{self.sl_id}")
         super().hoverEnterEvent(event)
 
+    def set_highlight(self, enabled: bool) -> None:
+        self._route_selected = bool(enabled)
+        self._apply_route_style()
+
+    def set_route_role(self, role: Optional[str]) -> None:
+        self._route_role = role
+        self._apply_route_style()
+
+    def _apply_route_style(self) -> None:
+        if self._route_role == "end":
+            self.setPen(self._end_pen)
+        elif self._route_selected:
+            self.setPen(self._route_pen)
+        else:
+            self.setPen(self._default_pen)
+
     def set_theme(self, theme: str) -> None:
         if theme == "dark":
-            self.setPen(QPen(QColor(ModernColors.D_TEXT)))
+            self._default_pen.setColor(QColor(ModernColors.D_TEXT))
+            self._route_pen.setColor(QColor(ModernColors.D_TEXT))
             self._label_item.setBrush(QBrush(QColor(ModernColors.D_TEXT)))
         else:
-            self.setPen(QPen(QColor(ModernColors.L_TEXT)))
+            self._default_pen.setColor(QColor(ModernColors.L_TEXT)) # Or black? Existing was black. L_TEXT is usually dark gray/black.
+            self._route_pen.setColor(QColor(ModernColors.L_TEXT))
             self._label_item.setBrush(QBrush(QColor(ModernColors.L_TEXT)))
-        self.pen().setWidthF(1.0)
+        
+        # Restore width 1.0 for default from set_theme logic if needed, or just rely on _default_pen config
+        self._default_pen.setWidthF(1.0)
+        self._apply_route_style()
 
 
 class TrackItem(QGraphicsPathItem):

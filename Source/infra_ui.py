@@ -203,10 +203,12 @@ class ParameterView(QWidget):
         self.infrastructureLoadRequested.emit(path)
 
     def _request_generation(self) -> None:
+        from datetime import datetime
+        default_name = f"JP-{datetime.now().strftime('%Y-%m-%d')}.json"
         path, _ = QFileDialog.getSaveFileName(
             self,
             "Save Journey Profile",
-            "",
+            default_name,
             "JSON files (*.json);;All files (*)",
         )
         if not path:

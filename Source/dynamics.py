@@ -158,8 +158,7 @@ def simulate_travel(
             state.decel_idx = max(0, state.decel_idx - 1)
             
         # 6. Handle end of data or speed zero
-        if (current_mode == "accel" and state.accel_idx >= len(accel_v)) or \
-           (current_mode == "decel" and (state.decel_idx <= 0 or state.velocity < 0.01)):
+        if current_mode == "decel" and (state.decel_idx <= 0 or state.velocity < 0.01):
             remaining = target_dist - state.total_distance
             # If we are decelerating and reached almost zero speed, 
             # we should be at the stop. Snap to target.
