@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from typing import List, Optional, Set
+from typing import List, Optional, Set, Tuple
 
 from PyQt6.QtCore import Qt, QPointF
 from PyQt6.QtGui import QBrush, QColor, QPainterPath, QPen, QTransform
@@ -232,6 +232,12 @@ class TrackItem(QGraphicsPathItem):
     white path on top (gives two rails at the edges on a white background).
     """
 
+    _ARROW_TARGET_SPACING = 120.0
+    _ARROW_EDGE_PADDING = 14.0
+    _ARROW_ENDPOINT_CLEARANCE = 26.0
+    _ARROW_HALF_LENGTH = 5.0
+    _MAX_ARROWS_PER_TRAVERSAL = 40
+
     def __init__(self, track_id: str, path: QPainterPath):
         super().__init__(path)
         self.track_id = track_id
@@ -333,56 +339,155 @@ class TrackItem(QGraphicsPathItem):
         pen.setColor(color)
         self._route_overlay.setPen(pen)
 
-        # Build a composite path with offset lines
+        # Build a composite path directly on top of the track centerline.
         path = self.path()
-        pts = []
+        pts: List[QPointF] = []
         for i in range(path.elementCount()):
             el = path.elementAt(i)
             pts.append(QPointF(el.x, el.y))
-        
         composite_path = QPainterPath()
+
         spacing = 7.0
 
-        # Count occurrences to handle multiple traversals of same direction
+        # Count occurrences to handle multiple traversals of same direction.
         fwd_count = traversals.count("forward")
         bwd_count = traversals.count("backward")
         fwd_idx = 0
         bwd_idx = 0
 
         for i, direction in enumerate(traversals):
-            if traversal_offsets and i < len(traversal_offsets):
-                s_off, e_off = traversal_offsets[i]
-                if direction == "backward":
-                    s_off, e_off = e_off, s_off
-            else:
-                # Default logic if no explicit offsets provided
-                if direction == "forward":
-                    if fwd_count == 1:
-                        s_off = e_off = spacing / 2.0
-                    else:
-                        s_off = e_off = spacing / 2.0 + (fwd_idx - (fwd_count - 1) / 2.0) * (spacing / 2.0)
-                    fwd_idx += 1
-                else:
-                    if bwd_count == 1:
-                        s_off = e_off = -spacing / 2.0
-                    else:
-                        s_off = e_off = -spacing / 2.0 + (bwd_idx - (bwd_count - 1) / 2.0) * (spacing / 2.0)
-                    bwd_idx += 1
-
             rng = traversal_ranges[i] if (traversal_ranges and i < len(traversal_ranges)) else (0.0, 1.0)
-            off_path = self._create_offset_path(pts, s_off, e_off, range_pct=rng)
-            composite_path.addPath(off_path)
+
+            # Keep single-traversal tracks on centerline. For multi-traversal tracks,
+            # apply side shifts so overlapping passes stay visually separated.
+            if num <= 1:
+                route_path = self._create_partial_path(path, range_pct=rng)
+            else:
+                if traversal_offsets and i < len(traversal_offsets):
+                    s_off, e_off = traversal_offsets[i]
+                    if direction == "backward":
+                        s_off, e_off = e_off, s_off
+                else:
+                    if direction == "forward":
+                        if fwd_count == 1:
+                            s_off = e_off = spacing / 2.0
+                        else:
+                            s_off = e_off = spacing / 2.0 + (fwd_idx - (fwd_count - 1) / 2.0) * (spacing / 2.0)
+                        fwd_idx += 1
+                    else:
+                        if bwd_count == 1:
+                            s_off = e_off = -spacing / 2.0
+                        else:
+                            s_off = e_off = -spacing / 2.0 + (bwd_idx - (bwd_count - 1) / 2.0) * (spacing / 2.0)
+                        bwd_idx += 1
+
+                route_path = self._create_offset_path(pts, s_off, e_off, range_pct=rng)
+            composite_path.addPath(route_path)
             
             # Arrows for this specific line
-            l = off_path.length()
+            l = route_path.length()
             if l > 1e-3:
-                percents = [0.1, 0.9] if l > 20 else [0.5]
-                for p in percents:
-                    pos = off_path.pointAtPercent(p)
-                    angle = off_path.angleAtPercent(p)
-                    self._create_arrow(pos, angle, color)
+                arrow_distances = self._arrow_distances_for_length(l)
+                for dist in arrow_distances:
+                    if hasattr(route_path, "percentAtLength"):
+                        t = route_path.percentAtLength(dist)
+                    else:
+                        t = dist / l
+                    t = min(1.0, max(0.0, t))
+                    pos = route_path.pointAtPercent(t)
+                    tangent = self._tangent_vector_at_distance(route_path, dist, l)
+                    self._create_arrow(pos, tangent, color)
 
         self._route_overlay.setPath(composite_path)
+
+    def _create_partial_path(self, base_path: QPainterPath, range_pct: Tuple[float, float] = (0.0, 1.0)) -> QPainterPath:
+        total_len = base_path.length()
+        if total_len <= 1e-6:
+            return QPainterPath()
+
+        s_pct, e_pct = range_pct
+        s_pct = min(1.0, max(0.0, s_pct))
+        e_pct = min(1.0, max(0.0, e_pct))
+
+        if abs(s_pct - e_pct) <= 1e-6:
+            # Tiny visible mark at the selected point.
+            if hasattr(base_path, "percentAtLength"):
+                t = base_path.percentAtLength(s_pct * total_len)
+            else:
+                t = s_pct
+            p = base_path.pointAtPercent(min(1.0, max(0.0, t)))
+            res = QPainterPath(p)
+            res.lineTo(p + QPointF(1e-3, 0.0))
+            return res
+
+        s_dist = s_pct * total_len
+        e_dist = e_pct * total_len
+
+        steps = max(8, int(abs(e_dist - s_dist) / 10.0))
+        res = QPainterPath()
+        first = True
+        for step in range(steps + 1):
+            d = s_dist + (e_dist - s_dist) * (step / steps)
+            if hasattr(base_path, "percentAtLength"):
+                t = base_path.percentAtLength(d)
+            else:
+                t = d / total_len
+            pt = base_path.pointAtPercent(min(1.0, max(0.0, t)))
+            if first:
+                res.moveTo(pt)
+                first = False
+            else:
+                res.lineTo(pt)
+        return res
+
+    def _arrow_distances_for_length(self, length: float) -> List[float]:
+        if length <= 1e-6:
+            return []
+
+        # Keep arrows inside the segment, but adapt on short segments so at least
+        # one arrow is still shown near the middle.
+        target_padding = max(self._ARROW_EDGE_PADDING, self._ARROW_ENDPOINT_CLEARANCE)
+        max_padding_that_still_fits = max(0.0, length * 0.45 - self._ARROW_HALF_LENGTH)
+        edge_padding = min(target_padding, max_padding_that_still_fits)
+
+        usable_len = max(0.0, length - 2.0 * edge_padding)
+        if usable_len <= (2.0 * self._ARROW_HALF_LENGTH + 1.0):
+            return [length * 0.5]
+        if usable_len <= self._ARROW_TARGET_SPACING * 0.8:
+            return [edge_padding + usable_len * 0.5]
+
+        arrow_count = int(round(usable_len / self._ARROW_TARGET_SPACING)) + 1
+        arrow_count = max(2, min(arrow_count, self._MAX_ARROWS_PER_TRAVERSAL))
+        spacing = usable_len / max(1, arrow_count - 1)
+
+        distances: List[float] = []
+        for i in range(arrow_count):
+            dist = edge_padding + i * spacing
+            distances.append(min(length - edge_padding, max(edge_padding, dist)))
+        return distances
+
+    def _tangent_vector_at_distance(self, path: QPainterPath, dist: float, total_len: float) -> QPointF:
+        if total_len <= 1e-6:
+            return QPointF(1.0, 0.0)
+        eps = min(10.0, max(2.0, total_len * 0.02))
+        d0 = min(total_len, max(0.0, dist))
+        if d0 + eps <= total_len:
+            d1, d2 = d0, d0 + eps
+        elif d0 - eps >= 0.0:
+            d1, d2 = d0 - eps, d0
+        else:
+            d1, d2 = 0.0, total_len
+
+        if hasattr(path, "percentAtLength"):
+            t1 = path.percentAtLength(d1)
+            t2 = path.percentAtLength(d2)
+        else:
+            t1 = d1 / total_len
+            t2 = d2 / total_len
+
+        p1 = path.pointAtPercent(min(1.0, max(0.0, t1)))
+        p2 = path.pointAtPercent(min(1.0, max(0.0, t2)))
+        return p2 - p1
 
     def _create_offset_path(self, pts: List[QPointF], start_offset: float, end_offset: float, range_pct: Tuple[float, float] = (0.0, 1.0)) -> QPainterPath:
         if not pts:
@@ -464,8 +569,10 @@ class TrackItem(QGraphicsPathItem):
                     if mag > 1e-6:
                         n /= mag
                         cos_half_theta = n.x() * n1.x() + n.y() * n1.y()
-                        if cos_half_theta > 0.1:
-                            n /= cos_half_theta
+                        # Clamp miter expansion at sharp bends to avoid local spikes/loops.
+                        if cos_half_theta > 1e-3:
+                            miter_scale = min(1.8, max(1.0, 1.0 / cos_half_theta))
+                            n *= miter_scale
                 else:
                     n = QPointF(0, 0)
             
@@ -486,10 +593,15 @@ class TrackItem(QGraphicsPathItem):
         
         # Approximate partial path by sampling
         steps = 100
+        res_full_len = res_full.length()
         first = True
         for step in range(steps + 1):
             p = s_pct + (e_pct - s_pct) * (step / steps)
-            pt = res_full.pointAtPercent(p)
+            if hasattr(res_full, "percentAtLength") and res_full_len > 1e-6:
+                t = res_full.percentAtLength(min(res_full_len, max(0.0, p * res_full_len)))
+            else:
+                t = p
+            pt = res_full.pointAtPercent(t)
             if first:
                 res.moveTo(pt)
                 first = False
@@ -497,20 +609,31 @@ class TrackItem(QGraphicsPathItem):
                 res.lineTo(pt)
         return res
 
-    def _create_arrow(self, pos: QPointF, angle_deg: float, color: QColor) -> None:
-        arrow_path = QPainterPath()
-        # Slightly larger triangle: 10 units long, 8 units wide
-        arrow_path.moveTo(-5, -4)
-        arrow_path.lineTo(5, 0)
-        arrow_path.lineTo(-5, 4)
+    def _create_arrow(self, pos: QPointF, tangent: QPointF, color: QColor) -> None:
+        mag = math.hypot(tangent.x(), tangent.y())
+        if mag <= 1e-6:
+            return
+        ux = tangent.x() / mag
+        uy = tangent.y() / mag
+        nx = -uy
+        ny = ux
+
+        # Slightly larger triangle: 10 units long, 8 units wide.
+        local_pts = [QPointF(-5.0, -4.0), QPointF(5.0, 0.0), QPointF(-5.0, 4.0)]
+        world_pts = [
+            QPointF(
+                pos.x() + lp.x() * ux + lp.y() * nx,
+                pos.y() + lp.x() * uy + lp.y() * ny,
+            )
+            for lp in local_pts
+        ]
+        arrow_path = QPainterPath(world_pts[0])
+        arrow_path.lineTo(world_pts[1])
+        arrow_path.lineTo(world_pts[2])
         arrow_path.closeSubpath()
 
-        trans = QTransform()
-        trans.translate(pos.x(), pos.y())
-        trans.rotate(-angle_deg) 
-        
         # Keep arrows above all infrastructure items to avoid being hidden by nodes/labels.
-        arrow_item = QGraphicsPathItem(trans.map(arrow_path))
+        arrow_item = QGraphicsPathItem(arrow_path)
         if self.scene() is not None:
             self.scene().addItem(arrow_item)
         # Black outline for better visibility when zoomed out
