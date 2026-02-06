@@ -230,6 +230,25 @@ class InfrastructureViewRouting:
                 ordered.append(end_tp_id)
         return ordered
 
+    def _mark_tp_as_stop_constraint(self, tp_id: int) -> None:
+        model = self._backend.model
+        selection = self._backend.selection
+        tp = model.timing_points.get(tp_id)
+        if tp is None:
+            return
+
+        existing = selection.timing_constraints.get(tp_id, {})
+        constraint = {
+            "timingPointId": tp_id,
+            "trackId": tp.track_id,
+            "targetNodeId": tp.target_node_id,
+            "distanceToTargetNodeInMeters": tp.distance_to_target_m,
+            "pointType": "STOP",
+            "arrivalTime": existing.get("arrivalTime"),
+            "departureTime": existing.get("departureTime"),
+        }
+        selection.set_timing_constraint(tp_id, constraint)
+
     def _find_node_uturn(self, route_nodes: List[str], route_tracks: List[str]) -> Optional[Tuple[str, str]]:
         """
         Detect immediate backtrack over same track: n[i] -> n[i+1] -> n[i] on identical track ids.
@@ -444,6 +463,7 @@ class InfrastructureViewRouting:
                         flush=True,
                     )
                     if self._replay_tp_sequence(start_tp_id, [reversal_tp_id, tp_id]):
+                        self._mark_tp_as_stop_constraint(reversal_tp_id)
                         return
                 else:
                     print(
@@ -516,6 +536,7 @@ class InfrastructureViewRouting:
                         ordered_targets.append(reversal_tp_id)
                     ordered_targets.append(tp_id)
                     if self._replay_tp_sequence(start_tp_id, ordered_targets):
+                        self._mark_tp_as_stop_constraint(reversal_tp_id)
                         return
                 else:
                     print(
