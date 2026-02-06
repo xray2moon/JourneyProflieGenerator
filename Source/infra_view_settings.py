@@ -10,7 +10,14 @@ from PyQt6.QtWidgets import QWidget, QApplication
 from Source.modern_theme import ModernColors, get_stylesheet
 
 
-class InfrastructureViewSettingsMixin:
+class InfrastructureViewSettings:
+    def __init__(self, view):
+        self._host = view
+        self._view = view._view
+
+    def __getattr__(self, name):
+        return getattr(self._host, name)
+
     def _position_overlay_widgets(self) -> None:
         if getattr(self, "_legend", None) is None:
             return
@@ -24,26 +31,26 @@ class InfrastructureViewSettingsMixin:
             try:
                 with open(settings_path, "r") as f:
                     settings = json.load(f)
-                    self._current_theme = settings.get("theme", "light")
-                    self._show_all_tp = settings.get("show_all_tp", False)
-                    self._keep_selection = settings.get("keep_selection", False)
-                    self._show_legend = settings.get("show_legend", True)
-                    self._default_view = settings.get("default_view", "Geographic")
-                    if self._default_view not in {"Geographic", "Schematic"}:
-                        self._default_view = "Geographic"
+                    self._host._current_theme = settings.get("theme", "light")
+                    self._host._show_all_tp = settings.get("show_all_tp", False)
+                    self._host._keep_selection = settings.get("keep_selection", False)
+                    self._host._show_legend = settings.get("show_legend", True)
+                    self._host._default_view = settings.get("default_view", "Geographic")
+                    if self._host._default_view not in {"Geographic", "Schematic"}:
+                        self._host._default_view = "Geographic"
                     
                     # Apply settings to UI
-                    self._settings_view._theme_combo.setCurrentText(self._current_theme.capitalize())
-                    self._settings_view._show_all_tp_check.setChecked(self._show_all_tp)
-                    self._settings_view._keep_selection_check.setChecked(self._keep_selection)
-                    self._settings_view._show_legend_check.setChecked(self._show_legend)
-                    self._settings_view._default_view_combo.setCurrentText(self._default_view)
+                    self._host._settings_view._theme_combo.setCurrentText(self._host._current_theme.capitalize())
+                    self._host._settings_view._show_all_tp_check.setChecked(self._host._show_all_tp)
+                    self._host._settings_view._keep_selection_check.setChecked(self._host._keep_selection)
+                    self._host._settings_view._show_legend_check.setChecked(self._host._show_legend)
+                    self._host._settings_view._default_view_combo.setCurrentText(self._host._default_view)
                     
                     # Apply to view
-                    self._on_theme_changed(self._current_theme)
-                    self._on_layout_mode_changed(self._default_view)
-                    self._layout_combo.setCurrentText(self._default_view)
-                    self._on_show_legend_changed(self._show_legend)
+                    self._on_theme_changed(self._host._current_theme)
+                    self._on_layout_mode_changed(self._host._default_view)
+                    self._host._layout_combo.setCurrentText(self._host._default_view)
+                    self._on_show_legend_changed(self._host._show_legend)
             except Exception as e:
                 print(f"Failed to load settings: {e}")
 
@@ -62,7 +69,7 @@ class InfrastructureViewSettingsMixin:
             print(f"Failed to save settings: {e}")
 
     def _on_theme_changed(self, theme: str) -> None:
-        self._current_theme = theme
+        self._host._current_theme = theme
         self._save_settings()
         
         # Apply global stylesheet
@@ -77,21 +84,21 @@ class InfrastructureViewSettingsMixin:
         self._rebuild_scene()
 
     def _on_show_all_tp_changed(self, enabled: bool) -> None:
-        self._show_all_tp = enabled
+        self._host._show_all_tp = enabled
         self._save_settings()
         self._rebuild_scene() # Rebuild to apply visibility rules
 
     def _on_keep_selection_changed(self, enabled: bool) -> None:
-        self._keep_selection = enabled
+        self._host._keep_selection = enabled
         self._save_settings()
 
     def _on_show_legend_changed(self, enabled: bool) -> None:
-        self._show_legend = enabled
-        self._legend.setVisible(enabled)
+        self._host._show_legend = enabled
+        self._host._legend.setVisible(enabled)
         self._save_settings()
 
     def _on_default_view_changed(self, view_name: str) -> None:
-        self._default_view = view_name
+        self._host._default_view = view_name
         self._save_settings()
 
     def _update_legend_text(self) -> None:
@@ -101,7 +108,7 @@ class InfrastructureViewSettingsMixin:
         # Use dark theme track color since legend is now always dark
         track_color = ModernColors.TRACK_DEFAULT_D
 
-        self._legend.setText(
+        self._host._legend.setText(
             "<b>Legende</b><br>"
             f"<span style='color:{track_color}'>■</span> Gleis&nbsp;&nbsp;"
             f"<span style='color:{ModernColors.TRACK_TP_VISIBLE}'>■</span> Gleis (TPs an)&nbsp;&nbsp;"
@@ -120,7 +127,7 @@ class InfrastructureViewSettingsMixin:
     def resizeEvent(self, event):
         # This is a mixin method; using `super()` here can skip the QWidget implementation
         # depending on the MRO. Call QWidget explicitly to ensure Qt's base handling runs.
-        QWidget.resizeEvent(self, event)
+        QWidget.resizeEvent(self._host, event)
         self._position_overlay_widgets()
         # Do the initial fit once, when the widget first gets a meaningful size.
         if not getattr(self, "_initial_fit_done", False):

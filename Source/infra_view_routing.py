@@ -6,7 +6,13 @@ from typing import Dict, List, Optional, Tuple
 from PyQt6.QtWidgets import QMessageBox
 
 
-class InfrastructureViewRoutingMixin:
+class InfrastructureViewRouting:
+    def __init__(self, view):
+        self._view = view
+
+    def __getattr__(self, name):
+        return getattr(self._view, name)
+
     def _is_transition_allowed(self, node_id: str, incoming_track_id: Optional[str], outgoing_track_id: str) -> bool:
         """
         Returns whether we may switch from incoming_track_id to outgoing_track_id at node_id.
@@ -20,8 +26,6 @@ class InfrastructureViewRoutingMixin:
         if incoming_track_id == outgoing_track_id:
             return True
         res = frozenset((incoming_track_id, outgoing_track_id)) in allowed
-        if not res:
-            print(f"DEBUG: Transition NOT allowed at {node_id}: {incoming_track_id} -> {outgoing_track_id}", flush=True)
         return res
 
     def _build_graph(self) -> None:
@@ -115,7 +119,7 @@ class InfrastructureViewRoutingMixin:
             
             if dist == float("inf"):
                 res = QMessageBox.question(
-                    self,
+                    self._view,
                     "Node not reachable",
                     "The selected node is not reachable from the current route end "
                     "(considering simple point connections).\n\n"
@@ -132,6 +136,35 @@ class InfrastructureViewRoutingMixin:
             new_tracks = current_tracks + track_path
             selection.set_route(new_nodes, new_tracks)
 
+    def _replay_tp_sequence(self, start_tp_id: int, ordered_targets: List[int]) -> bool:
+        selection = self._backend.selection
+        old_route = list(selection.current_route)
+        old_tracks = list(selection.current_tracks)
+        old_start = selection.start_tp_id
+        old_end = selection.end_tp_id
+        old_waypoints = list(selection.waypoint_tp_ids)
+
+        setattr(self, "_replaying_tp_sequence", True)
+        try:
+            selection.clear_selection()
+            selection.set_start_tp(start_tp_id)
+            for target_tp_id in ordered_targets:
+                self._extend_route_with_tp(target_tp_id)
+                if selection.end_tp_id != target_tp_id:
+                    selection.set_route(old_route, old_tracks)
+                    selection.set_start_tp(old_start)
+                    selection.set_end_tp(old_end)
+                    selection.set_waypoint_tp_ids(old_waypoints)
+                    QMessageBox.warning(
+                        self._view,
+                        "Waypoint not reachable",
+                        f"Could not insert timing point {target_tp_id} into the current route order.",
+                    )
+                    return False
+            return True
+        finally:
+            setattr(self, "_replaying_tp_sequence", False)
+
     def _extend_route_with_tp(self, tp_id: int) -> None:
         model = self._backend.model
         selection = self._backend.selection
@@ -143,11 +176,14 @@ class InfrastructureViewRoutingMixin:
         current_route = list(selection.current_route)
         current_tracks = list(selection.current_tracks)
         start_tp_id = selection.start_tp_id
+        end_tp_id = selection.end_tp_id
+        replay_mode = bool(getattr(self, "_replaying_tp_sequence", False))
 
         if start_tp_id is None:
             print(f"DEBUG: No start TP set. Setting start TP to {tp_id}", flush=True)
             selection.clear_selection()
             selection.set_start_tp(tp_id)
+            selection.set_waypoint_tp_ids([])
             return
 
         if not current_route:
@@ -222,10 +258,13 @@ class InfrastructureViewRoutingMixin:
             best_cost, best_nodes, best_tracks = min(reachable, key=lambda x: x[0])
             selection.set_route(best_nodes, best_tracks)
             selection.set_end_tp(tp_id)
+            if not replay_mode:
+                selection.set_waypoint_tp_ids([])
         else:
-            if current_tracks and tp.track_id == current_tracks[-1]:
-                selection.set_end_tp(tp_id)
+            if tp_id == end_tp_id:
                 return
+
+            previous_end_tp_id = end_tp_id
 
             e_tr = model.tracks.get(tp.track_id)
             if not e_tr: return
@@ -257,3 +296,12 @@ class InfrastructureViewRoutingMixin:
             
             selection.set_route(new_nodes, new_tracks)
             selection.set_end_tp(tp_id)
+            if not replay_mode:
+                waypoint_tp_ids = [
+                    w for w in selection.waypoint_tp_ids
+                    if w not in {start_tp_id, tp_id}
+                ]
+                if previous_end_tp_id is not None and previous_end_tp_id not in {start_tp_id, tp_id}:
+                    if previous_end_tp_id not in waypoint_tp_ids:
+                        waypoint_tp_ids.append(previous_end_tp_id)
+                selection.set_waypoint_tp_ids(waypoint_tp_ids)

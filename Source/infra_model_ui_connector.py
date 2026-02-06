@@ -21,6 +21,7 @@ class ModelUIConnector(QObject):
         self._backend.selection.visibleTpTracksChanged.connect(self._view.update_tp_visibility)
         self._backend.selection.startTpChanged.connect(lambda _: self._view.update_route_highlights_ui())
         self._backend.selection.endTpChanged.connect(lambda _: self._view.update_route_highlights_ui())
+        self._backend.selection.waypointTpsChanged.connect(lambda _: self._view.update_route_highlights_ui())
 
     def _on_infrastructure_loaded(self):
         # Notify the view to rebuild itself with new data

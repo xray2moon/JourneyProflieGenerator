@@ -15,6 +15,7 @@ class InfrastructureSelectionModel(QObject):
     selectedStoppingPointChanged = pyqtSignal(str)
     startTpChanged = pyqtSignal(object) # Optional[int]
     endTpChanged = pyqtSignal(object)   # Optional[int]
+    waypointTpsChanged = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
@@ -25,6 +26,7 @@ class InfrastructureSelectionModel(QObject):
         self._selected_stopping_point_id: Optional[str] = None
         self._start_tp_id: Optional[int] = None
         self._end_tp_id: Optional[int] = None
+        self._waypoint_tp_ids: List[int] = []
 
     @property
     def current_route(self) -> List[str]:
@@ -51,6 +53,14 @@ class InfrastructureSelectionModel(QObject):
     def set_end_tp(self, tp_id: Optional[int]):
         self._end_tp_id = tp_id
         self.endTpChanged.emit(tp_id)
+
+    @property
+    def waypoint_tp_ids(self) -> List[int]:
+        return self._waypoint_tp_ids
+
+    def set_waypoint_tp_ids(self, tp_ids: List[int]):
+        self._waypoint_tp_ids = list(tp_ids)
+        self.waypointTpsChanged.emit(list(self._waypoint_tp_ids))
 
     @property
     def current_tracks(self) -> List[str]:
@@ -89,8 +99,10 @@ class InfrastructureSelectionModel(QObject):
         self._selected_stopping_point_id = None
         self._start_tp_id = None
         self._end_tp_id = None
+        self._waypoint_tp_ids = []
         self.routeChanged.emit([])
         self.tracksChanged.emit([])
         self.selectedStoppingPointChanged.emit("")
         self.startTpChanged.emit(None)
         self.endTpChanged.emit(None)
+        self.waypointTpsChanged.emit([])

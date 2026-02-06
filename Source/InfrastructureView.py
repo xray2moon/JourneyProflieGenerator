@@ -22,24 +22,17 @@ if __package__ in (None, ""):
 from Source.infra_ui import ParameterView, PanZoomGraphicsView, SettingsView
 from Source.infra_scene_builder import InfrastructureSceneBuilder
 from Source.infra_items import NodeItem, TrackItem, TimingPointItem, StoppingLocationItem
-from Source.infra_view_interaction import InfrastructureViewInteractionMixin
-from Source.infra_view_layouts import InfrastructureViewLayoutsMixin
-from Source.infra_view_routing import InfrastructureViewRoutingMixin
-from Source.infra_view_scene import InfrastructureViewSceneMixin
-from Source.infra_view_settings import InfrastructureViewSettingsMixin
+from Source.infra_view_interaction import InfrastructureViewInteraction
+from Source.infra_view_layouts import InfrastructureViewLayouts
+from Source.infra_view_routing import InfrastructureViewRouting
+from Source.infra_view_scene import InfrastructureViewScene
+from Source.infra_view_settings import InfrastructureViewSettings
 from Source.modern_theme import get_stylesheet
 from Source.infra_backend import InfrastructureBackend
 from Source.infra_model_ui_connector import ModelUIConnector
 from Source.journey_profile_exporter import JourneyProfileExporter
 
-class InfrastructureView(
-    QWidget,
-    InfrastructureViewSettingsMixin,
-    InfrastructureViewRoutingMixin,
-    InfrastructureViewLayoutsMixin,
-    InfrastructureViewSceneMixin,
-    InfrastructureViewInteractionMixin,
-):
+class InfrastructureView(QWidget):
     routeChanged = pyqtSignal(list)
     timingConstraintsChanged = pyqtSignal(list)
     selectionChanged = pyqtSignal(dict)
@@ -55,6 +48,12 @@ class InfrastructureView(
         self._scene = QGraphicsScene(self)
         self._scene_builder = InfrastructureSceneBuilder(self._scene)
         self._view = PanZoomGraphicsView(self._scene, self)
+
+        self._settings = InfrastructureViewSettings(self)
+        self._routing = InfrastructureViewRouting(self)
+        self._layouts = InfrastructureViewLayouts(self)
+        self._scene_controller = InfrastructureViewScene(self)
+        self._interaction = InfrastructureViewInteraction(self)
         
         self._view.set_can_start_background_pan(self._can_start_background_pan)
         self._legend = QLabel(self._view.viewport())
@@ -151,6 +150,24 @@ class InfrastructureView(
     @property
     def backend(self) -> InfrastructureBackend:
         return self._backend
+
+    def __getattr__(self, name):
+        for field in ("_settings", "_routing", "_layouts", "_scene_controller", "_interaction"):
+            try:
+                component = object.__getattribute__(self, field)
+            except AttributeError:
+                continue
+            try:
+                return object.__getattribute__(component, name)
+            except AttributeError:
+                continue
+        raise AttributeError(f"{self.__class__.__name__!s} has no attribute {name!r}")
+
+    def eventFilter(self, obj, event):
+        return self._interaction.eventFilter(obj, event)
+
+    def resizeEvent(self, event):
+        self._settings.resizeEvent(event)
 
     def load_infrastructure(self, json_path: str):
         print(f"DEBUG: load_infrastructure requested for {json_path}", flush=True)

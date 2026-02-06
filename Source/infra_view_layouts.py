@@ -9,7 +9,13 @@ from PyQt6.QtGui import QPainterPath
 from Source.infra_models import Track, TimingPoint, StoppingLocation
 
 
-class InfrastructureViewLayoutsMixin:
+class InfrastructureViewLayouts:
+    def __init__(self, view):
+        self._host = view
+        self._view = view._view
+
+    def __getattr__(self, name):
+        return getattr(self._host, name)
     def _path_from_points(self, pts: List[QPointF]) -> QPainterPath:
         path = QPainterPath(pts[0])
         for p in pts[1:]:

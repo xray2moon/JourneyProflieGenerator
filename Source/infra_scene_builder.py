@@ -34,7 +34,10 @@ class InfrastructureSceneBuilder:
         sl_to_group: Dict[str, str],
         show_all_tp: bool,
         visible_tp_tracks: Set[str],
-        timing_constraints: Dict[int, dict]
+        timing_constraints: Dict[int, dict],
+        start_tp_id: Optional[int] = None,
+        end_tp_id: Optional[int] = None,
+        waypoint_tp_ids: Optional[Set[int]] = None,
     ) -> Dict[str, any]:
         """
         Builds the geographic representation.
@@ -92,7 +95,9 @@ class InfrastructureSceneBuilder:
                 if c.get("pointType") == "STOP":
                     has_stop = True
 
-            is_visible = (show_all_tp or (tp.track_id in visible_tp_tracks) or has_stop)
+            waypoint_ids = waypoint_tp_ids or set()
+            is_route_selected_tp = tp.id in {start_tp_id, end_tp_id} or tp.id in waypoint_ids
+            is_visible = (show_all_tp or (tp.track_id in visible_tp_tracks) or has_stop or is_route_selected_tp)
             tpi.setVisible(is_visible)
             self._scene.addItem(tpi)
             results["tp_items"][tp.id] = tpi

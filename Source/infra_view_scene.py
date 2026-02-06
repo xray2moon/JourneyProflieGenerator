@@ -6,7 +6,14 @@ from PyQt6.QtWidgets import QGraphicsView
 from Source.infra_items import NodeItem, TrackItem, TimingPointItem, StoppingLocationItem
 
 
-class InfrastructureViewSceneMixin:
+class InfrastructureViewScene:
+    def __init__(self, view):
+        self._host = view
+        self._view = view._view
+
+    def __getattr__(self, name):
+        return getattr(self._host, name)
+
     def _on_layout_mode_changed(self, mode_text: str) -> None:
         lowered = mode_text.lower().strip()
         if lowered.startswith("schem") or lowered.startswith("topo"):
@@ -27,11 +34,11 @@ class InfrastructureViewSceneMixin:
 
     def _rebuild_scene(self) -> None:
         self._scene_builder.clear()
-        self._node_items.clear()
-        self._track_items.clear()
-        self._tp_items.clear()
-        self._sl_items.clear()
-        self._tp_track_map.clear()
+        self._host._node_items.clear()
+        self._host._track_items.clear()
+        self._host._tp_items.clear()
+        self._host._sl_items.clear()
+        self._host._tp_track_map.clear()
 
         model = self._backend.model
         selection = self._backend.selection
@@ -40,7 +47,7 @@ class InfrastructureViewSceneMixin:
             self._rebuild_schematic_scene()
             return
 
-        self._node_positions = self._compute_node_positions()
+        self._host._node_positions = self._compute_node_positions()
         
         track_paths = {}
         for tr_id, tr in model.tracks.items():
@@ -64,23 +71,26 @@ class InfrastructureViewSceneMixin:
             tracks=model.tracks,
             timing_points=model.timing_points,
             stopping_locations=model.stopping_locations,
-            node_positions=self._node_positions,
+            node_positions=self._host._node_positions,
             track_paths=track_paths,
             tp_positions=tp_positions,
             sl_positions=sl_positions,
             sl_to_group=model.sl_to_group,
             show_all_tp=self._show_all_tp,
             visible_tp_tracks=selection.visible_tp_tracks,
-            timing_constraints=selection.timing_constraints
+            timing_constraints=selection.timing_constraints,
+            start_tp_id=selection.start_tp_id,
+            end_tp_id=selection.end_tp_id,
+            waypoint_tp_ids=set(selection.waypoint_tp_ids),
         )
         
-        self._node_items = build_results["node_items"]
-        self._track_items = build_results["track_items"]
-        self._tp_items = build_results["tp_items"]
-        self._sl_items = build_results["sl_items"]
-        self._tp_track_map = build_results["tp_track_map"]
+        self._host._node_items = build_results["node_items"]
+        self._host._track_items = build_results["track_items"]
+        self._host._tp_items = build_results["tp_items"]
+        self._host._sl_items = build_results["sl_items"]
+        self._host._tp_track_map = build_results["tp_track_map"]
 
-        self._scene.installEventFilter(self)
+        self._scene.installEventFilter(self._host)
         self._restore_timing_point_markers()
         self.update_route_highlights_ui()
 
@@ -90,9 +100,9 @@ class InfrastructureViewSceneMixin:
 
         This project currently only supports the geographic rendering mode.
         """
-        self._node_positions = {}
+        self._host._node_positions = {}
         self._scene.setSceneRect(QRectF(-1000.0, -1000.0, 2000.0, 2000.0))
-        self._scene.installEventFilter(self)
+        self._scene.installEventFilter(self._host)
 
     def _fit_to_scene(self) -> None:
         """Fit the view so the whole infrastructure is visible.

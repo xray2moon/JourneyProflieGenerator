@@ -14,7 +14,13 @@ from Source.infra_items import NodeItem, TrackItem, TimingPointItem, StoppingLoc
 from Source.infra_ui import TimingConstraintDialog
 
 
-class InfrastructureViewInteractionMixin:
+class InfrastructureViewInteraction:
+    def __init__(self, view):
+        self._view = view
+
+    def __getattr__(self, name):
+        return getattr(self._view, name)
+
     def _set_hovered_track(self, track_id: Optional[str]) -> None:
         prev = getattr(self, "_hover_track_id", None)
         if prev == track_id:
@@ -73,14 +79,19 @@ class InfrastructureViewInteractionMixin:
 
     def _apply_track_tp_visibility(self, track_id: str, visible: bool) -> None:
         selection = self._backend.selection
+        start_tp_id = selection.start_tp_id
+        end_tp_id = selection.end_tp_id
+        waypoint_tp_ids = set(selection.waypoint_tp_ids)
         for tpi in self._tp_track_map.get(track_id, []):
             has_stop = False
             if tpi.tp.id in selection.timing_constraints:
                 c = selection.timing_constraints[tpi.tp.id]
                 if c.get("pointType") == "STOP":
                     has_stop = True
-            
-            should_show = self._show_all_tp or visible or has_stop
+
+            # Keep route-defining timing points always visible.
+            is_route_selected_tp = tpi.tp.id in {start_tp_id, end_tp_id} or tpi.tp.id in waypoint_tp_ids
+            should_show = self._show_all_tp or visible or has_stop or is_route_selected_tp
             tpi.setVisible(should_show)
             
             if not should_show:
@@ -131,7 +142,12 @@ class InfrastructureViewInteractionMixin:
                         self._extend_route_with_tp(item.tp.id)
                         return True
                     if event.button() == Qt.MouseButton.RightButton:
-                        self._edit_timing_constraint(item.tp.id)
+                        # Keep plain right-click focused on routing flow.
+                        # Use Shift+RightClick for STOP/PASS constraint editing.
+                        if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+                            self._edit_timing_constraint(item.tp.id)
+                        else:
+                            self._extend_route_with_tp(item.tp.id)
                         return True
 
                 if isinstance(item, StoppingLocationItem):
@@ -151,7 +167,7 @@ class InfrastructureViewInteractionMixin:
                     self._toggle_track_timing_points(track_id)
                     return True
 
-        return QWidget.eventFilter(self, obj, event)
+        return QWidget.eventFilter(self._view, obj, event)
 
     def _on_selection_changed(self) -> None:
         sel = self._scene.selectedItems()
@@ -173,7 +189,16 @@ class InfrastructureViewInteractionMixin:
         self.selectionChanged.emit(info)
 
     def clear_route(self) -> None:
-        self._backend.selection.clear_selection()
+        selection = self._backend.selection
+        selection.clear_selection()
+        selection.set_visible_tp_tracks(set())
+
+        # Reset action should hide all TPs immediately.
+        for track_item in self._track_items.values():
+            track_item.set_timing_points_visible(False)
+        for tpi in self._tp_items.values():
+            tpi.setVisible(False)
+            tpi.setSelected(False)
 
     def update_route_highlights_ui(self) -> None:
         selection = self._backend.selection
@@ -248,9 +273,28 @@ class InfrastructureViewInteractionMixin:
 
         start_tp_id = selection.start_tp_id
         end_tp_id = selection.end_tp_id
+        waypoint_tp_ids = set(selection.waypoint_tp_ids)
         
         start_tp = model.timing_points.get(start_tp_id) if start_tp_id is not None else None
         end_tp = model.timing_points.get(end_tp_id) if end_tp_id is not None else None
+        traversal_local_indices: List[int] = []
+
+        def _tp_pct_from_source(tp_id: Optional[int]) -> Optional[float]:
+            if tp_id is None:
+                return None
+            tp_obj = model.timing_points.get(tp_id)
+            if not tp_obj:
+                return None
+            tr_obj = model.tracks.get(tp_obj.track_id)
+            if not tr_obj or tr_obj.length_m <= 0:
+                return None
+            pos = (
+                tr_obj.length_m - tp_obj.distance_to_target_m
+                if tp_obj.target_node_id == tr_obj.target
+                else tp_obj.distance_to_target_m
+            )
+            pct = pos / tr_obj.length_m
+            return max(0.0, min(1.0, pct))
 
         for i, ((tid, direction), offsets) in enumerate(zip(route_traversal_sequence, sequence_offsets)):
             if tid not in track_to_offsets:
@@ -259,6 +303,8 @@ class InfrastructureViewInteractionMixin:
             
             track_to_offsets[tid].append(offsets)
             tr = model.tracks[tid]
+            local_idx = len(track_to_ranges[tid])
+            traversal_local_indices.append(local_idx)
             
             # Start and End absolute percentages on the track (0.0 = source, 1.0 = target)
             # Default: whole track in direction of traversal
@@ -282,6 +328,57 @@ class InfrastructureViewInteractionMixin:
                     e_pct = tp_pos / tr.length_m
 
             track_to_ranges[tid].append((s_pct, e_pct))
+
+        ordered_tp_ids: List[int] = []
+        if start_tp_id is not None:
+            ordered_tp_ids.append(start_tp_id)
+        for w in selection.waypoint_tp_ids:
+            if w not in ordered_tp_ids:
+                ordered_tp_ids.append(w)
+        if end_tp_id is not None and end_tp_id not in ordered_tp_ids:
+            ordered_tp_ids.append(end_tp_id)
+
+        # Waypoint-aware clipping for same-track reversals: clip previous traversal
+        # at waypoint and start the opposite traversal from that same TP position.
+        search_from = 0
+        for tp_a_id, tp_b_id in zip(ordered_tp_ids, ordered_tp_ids[1:]):
+            tp_a = model.timing_points.get(tp_a_id)
+            tp_b = model.timing_points.get(tp_b_id)
+            if not tp_a or not tp_b or tp_a.track_id != tp_b.track_id:
+                continue
+
+            pct_a = _tp_pct_from_source(tp_a_id)
+            pct_b = _tp_pct_from_source(tp_b_id)
+            if pct_a is None or pct_b is None:
+                continue
+
+            reversal_pair: Optional[Tuple[int, int]] = None
+            for idx in range(search_from, len(route_traversal_sequence) - 1):
+                tid_i, dir_i = route_traversal_sequence[idx]
+                tid_j, dir_j = route_traversal_sequence[idx + 1]
+                if tid_i != tp_a.track_id or tid_j != tp_a.track_id:
+                    continue
+                if dir_i == dir_j:
+                    continue
+                reversal_pair = (idx, idx + 1)
+                break
+
+            if reversal_pair is None:
+                continue
+
+            i_prev, i_next = reversal_pair
+
+            prev_tid = route_traversal_sequence[i_prev][0]
+            prev_local = traversal_local_indices[i_prev]
+            prev_s, prev_e = track_to_ranges[prev_tid][prev_local]
+            track_to_ranges[prev_tid][prev_local] = (prev_s, pct_a)
+
+            next_tid = route_traversal_sequence[i_next][0]
+            next_local = traversal_local_indices[i_next]
+            _, next_e = track_to_ranges[next_tid][next_local]
+            track_to_ranges[next_tid][next_local] = (pct_a, pct_b if tp_b.track_id == next_tid else next_e)
+
+            search_from = i_next
 
         start_id = route_nodes[0] if route_nodes else None
         end_id = route_nodes[-1] if route_nodes else None
@@ -314,6 +411,7 @@ class InfrastructureViewInteractionMixin:
             elif tp_id == end_tp_id:
                 role = "end"
             item.set_route_role(role)
+            item.set_highlight(tp_id in waypoint_tp_ids)
 
         self._update_route_status_labels()
 
@@ -357,7 +455,7 @@ class InfrastructureViewInteractionMixin:
             return
 
         existing = selection.timing_constraints.get(tp_id)
-        dlg = TimingConstraintDialog(self, tp_id, existing=existing)
+        dlg = TimingConstraintDialog(self._view, tp_id, existing=existing)
         if dlg.exec() != QDialog.DialogCode.Accepted:
             return
 

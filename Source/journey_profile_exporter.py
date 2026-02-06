@@ -15,6 +15,104 @@ class JourneyProfileExporter:
     def __init__(self, backend: InfrastructureBackend):
         self._backend = backend
 
+    def _tp_pct_from_source(self, tp_id: Optional[int]) -> Optional[float]:
+        if tp_id is None:
+            return None
+        model = self._backend.model
+        tp = model.timing_points.get(tp_id)
+        if tp is None:
+            return None
+        track = model.tracks.get(tp.track_id)
+        if track is None or track.length_m <= 0:
+            return None
+        pos = (
+            track.length_m - tp.distance_to_target_m
+            if tp.target_node_id == track.target
+            else tp.distance_to_target_m
+        )
+        pct = pos / track.length_m
+        return max(0.0, min(1.0, pct))
+
+    def _compute_traversal_ranges(self, selection, model) -> List[tuple[float, float]]:
+        ranges: List[tuple[float, float]] = []
+        directions: List[str] = []
+        route_tracks = selection.current_tracks
+        route_nodes = selection.current_route
+
+        for i, tid in enumerate(route_tracks):
+            track = model.tracks.get(tid)
+            if not track or i + 1 >= len(route_nodes):
+                directions.append("forward")
+                ranges.append((0.0, 1.0))
+                continue
+            u = route_nodes[i]
+            v = route_nodes[i + 1]
+            direction = "forward" if (u == track.source and v == track.target) else "backward"
+            directions.append(direction)
+            ranges.append((0.0, 1.0) if direction == "forward" else (1.0, 0.0))
+
+        start_tp_id = selection.start_tp_id
+        end_tp_id = selection.end_tp_id
+
+        if route_tracks and start_tp_id is not None:
+            start_tp = model.timing_points.get(start_tp_id)
+            if start_tp and start_tp.track_id == route_tracks[0]:
+                start_pct = self._tp_pct_from_source(start_tp_id)
+                if start_pct is not None:
+                    _, e0 = ranges[0]
+                    ranges[0] = (start_pct, e0)
+
+        if route_tracks and end_tp_id is not None:
+            end_tp = model.timing_points.get(end_tp_id)
+            if end_tp and end_tp.track_id == route_tracks[-1]:
+                end_pct = self._tp_pct_from_source(end_tp_id)
+                if end_pct is not None:
+                    s_last, _ = ranges[-1]
+                    ranges[-1] = (s_last, end_pct)
+
+        ordered_tp_ids: List[int] = []
+        if start_tp_id is not None:
+            ordered_tp_ids.append(start_tp_id)
+        for w in selection.waypoint_tp_ids:
+            if w not in ordered_tp_ids:
+                ordered_tp_ids.append(w)
+        if end_tp_id is not None and end_tp_id not in ordered_tp_ids:
+            ordered_tp_ids.append(end_tp_id)
+
+        search_from = 0
+        for tp_a_id, tp_b_id in zip(ordered_tp_ids, ordered_tp_ids[1:]):
+            tp_a = model.timing_points.get(tp_a_id)
+            tp_b = model.timing_points.get(tp_b_id)
+            if not tp_a or not tp_b or tp_a.track_id != tp_b.track_id:
+                continue
+
+            pct_a = self._tp_pct_from_source(tp_a_id)
+            pct_b = self._tp_pct_from_source(tp_b_id)
+            if pct_a is None or pct_b is None:
+                continue
+
+            reversal_pair: Optional[tuple[int, int]] = None
+            for idx in range(search_from, len(route_tracks) - 1):
+                if route_tracks[idx] != tp_a.track_id or route_tracks[idx + 1] != tp_a.track_id:
+                    continue
+                if directions[idx] == directions[idx + 1]:
+                    continue
+                reversal_pair = (idx, idx + 1)
+                break
+
+            if reversal_pair is None:
+                continue
+
+            i_prev, i_next = reversal_pair
+            s_prev, _ = ranges[i_prev]
+            ranges[i_prev] = (s_prev, pct_a)
+
+            _, e_next = ranges[i_next]
+            ranges[i_next] = (pct_a, pct_b if route_tracks[i_next] == tp_b.track_id else e_next)
+            search_from = i_next
+
+        return ranges
+
     def export_journey_profile(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
         selection = self._backend.selection
         model = self._backend.model
@@ -35,6 +133,16 @@ class JourneyProfileExporter:
 
         start_tp_id = selection.start_tp_id
         end_tp_id = selection.end_tp_id
+        traversal_ranges = self._compute_traversal_ranges(selection, model)
+        selected_tp_ids_ordered: List[int] = []
+        if start_tp_id is not None:
+            selected_tp_ids_ordered.append(start_tp_id)
+        for wid in selection.waypoint_tp_ids:
+            if wid not in selected_tp_ids_ordered:
+                selected_tp_ids_ordered.append(wid)
+        if end_tp_id is not None and end_tp_id not in selected_tp_ids_ordered:
+            selected_tp_ids_ordered.append(end_tp_id)
+        selected_tp_rank = {tp_id: idx for idx, tp_id in enumerate(selected_tp_ids_ordered)}
 
         for i, tid in enumerate(selection.current_tracks):
             track = model.tracks.get(tid)
@@ -42,6 +150,7 @@ class JourneyProfileExporter:
                 continue
             u = selection.current_route[i]
             v = selection.current_route[i+1]
+            s_pct, e_pct = traversal_ranges[i] if i < len(traversal_ranges) else (0.0, 1.0)
             
             # Absolute direction on this track relative to its definition
             # Swapped as per user request: if track.target == v, it was NOMINAL, now REVERSE
@@ -73,28 +182,22 @@ class JourneyProfileExporter:
             # TPs on this track (Deduplication Logic)
             # 1. Collect all candidates
             candidates = []
-            start_tp_pos = None
-            end_tp_pos = None
 
             for tp in tps_by_track.get(tid, []):
-                local_pos = None
-                if tp.target_node_id == v:
-                    local_pos = track.length_m - tp.distance_to_target_m
-                elif tp.target_node_id == u:
-                    local_pos = tp.distance_to_target_m
-                
-                if local_pos is not None:
-                    candidates.append((local_pos, tp))
-                    if start_tp_id is not None and tp.id == start_tp_id and i == 0:
-                        start_tp_pos = local_pos
-                    if end_tp_id is not None and tp.id == end_tp_id and i == len(selection.current_tracks) - 1:
-                        end_tp_pos = local_pos
-            
-            # Filter by start/end TPs
-            if start_tp_pos is not None:
-                candidates = [(p, t) for p, t in candidates if p >= start_tp_pos - 0.001]
-            if end_tp_pos is not None:
-                candidates = [(p, t) for p, t in candidates if p <= end_tp_pos + 0.001]
+                if track.length_m <= 0:
+                    continue
+                if tp.target_node_id == track.target:
+                    pct_from_source = (track.length_m - tp.distance_to_target_m) / track.length_m
+                else:
+                    pct_from_source = tp.distance_to_target_m / track.length_m
+
+                lo = min(s_pct, e_pct) - 1e-6
+                hi = max(s_pct, e_pct) + 1e-6
+                if pct_from_source < lo or pct_from_source > hi:
+                    continue
+
+                local_pos = abs(pct_from_source - s_pct) * track.length_m
+                candidates.append((local_pos, tp))
 
             # 2. Group by position (epsilon 0.1m)
             candidates.sort(key=lambda x: x[0])
@@ -116,6 +219,18 @@ class JourneyProfileExporter:
             for group in grouped_candidates:
                 selected_tp = None
                 selected_pos = group[0][0] # Use position of first element
+
+                # Keep user-selected route TPs stable when multiple IDs share a position.
+                selected_members = [
+                    (selected_tp_rank[tp.id], pos, tp)
+                    for pos, tp in group
+                    if tp.id in selected_tp_rank
+                ]
+                if selected_members:
+                    selected_members.sort(key=lambda x: x[0])
+                    _rank, selected_pos, selected_tp = selected_members[0]
+                    track_tps.append(("TP", selected_tp, curr_route_pos + selected_pos, curr_track_dir))
+                    continue
                 
                 # Priority: Target == Track Target (Nominal Direction)
                 for pos, tp in group:
@@ -145,14 +260,18 @@ class JourneyProfileExporter:
             track_tps_aug = []
             for t in track_tps:
                 track_tps_aug.append(t + (forced_seg_id,))
+
+            if events and track_tps_aug and events[-1][0] == "TP":
+                prev_tp = events[-1][1]
+                prev_pos = events[-1][2]
+                first_tp = track_tps_aug[0][1]
+                first_pos = track_tps_aug[0][2]
+                if first_tp.id == prev_tp.id and abs(first_pos - prev_pos) < 0.1:
+                    track_tps_aug = track_tps_aug[1:]
             
             events.extend(track_tps_aug)
             
-            # If this is the last track and we have an end TP, the route ends there
-            if i == len(selection.current_tracks) - 1 and end_tp_pos is not None:
-                curr_route_pos += end_tp_pos
-            else:
-                curr_route_pos += track.length_m
+            curr_route_pos += abs(e_pct - s_pct) * track.length_m
             
             last_track_dir = curr_track_dir
 

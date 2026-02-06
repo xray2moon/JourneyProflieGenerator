@@ -509,14 +509,17 @@ class TrackItem(QGraphicsPathItem):
         trans.translate(pos.x(), pos.y())
         trans.rotate(-angle_deg) 
         
-        arrow_item = QGraphicsPathItem(trans.map(arrow_path), self._route_overlay)
+        # Keep arrows above all infrastructure items to avoid being hidden by nodes/labels.
+        arrow_item = QGraphicsPathItem(trans.map(arrow_path))
+        if self.scene() is not None:
+            self.scene().addItem(arrow_item)
         # Black outline for better visibility when zoomed out
         outline_pen = QPen(Qt.GlobalColor.black)
         outline_pen.setWidthF(1.0)
         outline_pen.setCosmetic(True) # Keeps pen width constant regardless of zoom
         arrow_item.setPen(outline_pen)
         arrow_item.setBrush(QBrush(color))
-        arrow_item.setZValue(4)
+        arrow_item.setZValue(50)
         arrow_item.setAcceptedMouseButtons(Qt.MouseButton.NoButton)
         
         self._arrows.append(arrow_item)
@@ -539,13 +542,16 @@ class TrackItem(QGraphicsPathItem):
         trans.translate(pos.x(), pos.y())
         trans.rotate(-angle_deg)
         
-        arrow_item = QGraphicsPathItem(trans.map(arrow_path), self._route_overlay)
+        # Keep arrows above all infrastructure items to avoid being hidden by nodes/labels.
+        arrow_item = QGraphicsPathItem(trans.map(arrow_path))
+        if self.scene() is not None:
+            self.scene().addItem(arrow_item)
         outline_pen = QPen(Qt.GlobalColor.black)
         outline_pen.setWidthF(1.0)
         outline_pen.setCosmetic(True)
         arrow_item.setPen(outline_pen)
         arrow_item.setBrush(QBrush(color))
-        arrow_item.setZValue(4)
+        arrow_item.setZValue(50)
         arrow_item.setAcceptedMouseButtons(Qt.MouseButton.NoButton)
         
         self._arrows.append(arrow_item)
