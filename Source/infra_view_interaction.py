@@ -380,6 +380,43 @@ class InfrastructureViewInteraction:
 
             search_from = i_next
 
+        # Also anchor any direction change on the same track to an explicit waypoint TP
+        # (even when adjacent selected TPs are on different tracks).
+        search_from = 0
+        for wp_id in selection.waypoint_tp_ids:
+            wp = model.timing_points.get(wp_id)
+            if not wp:
+                continue
+            wp_pct = _tp_pct_from_source(wp_id)
+            if wp_pct is None:
+                continue
+
+            reversal_pair: Optional[Tuple[int, int]] = None
+            for idx in range(search_from, len(route_traversal_sequence) - 1):
+                tid_i, dir_i = route_traversal_sequence[idx]
+                tid_j, dir_j = route_traversal_sequence[idx + 1]
+                if tid_i != wp.track_id or tid_j != wp.track_id:
+                    continue
+                if dir_i == dir_j:
+                    continue
+                reversal_pair = (idx, idx + 1)
+                break
+
+            if reversal_pair is None:
+                continue
+
+            i_prev, i_next = reversal_pair
+            prev_tid = route_traversal_sequence[i_prev][0]
+            prev_local = traversal_local_indices[i_prev]
+            prev_s, _ = track_to_ranges[prev_tid][prev_local]
+            track_to_ranges[prev_tid][prev_local] = (prev_s, wp_pct)
+
+            next_tid = route_traversal_sequence[i_next][0]
+            next_local = traversal_local_indices[i_next]
+            _, next_e = track_to_ranges[next_tid][next_local]
+            track_to_ranges[next_tid][next_local] = (wp_pct, next_e)
+            search_from = i_next
+
         start_id = route_nodes[0] if route_nodes else None
         end_id = route_nodes[-1] if route_nodes else None
         

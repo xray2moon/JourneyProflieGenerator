@@ -120,10 +120,13 @@ class JourneyProfileExporter:
         if not selection.current_tracks:
             return {}
 
-        # Pre-group timing points by track for efficiency
+        # Pre-group timing points by track for efficiency.
+        # Sort for deterministic tie-breaking when multiple TPs share a position.
         tps_by_track: Dict[str, List[TimingPoint]] = {}
         for tp in model.timing_points.values():
             tps_by_track.setdefault(tp.track_id, []).append(tp)
+        for tp_list in tps_by_track.values():
+            tp_list.sort(key=lambda tp: (tp.distance_to_target_m, tp.id))
 
         # 1. Gather all events (TPs and Reversals) along the route
         events = [] # List of (type, data, abs_pos, track_dir)
@@ -200,7 +203,7 @@ class JourneyProfileExporter:
                 candidates.append((local_pos, tp))
 
             # 2. Group by position (epsilon 0.1m)
-            candidates.sort(key=lambda x: x[0])
+            candidates.sort(key=lambda x: (x[0], x[1].id))
             grouped_candidates = []
             if candidates:
                 current_group = [candidates[0]]
@@ -232,34 +235,23 @@ class JourneyProfileExporter:
                     track_tps.append(("TP", selected_tp, curr_route_pos + selected_pos, curr_track_dir))
                     continue
                 
-                # Priority: Target == Track Target (Nominal Direction)
-                for pos, tp in group:
-                    if tp.target_node_id == track.target:
-                        selected_tp = tp
-                        selected_pos = pos
-                        break
+                # Priority: target == track.target, with deterministic TP-ID tie-break.
+                preferred = [(pos, tp) for pos, tp in group if tp.target_node_id == track.target]
+                if preferred:
+                    preferred.sort(key=lambda x: x[1].id)
+                    selected_pos, selected_tp = preferred[0]
                 
                 if selected_tp is None:
-                    # Fallback: Just pick the first one (lowest ID usually if sorted by ID? No, sorted by Pos)
-                    selected_tp = group[0][1]
-                    selected_pos = group[0][0]
+                    # Fallback: deterministic lowest TP ID in the co-located group.
+                    fallback = sorted(group, key=lambda x: x[1].id)[0]
+                    selected_pos, selected_tp = fallback
                 
                 track_tps.append(("TP", selected_tp, curr_route_pos + selected_pos, curr_track_dir))
 
             track_tps.sort(key=lambda x: x[2])
-            
-            # Determine representative Segment Profile ID for this track traversal
-            # We use the ID of the first TP encountered in this direction
-            forced_seg_id = 0
-            if track_tps:
-                # track_tps[0] is ("TP", tp, pos, dir)
-                forced_seg_id = track_tps[0][1].segment_profile_id
-            
-            # Augment track_tps with forced_seg_id
-            # New structure: ("TP", tp, abs_pos, track_dir, forced_seg_id)
-            track_tps_aug = []
-            for t in track_tps:
-                track_tps_aug.append(t + (forced_seg_id,))
+            # Carry each TP's own segment profile id.
+            # Event shape: ("TP", tp, abs_pos, track_dir, segment_profile_id)
+            track_tps_aug = [t + (t[1].segment_profile_id,) for t in track_tps]
 
             if events and track_tps_aug and events[-1][0] == "TP":
                 prev_tp = events[-1][1]
@@ -418,8 +410,7 @@ class JourneyProfileExporter:
                         "automaticDoorClosing": False
                     }
                 
-                # Check if we can continue the current segment
-                # Now using forced_seg_id instead of tp.segment_profile_id
+                # Start a new profile segment whenever segment id or direction changes.
                 if not profile_segments or \
                    profile_segments[-1]["segmentProfileId"] != forced_seg_id or \
                    profile_segments[-1]["direction"] != edir:

@@ -82,7 +82,25 @@ class InfrastructureSceneBuilder:
             results["node_items"][node_id] = ni
 
         # Timing points
-        for tp_id, tp in timing_points.items():
+        def _tp_pos_from_source(tp_obj: TimingPoint) -> float:
+            tr_obj = tracks.get(tp_obj.track_id)
+            if tr_obj is None or tr_obj.length_m <= 0:
+                return float("inf")
+            if tp_obj.target_node_id == tr_obj.target:
+                return tr_obj.length_m - tp_obj.distance_to_target_m
+            return tp_obj.distance_to_target_m
+
+        ordered_tps = sorted(
+            timing_points.values(),
+            key=lambda tp_obj: (
+                tp_obj.track_id,
+                _tp_pos_from_source(tp_obj),
+                tp_obj.id,
+            ),
+        )
+
+        for tp in ordered_tps:
+            tp_id = tp.id
             pos = tp_positions.get(tp_id)
             if pos is None: continue
             
