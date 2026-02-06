@@ -33,6 +33,9 @@ class JourneyProfileExporter:
         last_track_dir = None
         reversal_tp_ids = set()
 
+        start_tp_id = selection.start_tp_id
+        end_tp_id = selection.end_tp_id
+
         for i, tid in enumerate(selection.current_tracks):
             track = model.tracks.get(tid)
             if not track:
@@ -70,6 +73,9 @@ class JourneyProfileExporter:
             # TPs on this track (Deduplication Logic)
             # 1. Collect all candidates
             candidates = []
+            start_tp_pos = None
+            end_tp_pos = None
+
             for tp in tps_by_track.get(tid, []):
                 local_pos = None
                 if tp.target_node_id == v:
@@ -79,7 +85,17 @@ class JourneyProfileExporter:
                 
                 if local_pos is not None:
                     candidates.append((local_pos, tp))
+                    if start_tp_id is not None and tp.id == start_tp_id and i == 0:
+                        start_tp_pos = local_pos
+                    if end_tp_id is not None and tp.id == end_tp_id and i == len(selection.current_tracks) - 1:
+                        end_tp_pos = local_pos
             
+            # Filter by start/end TPs
+            if start_tp_pos is not None:
+                candidates = [(p, t) for p, t in candidates if p >= start_tp_pos - 0.001]
+            if end_tp_pos is not None:
+                candidates = [(p, t) for p, t in candidates if p <= end_tp_pos + 0.001]
+
             # 2. Group by position (epsilon 0.1m)
             candidates.sort(key=lambda x: x[0])
             grouped_candidates = []
@@ -132,7 +148,12 @@ class JourneyProfileExporter:
             
             events.extend(track_tps_aug)
             
-            curr_route_pos += track.length_m
+            # If this is the last track and we have an end TP, the route ends there
+            if i == len(selection.current_tracks) - 1 and end_tp_pos is not None:
+                curr_route_pos += end_tp_pos
+            else:
+                curr_route_pos += track.length_m
+            
             last_track_dir = curr_track_dir
 
         # Ensure we simulate until the very end of the route
@@ -151,7 +172,9 @@ class JourneyProfileExporter:
         train_state = TrainState()
         
         profile_segments: List[Dict[str, Any]] = []
-        last_pos = 0.0
+        
+        # Start simulation at the first event's position
+        last_pos = events[0][2] if events else 0.0
         
         # Identify the index of the last TP for endOfJourney flag
         last_tp_index = -1

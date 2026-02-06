@@ -13,6 +13,8 @@ class InfrastructureSelectionModel(QObject):
     visibleTpTracksChanged = pyqtSignal(set)
     selectionChanged = pyqtSignal(dict)  # for tooltips/sidepanels
     selectedStoppingPointChanged = pyqtSignal(str)
+    startTpChanged = pyqtSignal(object) # Optional[int]
+    endTpChanged = pyqtSignal(object)   # Optional[int]
 
     def __init__(self):
         super().__init__()
@@ -21,6 +23,8 @@ class InfrastructureSelectionModel(QObject):
         self._timing_constraints: Dict[int, dict] = {}
         self._visible_tp_tracks: Set[str] = set()
         self._selected_stopping_point_id: Optional[str] = None
+        self._start_tp_id: Optional[int] = None
+        self._end_tp_id: Optional[int] = None
 
     @property
     def current_route(self) -> List[str]:
@@ -31,6 +35,22 @@ class InfrastructureSelectionModel(QObject):
         self._current_tracks = tracks
         self.routeChanged.emit(self._current_route)
         self.tracksChanged.emit(self._current_tracks)
+
+    @property
+    def start_tp_id(self) -> Optional[int]:
+        return self._start_tp_id
+
+    def set_start_tp(self, tp_id: Optional[int]):
+        self._start_tp_id = tp_id
+        self.startTpChanged.emit(tp_id)
+
+    @property
+    def end_tp_id(self) -> Optional[int]:
+        return self._end_tp_id
+
+    def set_end_tp(self, tp_id: Optional[int]):
+        self._end_tp_id = tp_id
+        self.endTpChanged.emit(tp_id)
 
     @property
     def current_tracks(self) -> List[str]:
@@ -66,11 +86,11 @@ class InfrastructureSelectionModel(QObject):
     def clear_selection(self):
         self._current_route = []
         self._current_tracks = []
-        self._timing_constraints = {}
-        self._visible_tp_tracks = set()
         self._selected_stopping_point_id = None
+        self._start_tp_id = None
+        self._end_tp_id = None
         self.routeChanged.emit([])
         self.tracksChanged.emit([])
-        self.timingConstraintsChanged.emit({})
-        self.visibleTpTracksChanged.emit(set())
         self.selectedStoppingPointChanged.emit("")
+        self.startTpChanged.emit(None)
+        self.endTpChanged.emit(None)

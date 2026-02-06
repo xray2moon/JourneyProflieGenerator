@@ -180,7 +180,7 @@ class InfrastructureView(
         )
 
     def update_route_highlights(self, nodes: List[str]):
-        self._update_route_highlights_ui()
+        self.update_route_highlights_ui()
         self.routeChanged.emit(list(nodes))
 
     def update_timing_points(self, constraints: Dict[int, dict]):

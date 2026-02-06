@@ -128,29 +128,19 @@ class InfrastructureViewInteractionMixin:
 
                 if isinstance(item, TimingPointItem):
                     if event.button() == Qt.MouseButton.LeftButton:
-                        self._edit_timing_constraint(item.tp.id)
+                        self._extend_route_with_tp(item.tp.id)
                         return True
                     if event.button() == Qt.MouseButton.RightButton:
-                        self._remove_timing_constraint(item.tp.id)
+                        self._edit_timing_constraint(item.tp.id)
                         return True
 
                 if isinstance(item, StoppingLocationItem):
                     if event.button() == Qt.MouseButton.LeftButton:
-                        if self._layout_mode != "geographic":
-                            return False
-                        sl = self._backend.model.stopping_locations.get(item.sl_id)
-                        if sl and sl.target_direction_node_id:
-                            self._extend_route_with_node(sl.target_direction_node_id)
-                            self._backend.selection.set_selected_stopping_point(item.sl_id)
-                        return True
+                        return False # Disabled routing via SL
 
                 if isinstance(item, NodeItem):
                     if event.button() == Qt.MouseButton.LeftButton:
-                        if self._layout_mode != "geographic":
-                            return False
-                        self._extend_route_with_node(item.node.id)
-                        self._backend.selection.set_selected_stopping_point(None)
-                        return True
+                        return False # Disabled routing via Node
 
                 if event.button() == Qt.MouseButton.LeftButton:
                     track_id = self._pick_track_id_near(event.scenePos())
@@ -185,7 +175,7 @@ class InfrastructureViewInteractionMixin:
     def clear_route(self) -> None:
         self._backend.selection.clear_selection()
 
-    def _update_route_highlights_ui(self) -> None:
+    def update_route_highlights_ui(self) -> None:
         selection = self._backend.selection
         model = self._backend.model
         route_nodes = selection.current_route
@@ -252,33 +242,77 @@ class InfrastructureViewInteractionMixin:
             
             sequence_offsets.append((s_off, e_off))
 
-        # Map these back to track_id -> list of (s_off, e_off)
+        # Map these back to track_id -> list of (s_off, e_off) and list of (s_pct, e_pct)
         track_to_offsets: Dict[str, List[Tuple[float, float]]] = {}
-        counts: Dict[str, int] = {}
-        for (tid, direction), offsets in zip(route_traversal_sequence, sequence_offsets):
+        track_to_ranges: Dict[str, List[Tuple[float, float]]] = {}
+
+        start_tp_id = selection.start_tp_id
+        end_tp_id = selection.end_tp_id
+        
+        start_tp = model.timing_points.get(start_tp_id) if start_tp_id is not None else None
+        end_tp = model.timing_points.get(end_tp_id) if end_tp_id is not None else None
+
+        for i, ((tid, direction), offsets) in enumerate(zip(route_traversal_sequence, sequence_offsets)):
             if tid not in track_to_offsets:
                 track_to_offsets[tid] = []
+                track_to_ranges[tid] = []
+            
             track_to_offsets[tid].append(offsets)
+            tr = model.tracks[tid]
+            
+            # Start and End absolute percentages on the track (0.0 = source, 1.0 = target)
+            # Default: whole track in direction of traversal
+            if direction == "forward":
+                s_pct, e_pct = 0.0, 1.0
+            else:
+                s_pct, e_pct = 1.0, 0.0
+
+            # Adjust first track if there is a start TP
+            if i == 0 and start_tp and start_tp.track_id == tid:
+                # Absolute position of start TP from tr.source
+                tp_pos = (tr.length_m - start_tp.distance_to_target_m) if start_tp.target_node_id == tr.target else start_tp.distance_to_target_m
+                if tr.length_m > 0:
+                    s_pct = tp_pos / tr.length_m
+
+            # Adjust last track if there is an end TP
+            if i == len(route_traversal_sequence) - 1 and end_tp and end_tp.track_id == tid:
+                # Absolute position of end TP from tr.source
+                tp_pos = (tr.length_m - end_tp.distance_to_target_m) if end_tp.target_node_id == tr.target else end_tp.distance_to_target_m
+                if tr.length_m > 0:
+                    e_pct = tp_pos / tr.length_m
+
+            track_to_ranges[tid].append((s_pct, e_pct))
 
         start_id = route_nodes[0] if route_nodes else None
         end_id = route_nodes[-1] if route_nodes else None
+        
         selected_sp_id = selection.selected_stopping_point_id
 
         for nid, item in self._node_items.items():
             item.set_highlight(nid in node_ids_set)
-            role = None
-            if start_id is not None:
-                if nid == start_id: role = "start"
-                elif nid == end_id and not selected_sp_id: role = "end"
-            item.set_route_role(role)
+            item.set_route_role(None) # Nodes no longer have roles in the new logic
 
         for tid, item in self._track_items.items():
             traversals = track_traversals.get(tid, [])
             offsets = track_to_offsets.get(tid, [])
-            item.set_route_highlight(len(traversals) > 0, traversals=traversals, traversal_offsets=offsets)
+            ranges = track_to_ranges.get(tid, [])
+            item.set_route_highlight(
+                len(traversals) > 0, 
+                traversals=traversals, 
+                traversal_offsets=offsets,
+                traversal_ranges=ranges
+            )
 
         for sl_id, item in self._sl_items.items():
             role = "end" if sl_id == selected_sp_id else None
+            item.set_route_role(role)
+
+        for tp_id, item in self._tp_items.items():
+            role = None
+            if tp_id == start_tp_id:
+                role = "start"
+            elif tp_id == end_tp_id:
+                role = "end"
             item.set_route_role(role)
 
         self._update_route_status_labels()
@@ -298,16 +332,14 @@ class InfrastructureViewInteractionMixin:
             return
 
         selection = self._backend.selection
-        start_id = selection.current_route[0] if selection.current_route else None
-        end_id = selection.current_route[-1] if selection.current_route else None
+        start_tp_id = selection.start_tp_id
+        end_tp_id = selection.end_tp_id
         
-        start_text, start_tip = self._format_route_node_label(start_id)
-        end_text, end_tip = self._format_route_node_label(end_id)
+        start_text = str(start_tp_id) if start_tp_id is not None else "-"
+        end_text = str(end_tp_id) if end_tp_id is not None else "-"
 
-        start_label.setText(f"Start: {start_text}")
-        start_label.setToolTip(start_tip)
-        end_label.setText(f"End: {end_text}")
-        end_label.setToolTip(end_tip)
+        start_label.setText(f"Start TP: {start_text}")
+        end_label.setText(f"End TP: {end_text}")
 
     def _restore_timing_point_markers(self) -> None:
         selection = self._backend.selection

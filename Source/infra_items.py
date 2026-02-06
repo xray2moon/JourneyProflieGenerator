@@ -101,11 +101,22 @@ class TimingPointItem(QGraphicsEllipseItem):
         self._base_pen = QPen(QColor(ModernColors.L_TEXT))
         self._base_pen.setWidthF(1.0)
         self._base_brush = QBrush(QColor(ModernColors.TP_DEFAULT))
+        
+        self._route_selected = False
+        self._route_role: Optional[str] = None
+        self._route_pen = QPen(QColor(ModernColors.L_TEXT))
+        self._route_pen.setWidthF(2.5)
+        self._start_pen = QPen(QColor(ModernColors.NODE_START))
+        self._start_pen.setWidthF(3.0)
+        self._end_pen = QPen(QColor(ModernColors.NODE_END))
+        self._end_pen.setWidthF(3.0)
+        
         self.setPen(self._base_pen)
         self.setBrush(self._base_brush)
         self.setZValue(20)
 
         self._has_constraint = False
+        self._point_type: Optional[str] = None
 
     def hoverEnterEvent(self, event):
         self.setToolTip(
@@ -114,11 +125,34 @@ class TimingPointItem(QGraphicsEllipseItem):
         )
         super().hoverEnterEvent(event)
 
+    def set_highlight(self, enabled: bool) -> None:
+        self._route_selected = bool(enabled)
+        self._apply_route_style()
+
+    def set_route_role(self, role: Optional[str]) -> None:
+        if role not in {None, "start", "end"}:
+            role = None
+        self._route_role = role
+        self._apply_route_style()
+
+    def _apply_route_style(self) -> None:
+        if self._route_role == "start":
+            self.setPen(self._start_pen)
+        elif self._route_role == "end":
+            self.setPen(self._end_pen)
+        elif self._route_selected:
+            self.setPen(self._route_pen)
+        else:
+            pen = QPen(self._base_pen)
+            if self._point_type == "STOP":
+                pen.setColor(Qt.GlobalColor.black)
+                pen.setWidthF(2.5)
+            self.setPen(pen)
+
     def set_constraint_point_type(self, point_type: Optional[str]) -> None:
+        self._point_type = point_type
         self._has_constraint = point_type is not None
-        pen = QPen(Qt.GlobalColor.black)
-        pen.setWidthF(2.5 if point_type == "STOP" else 1.0)
-        self.setPen(pen)
+        self._apply_route_style()
 
     def set_theme(self, theme: str) -> None:
         if theme == "dark":
@@ -126,8 +160,7 @@ class TimingPointItem(QGraphicsEllipseItem):
         else:
             self._base_pen.setColor(QColor(ModernColors.L_TEXT))
         self._base_pen.setWidthF(1.0)
-        if not self._has_constraint:
-            self.setPen(self._base_pen)
+        self._apply_route_style()
 
 
 class StoppingLocationItem(QGraphicsEllipseItem):
@@ -266,12 +299,14 @@ class TrackItem(QGraphicsPathItem):
         is_double: bool = False, 
         directions: Optional[Set[str]] = None,
         traversals: Optional[List[str]] = None,
-        traversal_offsets: Optional[List[Tuple[float, float]]] = None
+        traversal_offsets: Optional[List[Tuple[float, float]]] = None,
+        traversal_ranges: Optional[List[Tuple[float, float]]] = None
     ) -> None:
         """
         Highlight the track if it is part of the current route.
         If traversed multiple times, draw separate offset lines.
         traversal_offsets: List of (start_offset, end_offset) for each traversal.
+        traversal_ranges: List of (start_pct, end_pct) for each traversal (0.0 to 1.0).
         """
         self._route_overlay.setVisible(enabled)
         
@@ -317,8 +352,6 @@ class TrackItem(QGraphicsPathItem):
         for i, direction in enumerate(traversals):
             if traversal_offsets and i < len(traversal_offsets):
                 s_off, e_off = traversal_offsets[i]
-                # If backward, the traversal goes from target (pts[-1]) to source (pts[0]).
-                # _create_offset_path expects (offset_at_pts[0], offset_at_pts[-1]).
                 if direction == "backward":
                     s_off, e_off = e_off, s_off
             else:
@@ -336,7 +369,8 @@ class TrackItem(QGraphicsPathItem):
                         s_off = e_off = -spacing / 2.0 + (bwd_idx - (bwd_count - 1) / 2.0) * (spacing / 2.0)
                     bwd_idx += 1
 
-            off_path = self._create_offset_path(pts, s_off, e_off)
+            rng = traversal_ranges[i] if (traversal_ranges and i < len(traversal_ranges)) else (0.0, 1.0)
+            off_path = self._create_offset_path(pts, s_off, e_off, range_pct=rng)
             composite_path.addPath(off_path)
             
             # Arrows for this specific line
@@ -346,13 +380,11 @@ class TrackItem(QGraphicsPathItem):
                 for p in percents:
                     pos = off_path.pointAtPercent(p)
                     angle = off_path.angleAtPercent(p)
-                    if direction == "backward":
-                        angle += 180
                     self._create_arrow(pos, angle, color)
 
         self._route_overlay.setPath(composite_path)
 
-    def _create_offset_path(self, pts: List[QPointF], start_offset: float, end_offset: float) -> QPainterPath:
+    def _create_offset_path(self, pts: List[QPointF], start_offset: float, end_offset: float, range_pct: Tuple[float, float] = (0.0, 1.0)) -> QPainterPath:
         if not pts:
             return QPainterPath()
         
@@ -385,10 +417,20 @@ class TrackItem(QGraphicsPathItem):
 
         new_pts = []
         curr_len = 0.0
+        s_pct, e_pct = range_pct
         for i in range(len(pts)):
+            p = curr_len / total_len if total_len > 1e-6 else 0.0
+            
+            # Check if this point is within the range
+            if p < s_pct - 1e-6 or p > e_pct + 1e-6:
+                # We need to handle points at the boundary to avoid gaps
+                # But for now let's just collect all and trim the path later if needed,
+                # or just use pointAtPercent on the final path.
+                # Actually, better to interpolate here.
+                pass
+
             # Interpolate offset
             if total_len > 1e-6:
-                p = curr_len / total_len
                 # Cubic interpolation for a "branching" look
                 if start_offset == 0 and end_offset != 0:
                     t = p * p * p # Branches out late
@@ -431,9 +473,28 @@ class TrackItem(QGraphicsPathItem):
             if i < len(segment_lengths):
                 curr_len += segment_lengths[i]
 
-        res = QPainterPath(new_pts[0])
+        res_full = QPainterPath(new_pts[0])
         for pt in new_pts[1:]:
-            res.lineTo(pt)
+            res_full.lineTo(pt)
+            
+        if s_pct == 0.0 and e_pct == 1.0:
+            return res_full
+            
+        # Create a partial path
+        res = QPainterPath()
+        if total_len < 1e-6: return res
+        
+        # Approximate partial path by sampling
+        steps = 100
+        first = True
+        for step in range(steps + 1):
+            p = s_pct + (e_pct - s_pct) * (step / steps)
+            pt = res_full.pointAtPercent(p)
+            if first:
+                res.moveTo(pt)
+                first = False
+            else:
+                res.lineTo(pt)
         return res
 
     def _create_arrow(self, pos: QPointF, angle_deg: float, color: QColor) -> None:

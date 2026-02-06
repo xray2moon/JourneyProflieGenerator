@@ -82,7 +82,7 @@ class InfrastructureViewSceneMixin:
 
         self._scene.installEventFilter(self)
         self._restore_timing_point_markers()
-        self._update_route_highlights_ui()
+        self.update_route_highlights_ui()
 
     def _rebuild_schematic_scene(self) -> None:
         """
