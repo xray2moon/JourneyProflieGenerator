@@ -1,4 +1,5 @@
 from __future__ import annotations
+import copy
 from typing import List, Dict, Set, Optional
 from PyQt6.QtCore import QObject, pyqtSignal
 
@@ -106,3 +107,34 @@ class InfrastructureSelectionModel(QObject):
         self.startTpChanged.emit(None)
         self.endTpChanged.emit(None)
         self.waypointTpsChanged.emit([])
+
+    def snapshot_state(self) -> dict:
+        return {
+            "current_route": list(self._current_route),
+            "current_tracks": list(self._current_tracks),
+            "timing_constraints": copy.deepcopy(self._timing_constraints),
+            "visible_tp_tracks": set(self._visible_tp_tracks),
+            "selected_stopping_point_id": self._selected_stopping_point_id,
+            "start_tp_id": self._start_tp_id,
+            "end_tp_id": self._end_tp_id,
+            "waypoint_tp_ids": list(self._waypoint_tp_ids),
+        }
+
+    def restore_state(self, state: dict) -> None:
+        self._current_route = list(state.get("current_route", []))
+        self._current_tracks = list(state.get("current_tracks", []))
+        self._timing_constraints = copy.deepcopy(state.get("timing_constraints", {}))
+        self._visible_tp_tracks = set(state.get("visible_tp_tracks", set()))
+        self._selected_stopping_point_id = state.get("selected_stopping_point_id")
+        self._start_tp_id = state.get("start_tp_id")
+        self._end_tp_id = state.get("end_tp_id")
+        self._waypoint_tp_ids = list(state.get("waypoint_tp_ids", []))
+
+        self.routeChanged.emit(list(self._current_route))
+        self.tracksChanged.emit(list(self._current_tracks))
+        self.timingConstraintsChanged.emit(dict(self._timing_constraints))
+        self.visibleTpTracksChanged.emit(set(self._visible_tp_tracks))
+        self.selectedStoppingPointChanged.emit(self._selected_stopping_point_id or "")
+        self.startTpChanged.emit(self._start_tp_id)
+        self.endTpChanged.emit(self._end_tp_id)
+        self.waypointTpsChanged.emit(list(self._waypoint_tp_ids))

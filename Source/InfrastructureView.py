@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from PyQt6.QtCore import Qt, pyqtSignal, QTimer, QPointF
+from PyQt6.QtGui import QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
     QApplication,
     QWidget,
@@ -131,6 +132,9 @@ class InfrastructureView(QWidget):
 
         self._scene.selectionChanged.connect(self._on_selection_changed)
         self._update_legend_text()
+        self._undo_shortcut = QShortcut(QKeySequence.StandardKey.Undo, self)
+        self._undo_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
+        self._undo_shortcut.activated.connect(self.undo_last_change)
 
         if json_path:
             self.load_infrastructure(json_path)

@@ -15,8 +15,12 @@ from Source.infra_ui import TimingConstraintDialog
 
 
 class InfrastructureViewInteraction:
+    MAX_UNDO_STEPS = 100
+
     def __init__(self, view):
         self._view = view
+        self._undo_stack: List[dict] = []
+        self._restoring_undo = False
 
     def __getattr__(self, name):
         return getattr(self._view, name)
@@ -139,6 +143,7 @@ class InfrastructureViewInteraction:
 
                 if isinstance(item, TimingPointItem):
                     if event.button() == Qt.MouseButton.LeftButton:
+                        self._push_undo_snapshot()
                         self._extend_route_with_tp(item.tp.id)
                         return True
                     if event.button() == Qt.MouseButton.RightButton:
@@ -187,6 +192,7 @@ class InfrastructureViewInteraction:
         self.selectionChanged.emit(info)
 
     def clear_route(self) -> None:
+        self._push_undo_snapshot()
         selection = self._backend.selection
         selection.clear_selection()
         selection.set_visible_tp_tracks(set())
@@ -508,6 +514,10 @@ class InfrastructureViewInteraction:
             "arrivalTime": c["arrivalTime"],
             "departureTime": c["departureTime"],
         }
+        if existing == constraint:
+            return
+
+        self._push_undo_snapshot()
         selection.set_timing_constraint(tp_id, constraint)
 
         item = self._tp_items.get(tp_id)
@@ -520,7 +530,8 @@ class InfrastructureViewInteraction:
         selection = self._backend.selection
         if tp_id not in selection.timing_constraints:
             return
-        
+
+        self._push_undo_snapshot()
         track_id = selection.timing_constraints[tp_id]["trackId"]
         selection.set_timing_constraint(tp_id, None)
         
@@ -529,3 +540,24 @@ class InfrastructureViewInteraction:
             item.set_constraint_point_type(None)
             is_track_visible = track_id in selection.visible_tp_tracks
             self._apply_track_tp_visibility(track_id, is_track_visible)
+
+    def _push_undo_snapshot(self) -> None:
+        if self._restoring_undo:
+            return
+        selection = self._backend.selection
+        snapshot = selection.snapshot_state()
+        if self._undo_stack and self._undo_stack[-1] == snapshot:
+            return
+        self._undo_stack.append(snapshot)
+        if len(self._undo_stack) > self.MAX_UNDO_STEPS:
+            self._undo_stack.pop(0)
+
+    def undo_last_change(self) -> None:
+        if not self._undo_stack:
+            return
+        previous_state = self._undo_stack.pop()
+        self._restoring_undo = True
+        try:
+            self._backend.selection.restore_state(previous_state)
+        finally:
+            self._restoring_undo = False
