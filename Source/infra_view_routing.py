@@ -348,6 +348,98 @@ class InfrastructureViewRouting:
                 return route_nodes[i + 1], route_tracks[i]
         return None
 
+    def _find_unprotected_node_uturn(
+        self,
+        route_nodes: List[str],
+        route_tracks: List[str],
+        *,
+        protected_tp_ids: set[int],
+    ) -> Optional[Tuple[str, str]]:
+        """
+        Like _find_node_uturn, but ignores U-turns on tracks that already have at least
+        one suitable selected TP (used as a reversal protection marker).
+        """
+        model = self._backend.model
+        protected_tracks: set[str] = set()
+        for tp_id in protected_tp_ids:
+            tp = model.timing_points.get(tp_id)
+            if tp is None:
+                continue
+            tr = model.tracks.get(tp.track_id)
+            if tr is None:
+                continue
+            if self._is_tp_suitable_reversal_point(tp, tr):
+                protected_tracks.add(tp.track_id)
+
+        if len(route_tracks) < 2 or len(route_nodes) < 3:
+            return None
+        for i in range(len(route_tracks) - 2, -1, -1):
+            if route_tracks[i] != route_tracks[i + 1]:
+                continue
+            if route_tracks[i] in protected_tracks:
+                continue
+            if i + 2 >= len(route_nodes):
+                continue
+            if route_nodes[i] == route_nodes[i + 2]:
+                return route_nodes[i + 1], route_tracks[i]
+        return None
+
+    def _resolve_remaining_uturns_after_replay(
+        self,
+        *,
+        start_tp_id: int,
+        ordered_targets: List[int],
+        base_route_len: int,
+        base_track_len: int,
+        final_goal_tp_id: int,
+    ) -> bool:
+        """
+        Replay inserted one reversal TP, but the newly-built extension can still contain
+        one more unprotected node U-turn later in the segment. Try one extra insertion
+        to avoid over-inserting unrelated reversal points.
+        """
+        selection = self._backend.selection
+        ext_nodes = (
+            selection.current_route[base_route_len - 1 :]
+            if base_route_len > 0
+            else list(selection.current_route)
+        )
+        ext_tracks = selection.current_tracks[base_track_len:]
+        protected_tp_ids = set(ordered_targets) | {start_tp_id}
+        uturn = self._find_unprotected_node_uturn(
+            ext_nodes,
+            ext_tracks,
+            protected_tp_ids=protected_tp_ids,
+        )
+        if uturn is None:
+            return True
+
+        turn_node, incoming_track = uturn
+        excluded_tp_ids = set(ordered_targets) | {start_tp_id}
+        reversal_tp_id = self._find_nearest_reversal_tp_after_node(
+            turn_node,
+            incoming_track_id=incoming_track,
+            goal_tp_id=final_goal_tp_id,
+            excluded_tp_ids=excluded_tp_ids,
+        )
+        if reversal_tp_id is None:
+            print(
+                f"DEBUG: remaining U-turn at node {turn_node} has no suitable reversal TP",
+                flush=True,
+            )
+            return True
+
+        print(
+            f"DEBUG: inserting additional reversal TP {reversal_tp_id} before TP {final_goal_tp_id} (turn node {turn_node})",
+            flush=True,
+        )
+        insert_at = len(ordered_targets) - 1 if ordered_targets else 0
+        ordered_targets.insert(insert_at, reversal_tp_id)
+        if not self._replay_tp_sequence(start_tp_id, ordered_targets):
+            return False
+        self._mark_tp_as_stop_constraint(reversal_tp_id)
+        return True
+
     def _entry_transition_ok(
         self,
         entry_node_id: str,
@@ -546,9 +638,17 @@ class InfrastructureViewRouting:
                         f"DEBUG: inserting reversal TP {reversal_tp_id} before TP {tp_id} (turn node {turn_node})",
                         flush=True,
                     )
-                    if self._replay_tp_sequence(start_tp_id, [reversal_tp_id, tp_id]):
+                    replay_targets = [reversal_tp_id, tp_id]
+                    if self._replay_tp_sequence(start_tp_id, replay_targets):
                         self._mark_tp_as_stop_constraint(reversal_tp_id)
-                        return
+                        if self._resolve_remaining_uturns_after_replay(
+                            start_tp_id=start_tp_id,
+                            ordered_targets=replay_targets,
+                            base_route_len=0,
+                            base_track_len=0,
+                            final_goal_tp_id=tp_id,
+                        ):
+                            return
                 else:
                     print(
                         f"DEBUG: no suitable reversal TP found after node {turn_node}; keeping direct route",
@@ -653,7 +753,14 @@ class InfrastructureViewRouting:
                     ordered_targets.append(tp_id)
                     if self._replay_tp_sequence(start_tp_id, ordered_targets):
                         self._mark_tp_as_stop_constraint(reversal_tp_id)
-                        return
+                        if self._resolve_remaining_uturns_after_replay(
+                            start_tp_id=start_tp_id,
+                            ordered_targets=ordered_targets,
+                            base_route_len=len(current_route),
+                            base_track_len=len(current_tracks),
+                            final_goal_tp_id=tp_id,
+                        ):
+                            return
                 else:
                     print(
                         f"DEBUG: no suitable reversal TP found after node {turn_node}; keeping direct route",
