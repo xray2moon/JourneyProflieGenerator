@@ -142,12 +142,10 @@ class InfrastructureViewInteraction:
                         self._extend_route_with_tp(item.tp.id)
                         return True
                     if event.button() == Qt.MouseButton.RightButton:
-                        # Keep plain right-click focused on routing flow.
-                        # Use Shift+RightClick for STOP/PASS constraint editing.
                         if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
                             self._edit_timing_constraint(item.tp.id)
                         else:
-                            self._extend_route_with_tp(item.tp.id)
+                            item.setSelected(False)
                         return True
 
                 if isinstance(item, StoppingLocationItem):

@@ -127,7 +127,8 @@ class InfrastructureViewRouting:
         Find the nearest TP where we can reverse safely after passing node_id.
         Priority:
         1) A suitable TP on the turn segment itself (incoming_track_id), measured away from node_id.
-        2) Otherwise nearest suitable TP reachable in the network.
+        2) If no suitable TP exists on the turn segment, do not fallback to another track.
+           A fallback on a different track can mislabel unrelated points as reversal stops.
         """
         model = self._backend.model
         if node_id not in model.nodes:
@@ -147,7 +148,8 @@ class InfrastructureViewRouting:
         if not tps_by_track:
             return None
 
-        # Prefer a TP on the turn segment itself; only if none exists continue searching.
+        # A reversal TP must be on the turn segment itself.
+        # Falling back to other tracks can produce misleading STOP markers.
         if incoming_track_id is not None:
             tr_in = model.tracks.get(incoming_track_id)
             if tr_in is not None:
@@ -170,6 +172,7 @@ class InfrastructureViewRouting:
                 if local_candidates:
                     local_candidates.sort(key=lambda x: (x[0], x[1], x[2]))
                     return local_candidates[0][2]
+            return None
 
         start_state = (node_id, incoming_track_id)
         pq: List[Tuple[float, str, Optional[str], bool]] = [(0.0, node_id, incoming_track_id, True)]
@@ -483,6 +486,37 @@ class InfrastructureViewRouting:
 
             e_tr = model.tracks.get(tp.track_id)
             if not e_tr: return
+
+            previous_end_tp = model.timing_points.get(previous_end_tp_id) if previous_end_tp_id is not None else None
+            can_continue_on_last_traversal = False
+            if (
+                previous_end_tp is not None
+                and previous_end_tp.track_id == tp.track_id
+                and current_tracks
+                and current_tracks[-1] == tp.track_id
+                and len(current_route) >= 2
+            ):
+                prev_pos = self._tp_position_from_source(previous_end_tp, e_tr)
+                next_pos = self._tp_position_from_source(tp, e_tr)
+                last_u = current_route[-2]
+                last_v = current_route[-1]
+                if last_u == e_tr.source and last_v == e_tr.target:
+                    can_continue_on_last_traversal = next_pos >= prev_pos
+                elif last_u == e_tr.target and last_v == e_tr.source:
+                    can_continue_on_last_traversal = next_pos <= prev_pos
+
+            if can_continue_on_last_traversal:
+                selection.set_end_tp(tp_id)
+                if not replay_mode:
+                    waypoint_tp_ids = [
+                        w for w in selection.waypoint_tp_ids
+                        if w not in {start_tp_id, tp_id}
+                    ]
+                    if previous_end_tp_id is not None and previous_end_tp_id not in {start_tp_id, tp_id}:
+                        if previous_end_tp_id not in waypoint_tp_ids:
+                            waypoint_tp_ids.append(previous_end_tp_id)
+                    selection.set_waypoint_tp_ids(waypoint_tp_ids)
+                return
             
             last_node = current_route[-1]
             last_track = current_tracks[-1] if current_tracks else None
