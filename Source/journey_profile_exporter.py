@@ -453,6 +453,21 @@ class JourneyProfileExporter:
             "status": "VALID",
             "dataId": f"FFFFFFF1.{datetime.now().strftime('%Y-%m-%d')}",
             "operatingDay": datetime.now().strftime("%Y-%m-%d"),
+            "generatorRouteSelection": {
+                "startTimingPointId": selection.start_tp_id,
+                "endTimingPointId": selection.end_tp_id,
+                "waypointTimingPointIds": list(selection.waypoint_tp_ids),
+            },
+            "generatorTimingConstraints": [
+                {
+                    "timingPointId": int(tp_id),
+                    "pointType": str(constraint.get("pointType", "STOP")),
+                    "arrivalTime": str(constraint.get("arrivalTime", "") or ""),
+                    "departureTime": str(constraint.get("departureTime", "") or ""),
+                }
+                for tp_id, constraint in sorted(selection.timing_constraints.items(), key=lambda x: int(x[0]))
+                if isinstance(constraint, dict)
+            ],
             "segmentProfileReferences": profile_segments
         }
         

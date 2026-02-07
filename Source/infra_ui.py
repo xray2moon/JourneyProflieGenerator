@@ -74,6 +74,7 @@ class TimingConstraintDialog(QDialog):
 
 class ParameterView(QWidget):
     infrastructureLoadRequested = pyqtSignal(str)
+    journeyProfileLoadRequested = pyqtSignal(str)
     parametersChanged = pyqtSignal(dict)
     journeyProfileGenerationRequested = pyqtSignal(str, dict)
 
@@ -101,6 +102,24 @@ class ParameterView(QWidget):
         infra_layout.setSpacing(10)
         infra_layout.addLayout(infra_path_row)
         infra_layout.addWidget(self._infra_status)
+
+        # Reverse routing loader (route/journey profile)
+        self._route_path = QLineEdit()
+        self._route_path.setPlaceholderText("Select a route/journey profile JSON file...")
+        self._route_browse = QPushButton("Browse")
+        self._route_load = QPushButton("Load Route")
+
+        route_path_row = QHBoxLayout()
+        route_path_row.setSpacing(8)
+        route_path_row.addWidget(self._route_path, 1)
+        route_path_row.addWidget(self._route_browse)
+        route_path_row.addWidget(self._route_load)
+
+        route_box = QGroupBox("Load Journey Profile / Route")
+        route_layout = QVBoxLayout(route_box)
+        route_layout.setContentsMargins(12, 20, 12, 12)
+        route_layout.setSpacing(10)
+        route_layout.addLayout(route_path_row)
 
         # Train and strategy parameters
         self._train_number = QLineEdit()
@@ -136,6 +155,7 @@ class ParameterView(QWidget):
         layout.setContentsMargins(16, 16, 16, 16)
         layout.setSpacing(16)
         layout.addWidget(infra_box)
+        layout.addWidget(route_box)
         layout.addWidget(params_box)
         layout.addWidget(self._generate_btn)
         layout.addStretch(1)
@@ -143,6 +163,8 @@ class ParameterView(QWidget):
 
         self._infra_browse.clicked.connect(self._browse_infra_json)
         self._infra_load.clicked.connect(self._request_load)
+        self._route_browse.clicked.connect(self._browse_route_json)
+        self._route_load.clicked.connect(self._request_route_load)
         self._generate_btn.clicked.connect(self._request_generation)
 
         self._train_number.textChanged.connect(self._emit_parameters_changed)
@@ -201,6 +223,26 @@ class ParameterView(QWidget):
             QMessageBox.information(self, "No file selected", "Please select an infrastructure JSON file.")
             return
         self.infrastructureLoadRequested.emit(path)
+
+    def _browse_route_json(self) -> None:
+        current = self._route_path.text().strip()
+        start_dir = str(Path(current).expanduser().parent) if current else ""
+        path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open route / journey profile JSON",
+            start_dir,
+            "JSON files (*.json);;All files (*)",
+        )
+        if not path:
+            return
+        self._route_path.setText(path)
+
+    def _request_route_load(self) -> None:
+        path = self._route_path.text().strip()
+        if not path:
+            QMessageBox.information(self, "No file selected", "Please select a route JSON file.")
+            return
+        self.journeyProfileLoadRequested.emit(path)
 
     def _request_generation(self) -> None:
         from datetime import datetime

@@ -463,7 +463,12 @@ class InfrastructureViewInteraction:
             elif tp_id == end_tp_id:
                 role = "end"
             item.set_route_role(role)
-            item.set_highlight(tp_id in waypoint_tp_ids)
+            is_waypoint = tp_id in waypoint_tp_ids
+            item.set_highlight(is_waypoint)
+            if role is not None or is_waypoint:
+                # Route-defining timing points must stay visible even if the track
+                # timing-point layer is currently hidden.
+                item.setVisible(True)
 
         self._update_route_status_labels()
 

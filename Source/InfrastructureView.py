@@ -31,6 +31,7 @@ from Source.modern_theme import get_stylesheet
 from Source.infra_backend import InfrastructureBackend
 from Source.infra_model_ui_connector import ModelUIConnector
 from Source.journey_profile_exporter import JourneyProfileExporter
+from Source.journey_profile_importer import JourneyProfileImporter
 
 class InfrastructureView(QWidget):
     routeChanged = pyqtSignal(list)
@@ -44,6 +45,7 @@ class InfrastructureView(QWidget):
         self._backend = InfrastructureBackend()
         self._connector = ModelUIConnector(self._backend, self)
         self._exporter = JourneyProfileExporter(self._backend)
+        self._importer = JourneyProfileImporter(self._backend)
 
         self._scene = QGraphicsScene(self)
         self._scene_builder = InfrastructureSceneBuilder(self._scene)
@@ -92,6 +94,7 @@ class InfrastructureView(QWidget):
         
         self._parameter_view = ParameterView(self)
         self._parameter_view.infrastructureLoadRequested.connect(self.load_infrastructure)
+        self._parameter_view.journeyProfileLoadRequested.connect(self._on_journey_profile_load_requested)
         self._parameter_view.parametersChanged.connect(self._on_parameters_changed)
         self._parameter_view.journeyProfileGenerationRequested.connect(self._on_journey_profile_generation_requested)
         self._tabs.addTab(self._parameter_view, "Parameter View")
@@ -218,6 +221,52 @@ class InfrastructureView(QWidget):
         except Exception as exc:
             from PyQt6.QtWidgets import QMessageBox
             QMessageBox.critical(self, "Generation failed", str(exc))
+
+    def _on_journey_profile_load_requested(self, file_path: str) -> None:
+        from PyQt6.QtWidgets import QMessageBox
+        model = self._backend.model
+        if not model.timing_points:
+            QMessageBox.warning(
+                self,
+                "No infrastructure loaded",
+                "Load an infrastructure first, then load the route JSON.",
+            )
+            return
+
+        try:
+            replay_tp_ids, selected_tp_ids, stop_constraints = self._importer.load_file(file_path)
+            if not replay_tp_ids:
+                raise ValueError("No matching timing points found for this infrastructure.")
+            if not selected_tp_ids:
+                raise ValueError("No selectable timing points found for this infrastructure.")
+
+            self._push_undo_snapshot()
+            start_tp_id = replay_tp_ids[0]
+            ordered_targets = replay_tp_ids[1:]
+            if not self._replay_tp_sequence(start_tp_id, ordered_targets):
+                raise ValueError("Could not reconstruct the route from the selected profile.")
+
+            selection = self._backend.selection
+            start_selected = selected_tp_ids[0]
+            end_selected = selected_tp_ids[-1]
+            waypoint_selected: List[int] = []
+            for tp_id in selected_tp_ids[1:-1]:
+                if tp_id not in waypoint_selected:
+                    waypoint_selected.append(tp_id)
+            selection.set_start_tp(start_selected)
+            selection.set_end_tp(end_selected)
+            selection.set_waypoint_tp_ids(waypoint_selected)
+
+            for tp_id in list(selection.timing_constraints.keys()):
+                selection.set_timing_constraint(tp_id, None)
+            for tp_id, constraint in stop_constraints.items():
+                selection.set_timing_constraint(tp_id, constraint)
+
+            self._tabs.setCurrentIndex(0)
+
+            QMessageBox.information(self, "Route loaded", f"Loaded route from:\n{file_path}")
+        except Exception as exc:
+            QMessageBox.critical(self, "Route load failed", str(exc))
 
     def export_state(self) -> dict:
         return self._exporter.export_to_dict(self._parameters)
