@@ -10,7 +10,6 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QTabWidget,
     QGraphicsScene,
-    QComboBox,
     QHBoxLayout,
     QPushButton,
     QLabel,
@@ -67,9 +66,6 @@ class InfrastructureView(QWidget):
         # Toolbar
         self._clear_route_btn = QPushButton("Clear route")
         self._clear_route_btn.clicked.connect(self.clear_route)
-        self._layout_combo = QComboBox()
-        self._layout_combo.addItems(["Geographic", "Schematic"])
-        self._layout_combo.currentTextChanged.connect(self._on_layout_mode_changed)
         
         self._route_start_label = QLabel("Start: -")
         self._route_end_label = QLabel("End: -")
@@ -78,9 +74,6 @@ class InfrastructureView(QWidget):
         toolbar.setContentsMargins(8, 4, 8, 4)
         toolbar.setSpacing(10)
         toolbar.addWidget(self._clear_route_btn)
-        toolbar.addSpacing(4)
-        toolbar.addWidget(QLabel("Layout:"))
-        toolbar.addWidget(self._layout_combo)
         toolbar.addStretch(1)
         toolbar.addWidget(self._route_start_label)
         toolbar.addSpacing(8)
@@ -107,9 +100,7 @@ class InfrastructureView(QWidget):
         self._settings_view.showAllTimingPointsChanged.connect(self._on_show_all_tp_changed)
         self._settings_view.keepSelectionChanged.connect(self._on_keep_selection_changed)
         self._settings_view.showLegendChanged.connect(self._on_show_legend_changed)
-        self._settings_view.defaultViewChanged.connect(self._on_default_view_changed)
         self._tabs.addTab(self._settings_view, "Settings")
-        self._tabs.addTab(QWidget(), "Confirm")
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(8, 8, 8, 8)
@@ -137,7 +128,6 @@ class InfrastructureView(QWidget):
         self._show_all_tp: bool = False
         self._keep_selection: bool = False
         self._show_legend: bool = True
-        self._default_view: str = "Geographic"
 
         self._scene.selectionChanged.connect(self._on_selection_changed)
         self._update_legend_text()

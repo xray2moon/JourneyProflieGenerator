@@ -35,21 +35,15 @@ class InfrastructureViewSettings:
                     self._host._show_all_tp = settings.get("show_all_tp", False)
                     self._host._keep_selection = settings.get("keep_selection", False)
                     self._host._show_legend = settings.get("show_legend", True)
-                    self._host._default_view = settings.get("default_view", "Geographic")
-                    if self._host._default_view not in {"Geographic", "Schematic"}:
-                        self._host._default_view = "Geographic"
                     
                     # Apply settings to UI
                     self._host._settings_view._theme_combo.setCurrentText(self._host._current_theme.capitalize())
                     self._host._settings_view._show_all_tp_check.setChecked(self._host._show_all_tp)
                     self._host._settings_view._keep_selection_check.setChecked(self._host._keep_selection)
                     self._host._settings_view._show_legend_check.setChecked(self._host._show_legend)
-                    self._host._settings_view._default_view_combo.setCurrentText(self._host._default_view)
                     
                     # Apply to view
                     self._on_theme_changed(self._host._current_theme)
-                    self._on_layout_mode_changed(self._host._default_view)
-                    self._host._layout_combo.setCurrentText(self._host._default_view)
                     self._on_show_legend_changed(self._host._show_legend)
             except Exception as e:
                 print(f"Failed to load settings: {e}")
@@ -60,7 +54,6 @@ class InfrastructureViewSettings:
             "show_all_tp": self._show_all_tp,
             "keep_selection": self._keep_selection,
             "show_legend": self._show_legend,
-            "default_view": self._default_view
         }
         try:
             with open("user_settings.json", "w") as f:
@@ -95,10 +88,6 @@ class InfrastructureViewSettings:
     def _on_show_legend_changed(self, enabled: bool) -> None:
         self._host._show_legend = enabled
         self._host._legend.setVisible(enabled)
-        self._save_settings()
-
-    def _on_default_view_changed(self, view_name: str) -> None:
-        self._host._default_view = view_name
         self._save_settings()
 
     def _update_legend_text(self) -> None:

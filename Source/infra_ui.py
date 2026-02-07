@@ -221,7 +221,6 @@ class SettingsView(QWidget):
     showAllTimingPointsChanged = pyqtSignal(bool)
     keepSelectionChanged = pyqtSignal(bool)
     showLegendChanged = pyqtSignal(bool)
-    defaultViewChanged = pyqtSignal(str)  # "Geographic", "Schematic"
 
     def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
@@ -241,10 +240,6 @@ class SettingsView(QWidget):
         self._show_legend_check.setChecked(True)
         self._show_legend_check.toggled.connect(self.showLegendChanged.emit)
 
-        self._default_view_combo = QComboBox()
-        self._default_view_combo.addItems(["Geographic", "Schematic"])
-        self._default_view_combo.currentTextChanged.connect(self.defaultViewChanged.emit)
-
         layout = QFormLayout()
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(15)
@@ -252,7 +247,6 @@ class SettingsView(QWidget):
         layout.addRow("", self._show_all_tp_check)
         layout.addRow("", self._keep_selection_check)
         layout.addRow("", self._show_legend_check)
-        layout.addRow("Default View", self._default_view_combo)
 
         # Add some stretch to push it to the top
         main_layout = QVBoxLayout(self)
