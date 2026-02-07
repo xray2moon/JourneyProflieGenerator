@@ -462,13 +462,25 @@ class InfrastructureViewInteraction:
                 role = "start"
             elif tp_id == end_tp_id:
                 role = "end"
-            item.set_route_role(role)
             is_waypoint = tp_id in waypoint_tp_ids
+            is_route_selected_tp = role is not None or is_waypoint
+
+            item.set_route_role(role)
             item.set_highlight(is_waypoint)
-            if role is not None or is_waypoint:
-                # Route-defining timing points must stay visible even if the track
-                # timing-point layer is currently hidden.
-                item.setVisible(True)
+
+            constraint = selection.timing_constraints.get(tp_id)
+            has_stop_constraint = bool(constraint and constraint.get("pointType") == "STOP")
+            is_track_visible = item.tp.track_id in selection.visible_tp_tracks
+
+            should_show = (
+                self._show_all_tp
+                or is_track_visible
+                or has_stop_constraint
+                or is_route_selected_tp
+            )
+            item.setVisible(should_show)
+            if not should_show:
+                item.setSelected(False)
 
         self._update_route_status_labels()
 
