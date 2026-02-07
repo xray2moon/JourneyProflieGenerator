@@ -46,314 +46,355 @@ class InfrastructureDescriptionGenerator:
         return self.default_output_dir() / f"infrastructure_{resolved_index}.json"
 
     def build(self, config: InfrastructureGenerationConfig | None = None) -> Dict[str, Any]:
-        cfg = config or InfrastructureGenerationConfig()
         build_seed = self._seed if self._seed is not None else str(uuid.uuid4())
         self._current_build_seed = build_seed
-        rng = random.Random(build_seed)
-        if cfg.main_node_count < 3:
-            raise ValueError("main_node_count must be >= 3")
-        if cfg.track_length_m <= 0:
-            raise ValueError("track_length_m must be > 0")
-        if cfg.timing_points_per_direction < 2:
-            raise ValueError("timing_points_per_direction must be >= 2")
+        try:
+            rng = random.Random(build_seed)
 
-        node_defs: List[Dict[str, Any]] = []
-        track_defs: List[Dict[str, Any]] = []
-        allocation_sections: List[Dict[str, Any]] = []
-        segment_profiles: List[Dict[str, Any]] = []
-        timing_points: List[Dict[str, Any]] = []
-        stopping_locations: List[Dict[str, Any]] = []
-        stopping_location_groups: List[Dict[str, Any]] = []
-        virtual_nodes: List[Dict[str, Any]] = []
-        virtual_tracks: List[Dict[str, Any]] = []
-        dps_groups: List[Dict[str, Any]] = []
+            if config is None:
+                profile = rng.choice(("compact", "corridor", "branching", "mesh"))
+                if profile == "compact":
+                    cfg = InfrastructureGenerationConfig(
+                        main_node_count=rng.randint(4, 6),
+                        track_length_m=rng.uniform(350.0, 700.0),
+                        timing_points_per_direction=rng.randint(3, 6),
+                        include_branch=rng.random() < 0.7,
+                        include_virtual_tracks=rng.random() < 0.5,
+                    )
+                elif profile == "corridor":
+                    cfg = InfrastructureGenerationConfig(
+                        main_node_count=rng.randint(7, 11),
+                        track_length_m=rng.uniform(900.0, 2200.0),
+                        timing_points_per_direction=rng.randint(4, 10),
+                        include_branch=rng.random() < 0.85,
+                        include_virtual_tracks=rng.random() < 0.8,
+                    )
+                elif profile == "branching":
+                    cfg = InfrastructureGenerationConfig(
+                        main_node_count=rng.randint(6, 10),
+                        track_length_m=rng.uniform(500.0, 1300.0),
+                        timing_points_per_direction=rng.randint(5, 12),
+                        include_branch=True,
+                        include_virtual_tracks=rng.random() < 0.75,
+                    )
+                else:
+                    cfg = InfrastructureGenerationConfig(
+                        main_node_count=rng.randint(8, 13),
+                        track_length_m=rng.uniform(450.0, 1200.0),
+                        timing_points_per_direction=rng.randint(4, 9),
+                        include_branch=True,
+                        include_virtual_tracks=rng.random() < 0.65,
+                    )
+            else:
+                cfg = config
 
-        numeric_id = 1
-        segment_profile_id = 1
-        timing_point_id = 1000
-        allocation_group_id = 1
+            if cfg.main_node_count < 3:
+                raise ValueError("main_node_count must be >= 3")
+            if cfg.track_length_m <= 0:
+                raise ValueError("track_length_m must be > 0")
+            if cfg.timing_points_per_direction < 2:
+                raise ValueError("timing_points_per_direction must be >= 2")
 
-        main_node_ids: List[str] = []
-        x_cursor = 0.0
-        for i in range(cfg.main_node_count):
-            node_id = self._uid("node", i)
-            main_node_ids.append(node_id)
-            x_cursor += cfg.track_length_m * rng.uniform(0.8, 1.25)
-            y = rng.uniform(-220.0, 220.0)
-            node_defs.append(
-                {
+            node_defs: List[Dict[str, Any]] = []
+            track_defs: List[Dict[str, Any]] = []
+            allocation_sections: List[Dict[str, Any]] = []
+            segment_profiles: List[Dict[str, Any]] = []
+            timing_points: List[Dict[str, Any]] = []
+            stopping_locations: List[Dict[str, Any]] = []
+            stopping_location_groups: List[Dict[str, Any]] = []
+            virtual_nodes: List[Dict[str, Any]] = []
+            virtual_tracks: List[Dict[str, Any]] = []
+            dps_groups: List[Dict[str, Any]] = []
+
+            numeric_id = 1
+            segment_profile_id = 1
+            timing_point_id = 1000
+            allocation_group_id = 1
+
+            node_by_id: Dict[str, Dict[str, Any]] = {}
+            edge_pairs: set[frozenset[str]] = set()
+            node_to_tracks: Dict[str, List[str]] = {}
+
+            def add_node(tag: str, x: float, y: float) -> str:
+                nonlocal numeric_id
+                node_id = self._uid("node", tag)
+                node = {
                     "id": node_id,
-                    "coordinate": {"x": round(float(x_cursor), 3), "y": round(float(y), 3)},
+                    "coordinate": {"x": round(float(x), 3), "y": round(float(y), 3)},
                     "numericId": numeric_id,
                 }
-            )
-            numeric_id += 1
+                numeric_id += 1
+                node_defs.append(node)
+                node_by_id[node_id] = node
+                return node_id
 
-        branch_node_id = None
-        if cfg.include_branch:
-            branch_node_id = self._uid("node", "branch")
-            branch_anchor = next(n for n in node_defs if n["id"] == main_node_ids[1])["coordinate"]
-            node_defs.append(
-                {
-                    "id": branch_node_id,
-                    "coordinate": {
-                        "x": round(float(branch_anchor["x"] + rng.uniform(-300.0, 300.0)), 3),
-                        "y": round(float(branch_anchor["y"] + rng.uniform(650.0, 1300.0)), 3),
-                    },
-                    "numericId": numeric_id,
-                }
-            )
-            numeric_id += 1
+            def add_track(source_id: str, target_id: str, tag: str, *, force_shape: bool = False) -> Optional[str]:
+                nonlocal numeric_id, segment_profile_id, timing_point_id, allocation_group_id
+                if source_id == target_id:
+                    return None
+                pair = frozenset((source_id, target_id))
+                if pair in edge_pairs:
+                    return None
+                edge_pairs.add(pair)
 
-        main_track_ids: List[str] = []
-        for i in range(cfg.main_node_count - 1):
-            tr_id = self._uid("track", i)
-            main_track_ids.append(tr_id)
-            length = max(120.0, cfg.track_length_m * rng.uniform(0.7, 1.35) + (i * 20.0))
-            source_id = main_node_ids[i]
-            target_id = main_node_ids[i + 1]
-            source_coord = next(n for n in node_defs if n["id"] == source_id)["coordinate"]
-            target_coord = next(n for n in node_defs if n["id"] == target_id)["coordinate"]
-            shaping_points: List[Dict[str, float]] = []
-            if rng.random() < 0.55:
-                mid_x = (float(source_coord["x"]) + float(target_coord["x"])) / 2.0
-                mid_y = (float(source_coord["y"]) + float(target_coord["y"])) / 2.0
-                shaping_points = [
+                tr_id = self._uid("track", tag)
+                source = node_by_id[source_id]["coordinate"]
+                target = node_by_id[target_id]["coordinate"]
+                euclidean = ((float(target["x"]) - float(source["x"])) ** 2 + (float(target["y"]) - float(source["y"])) ** 2) ** 0.5
+                length = max(90.0, euclidean * rng.uniform(0.95, 1.65))
+
+                shaping_points: List[Dict[str, float]] = []
+                shape_count = rng.choices((0, 1, 2), weights=(0.35, 0.45, 0.20))[0]
+                if force_shape and shape_count == 0:
+                    shape_count = 1
+                for i in range(shape_count):
+                    alpha = (i + 1) / float(shape_count + 1)
+                    x = (1.0 - alpha) * float(source["x"]) + alpha * float(target["x"]) + rng.uniform(-320.0, 320.0)
+                    y = (1.0 - alpha) * float(source["y"]) + alpha * float(target["y"]) + rng.uniform(-260.0, 260.0)
+                    shaping_points.append({"x": round(x, 3), "y": round(y, 3)})
+
+                track_defs.append(
                     {
-                        "x": round(mid_x + rng.uniform(-200.0, 200.0), 3),
-                        "y": round(mid_y + rng.uniform(-160.0, 160.0), 3),
+                        "id": tr_id,
+                        "sourceNodeId": source_id,
+                        "targetNodeId": target_id,
+                        "shapingPoints": shaping_points,
+                        "lengthMeter": round(float(length), 3),
+                        "numericId": numeric_id,
                     }
-                ]
+                )
+                numeric_id += 1
 
-            track_defs.append(
-                {
-                    "id": tr_id,
-                    "sourceNodeId": source_id,
-                    "targetNodeId": target_id,
-                    "shapingPoints": shaping_points,
-                    "lengthMeter": round(float(length), 3),
-                    "numericId": numeric_id,
+                node_to_tracks.setdefault(source_id, []).append(tr_id)
+                node_to_tracks.setdefault(target_id, []).append(tr_id)
+
+                allocation_sections.extend(
+                    [
+                        self._allocation_extent(tr_id, source_id, allocation_group_id, length),
+                        self._allocation_extent(tr_id, target_id, allocation_group_id + 1, length),
+                    ]
+                )
+                allocation_group_id += 2
+
+                forward_segment_id = segment_profile_id
+                segment_profiles.append(
+                    {
+                        "trackId": tr_id,
+                        "id": forward_segment_id,
+                        "targetNodeId": target_id,
+                        "distanceSegmentStartToTargetNodeInMeters": float(length),
+                        "distanceSegmentEndToTargetNodeInMeters": 0.0,
+                    }
+                )
+                segment_profile_id += 1
+
+                reverse_segment_id = segment_profile_id
+                segment_profiles.append(
+                    {
+                        "trackId": tr_id,
+                        "id": reverse_segment_id,
+                        "targetNodeId": source_id,
+                        "distanceSegmentStartToTargetNodeInMeters": float(length),
+                        "distanceSegmentEndToTargetNodeInMeters": 0.0,
+                    }
+                )
+                segment_profile_id += 1
+
+                tp_count = max(2, int(round(cfg.timing_points_per_direction * rng.uniform(0.55, 2.2))))
+                tp_entries, timing_point_id_local = self._timing_points_for_track(
+                    track_id=tr_id,
+                    source_node_id=source_id,
+                    target_node_id=target_id,
+                    length=length,
+                    count_per_direction=tp_count,
+                    tp_start_id=timing_point_id,
+                    forward_segment_profile_id=forward_segment_id,
+                    reverse_segment_profile_id=reverse_segment_id,
+                )
+                timing_points.extend(tp_entries)
+                timing_point_id = timing_point_id_local
+                return tr_id
+
+            # Main corridor.
+            main_node_ids: List[str] = []
+            x_cursor = 0.0
+            y_cursor = rng.uniform(-100.0, 100.0)
+            for i in range(cfg.main_node_count):
+                x_cursor += cfg.track_length_m * rng.uniform(0.65, 1.35)
+                y_cursor += rng.uniform(-300.0, 300.0)
+                main_node_ids.append(add_node(f"main-{i}", x_cursor, y_cursor))
+
+            main_track_ids: List[str] = []
+            for i in range(cfg.main_node_count - 1):
+                track_id = add_track(main_node_ids[i], main_node_ids[i + 1], f"main-{i}")
+                if track_id is not None:
+                    main_track_ids.append(track_id)
+
+            # Branches / spurs.
+            branch_node_ids: List[str] = []
+            branch_anchors: Dict[str, str] = {}
+            if cfg.include_branch:
+                max_branches = max(1, min(6, cfg.main_node_count // 2 + 1))
+                branch_count = rng.randint(1, max_branches)
+                for b in range(branch_count):
+                    anchor_idx = rng.randint(1, max(1, cfg.main_node_count - 2))
+                    anchor_id = main_node_ids[anchor_idx]
+                    anchor = node_by_id[anchor_id]["coordinate"]
+                    angle = rng.uniform(-2.8, 2.8)
+                    radius = cfg.track_length_m * rng.uniform(0.6, 1.8)
+                    bx = float(anchor["x"]) + radius * (1.0 if angle >= 0 else -1.0) * rng.uniform(0.3, 1.0)
+                    by = float(anchor["y"]) + radius * rng.uniform(0.35, 1.1) * (1.0 if b % 2 == 0 else -1.0)
+                    branch_node_id = add_node(f"branch-{b}", bx, by)
+                    branch_node_ids.append(branch_node_id)
+                    branch_anchors[branch_node_id] = anchor_id
+                    add_track(anchor_id, branch_node_id, f"branch-{b}", force_shape=True)
+
+            # Cross-links to introduce loops and shortcut paths.
+            cross_target = rng.randint(0, max(1, cfg.main_node_count // 2))
+            attempts = 0
+            cross_added = 0
+            while cross_added < cross_target and attempts < 30:
+                attempts += 1
+                i = rng.randint(0, cfg.main_node_count - 3)
+                j = rng.randint(i + 2, cfg.main_node_count - 1)
+                tr = add_track(main_node_ids[i], main_node_ids[j], f"cross-{i}-{j}-{cross_added}", force_shape=True)
+                if tr is not None:
+                    cross_added += 1
+
+            # Reconnect some branches back to corridor for different network styles.
+            if branch_node_ids and cfg.main_node_count >= 5:
+                loop_target = rng.randint(0, len(branch_node_ids))
+                loop_added = 0
+                attempts = 0
+                while loop_added < loop_target and attempts < 25:
+                    attempts += 1
+                    bnode = rng.choice(branch_node_ids)
+                    anchor_id = branch_anchors[bnode]
+                    target_main = rng.choice(main_node_ids)
+                    if target_main == anchor_id:
+                        continue
+                    tr = add_track(bnode, target_main, f"loop-{bnode}-{target_main}-{loop_added}", force_shape=True)
+                    if tr is not None:
+                        loop_added += 1
+
+            # Station-like stopping locations on a random subset of tracks.
+            if track_defs:
+                station_track_count = rng.randint(2, min(6, len(track_defs)))
+                chosen_tracks = rng.sample(track_defs, k=station_track_count)
+                for idx, tr in enumerate(chosen_tracks):
+                    station = self._station_stopping_locations(f"TestStation{idx}", tr)
+                    stopping_locations.extend(station["stopping_locations"])
+                    stopping_location_groups.append(station["group"])
+            self._attach_stopping_locations_to_timing_points(timing_points, stopping_locations)
+
+            # Add simple-point constraints on nodes with multiple incident tracks.
+            for node_id, incident_tracks in node_to_tracks.items():
+                unique_tracks = sorted(set(incident_tracks))
+                degree = len(unique_tracks)
+                if degree < 2:
+                    continue
+                if degree == 2 and rng.random() > 0.25:
+                    continue
+                if degree >= 3 and rng.random() > 0.9:
+                    continue
+                connections: List[Dict[str, str]] = []
+                for i in range(len(unique_tracks)):
+                    for j in range(i + 1, len(unique_tracks)):
+                        connections.append({"trackA": unique_tracks[i], "trackB": unique_tracks[j]})
+                if not connections:
+                    continue
+                node_by_id[node_id]["simplePoint"] = {
+                    "connections": connections,
+                    "switchDurationSecond": rng.randint(1, 3),
+                    "allocationGroupId": str(allocation_group_id),
                 }
-            )
-            numeric_id += 1
+                allocation_group_id += 1
 
-            allocation_sections.extend(
-                [
-                    self._allocation_extent(tr_id, source_id, allocation_group_id, length),
-                    self._allocation_extent(tr_id, target_id, allocation_group_id + 1, length),
-                ]
-            )
-            allocation_group_id += 2
-
-            forward_segment_id = segment_profile_id
-            segment_profiles.append(
-                {
-                    "trackId": tr_id,
-                    "id": forward_segment_id,
-                    "targetNodeId": target_id,
-                    "distanceSegmentStartToTargetNodeInMeters": float(length),
-                    "distanceSegmentEndToTargetNodeInMeters": 0.0,
-                }
-            )
-            segment_profile_id += 1
-
-            reverse_segment_id = segment_profile_id
-            segment_profiles.append(
-                {
-                    "trackId": tr_id,
-                    "id": reverse_segment_id,
-                    "targetNodeId": source_id,
-                    "distanceSegmentStartToTargetNodeInMeters": float(length),
-                    "distanceSegmentEndToTargetNodeInMeters": 0.0,
-                }
-            )
-            segment_profile_id += 1
-
-            tp_entries, timing_point_id = self._timing_points_for_track(
-                track_id=tr_id,
-                source_node_id=source_id,
-                target_node_id=target_id,
-                length=length,
-                count_per_direction=cfg.timing_points_per_direction,
-                tp_start_id=timing_point_id,
-                forward_segment_profile_id=forward_segment_id,
-                reverse_segment_profile_id=reverse_segment_id,
-            )
-            timing_points.extend(tp_entries)
-
-        if branch_node_id is not None:
-            branch_track_id = self._uid("track", "branch")
-            main_track_ids.append(branch_track_id)
-            branch_source = main_node_ids[1]
-            branch_target = branch_node_id
-            branch_length = max(200.0, cfg.track_length_m * rng.uniform(0.45, 0.95))
-            source_coord = next(n for n in node_defs if n["id"] == branch_source)["coordinate"]
-            target_coord = next(n for n in node_defs if n["id"] == branch_target)["coordinate"]
-            branch_mid_x = (float(source_coord["x"]) + float(target_coord["x"])) / 2.0
-            branch_mid_y = (float(source_coord["y"]) + float(target_coord["y"])) / 2.0
-            track_defs.append(
-                {
-                    "id": branch_track_id,
-                    "sourceNodeId": branch_source,
-                    "targetNodeId": branch_target,
-                    "shapingPoints": [
+            # Virtual ingress/egress tracks on randomly chosen endpoints.
+            if cfg.include_virtual_tracks:
+                portal_candidates = list(main_node_ids)
+                for bnode in branch_node_ids:
+                    if rng.random() < 0.5:
+                        portal_candidates.append(bnode)
+                portal_count = min(len(portal_candidates), rng.randint(2, 4))
+                for idx, endpoint in enumerate(rng.sample(portal_candidates, k=portal_count)):
+                    anchor = node_by_id[endpoint]["coordinate"]
+                    vnode_id = f"{endpoint}_virtual_track_virtual_node"
+                    vtrack_id = f"{endpoint}_virtual_track"
+                    virtual_nodes.append(
                         {
-                            "x": round(branch_mid_x + rng.uniform(-120.0, 120.0), 3),
-                            "y": round(branch_mid_y + rng.uniform(-100.0, 100.0), 3),
+                            "id": vnode_id,
+                            "coordinate": {
+                                "x": round(float(anchor["x"] + rng.uniform(-900.0, 900.0)), 3),
+                                "y": round(float(anchor["y"] + rng.uniform(-900.0, 900.0)), 3),
+                            },
+                            "numericId": numeric_id,
                         }
-                    ],
-                    "lengthMeter": round(float(branch_length), 3),
-                    "numericId": numeric_id,
-                }
-            )
-            numeric_id += 1
-
-            allocation_sections.extend(
-                [
-                    self._allocation_extent(branch_track_id, branch_source, allocation_group_id, branch_length),
-                    self._allocation_extent(branch_track_id, branch_target, allocation_group_id + 1, branch_length),
-                ]
-            )
-            allocation_group_id += 2
-
-            forward_segment_id = segment_profile_id
-            segment_profiles.append(
-                {
-                    "trackId": branch_track_id,
-                    "id": forward_segment_id,
-                    "targetNodeId": branch_target,
-                    "distanceSegmentStartToTargetNodeInMeters": float(branch_length),
-                    "distanceSegmentEndToTargetNodeInMeters": 0.0,
-                }
-            )
-            segment_profile_id += 1
-
-            reverse_segment_id = segment_profile_id
-            segment_profiles.append(
-                {
-                    "trackId": branch_track_id,
-                    "id": reverse_segment_id,
-                    "targetNodeId": branch_source,
-                    "distanceSegmentStartToTargetNodeInMeters": float(branch_length),
-                    "distanceSegmentEndToTargetNodeInMeters": 0.0,
-                }
-            )
-            segment_profile_id += 1
-
-            tp_entries, timing_point_id = self._timing_points_for_track(
-                track_id=branch_track_id,
-                source_node_id=branch_source,
-                target_node_id=branch_target,
-                length=branch_length,
-                count_per_direction=cfg.timing_points_per_direction,
-                tp_start_id=timing_point_id,
-                forward_segment_profile_id=forward_segment_id,
-                reverse_segment_profile_id=reverse_segment_id,
-            )
-            timing_points.extend(tp_entries)
-
-            # Add switch-like constraints on the branching node.
-            main_left = self._uid("track", 0)
-            main_right = self._uid("track", 1)
-            switch_node = next(n for n in node_defs if n["id"] == branch_source)
-            switch_node["simplePoint"] = {
-                "connections": [
-                    {"trackA": main_left, "trackB": main_right},
-                    {"trackA": main_left, "trackB": branch_track_id},
-                ],
-                "switchDurationSecond": 1,
-                "allocationGroupId": str(allocation_group_id),
-            }
-            allocation_group_id += 1
-
-        # Create a small station-like subset of stopping locations.
-        if main_track_ids:
-            first_track = next(t for t in track_defs if t["id"] == main_track_ids[0])
-            last_track = next(t for t in track_defs if t["id"] == main_track_ids[-1])
-
-            st1 = self._station_stopping_locations("TestStationA", first_track)
-            st2 = self._station_stopping_locations("TestStationB", last_track)
-            stopping_locations.extend(st1["stopping_locations"])
-            stopping_locations.extend(st2["stopping_locations"])
-            stopping_location_groups.append(st1["group"])
-            stopping_location_groups.append(st2["group"])
-
-        self._attach_stopping_locations_to_timing_points(timing_points, stopping_locations)
-
-        if cfg.include_virtual_tracks:
-            for i, endpoint in enumerate((main_node_ids[0], main_node_ids[-1])):
-                anchor = next(n for n in node_defs if n["id"] == endpoint)
-                vnode_id = f"{endpoint}_virtual_track_virtual_node"
-                vtrack_id = f"{endpoint}_virtual_track"
-
-                virtual_nodes.append(
-                    {
-                        "id": vnode_id,
-                        "coordinate": {
-                            "x": round(float(anchor["coordinate"]["x"] + (-400.0 if i == 0 else 400.0)), 3),
-                            "y": round(float(anchor["coordinate"]["y"] - 350.0 + rng.uniform(-80.0, 80.0)), 3),
-                        },
-                        "numericId": numeric_id,
-                    }
-                )
-                numeric_id += 1
-
-                virtual_tracks.append(
-                    {
-                        "id": vtrack_id,
-                        "sourceNodeId": vnode_id,
-                        "targetNodeId": endpoint,
-                        "shapingPoints": [],
-                        "lengthMeter": 10000.0,
-                        "numericId": numeric_id,
-                    }
-                )
-                numeric_id += 1
-
-        if track_defs:
-            first_track = track_defs[0]
-            dps_len = float(first_track["lengthMeter"])
-            start = round(min(max(5.0, dps_len * 0.05), max(5.0, dps_len * 0.25)), 3)
-            end = round(min(dps_len, start + max(10.0, dps_len * 0.08)), 3)
-            dps_groups.append(
-                {
-                    "id": self._uid("dps", 0),
-                    "protectedNodeIds": [first_track["sourceNodeId"]],
-                    "sections": [
+                    )
+                    numeric_id += 1
+                    virtual_tracks.append(
                         {
-                            "id": self._uid("dps-section", 0),
-                            "trackSections": [
+                            "id": vtrack_id,
+                            "sourceNodeId": vnode_id,
+                            "targetNodeId": endpoint,
+                            "shapingPoints": [],
+                            "lengthMeter": round(rng.uniform(7000.0, 18000.0), 3),
+                            "numericId": numeric_id,
+                        }
+                    )
+                    numeric_id += 1
+
+            # DPS groups on random tracks.
+            if track_defs:
+                dps_count = min(len(track_defs), rng.randint(1, 5))
+                for idx, tr in enumerate(rng.sample(track_defs, k=dps_count)):
+                    tr_len = float(tr["lengthMeter"])
+                    start = round(rng.uniform(0.0, max(1.0, tr_len * 0.45)), 3)
+                    span = rng.uniform(max(8.0, tr_len * 0.04), max(20.0, tr_len * 0.3))
+                    end = round(min(tr_len, start + span), 3)
+                    protected = [tr["sourceNodeId"]]
+                    if rng.random() < 0.45:
+                        protected.append(tr["targetNodeId"])
+                    dps_groups.append(
+                        {
+                            "id": self._uid("dps", idx),
+                            "protectedNodeIds": protected,
+                            "sections": [
                                 {
-                                    "trackId": first_track["id"],
-                                    "referenceNodeId": first_track["sourceNodeId"],
-                                    "coordinateStart": start,
-                                    "coordinateEnd": end,
+                                    "id": self._uid("dps-section", idx),
+                                    "trackSections": [
+                                        {
+                                            "trackId": tr["id"],
+                                            "referenceNodeId": tr["sourceNodeId"],
+                                            "coordinateStart": start,
+                                            "coordinateEnd": end,
+                                        }
+                                    ],
                                 }
                             ],
+                            "dependencyType": "DRIVE_PROTECTION_SECTION_GROUP_DEPENDENCY_EXCLUSIVE",
                         }
-                    ],
-                    "dependencyType": "DRIVE_PROTECTION_SECTION_GROUP_DEPENDENCY_EXCLUSIVE",
-                }
-            )
+                    )
 
-        result = {
-            "nodes": node_defs,
-            "tracks": track_defs,
-            "allocationSections": allocation_sections,
-            "platforms": [],
-            "stoppingLocations": stopping_locations,
-            "speedConstraints": [],
-            "stoppingLocationGroups": stopping_location_groups,
-            "segmentProfiles": segment_profiles,
-            "timingPoints": timing_points,
-            "virtualNodes": virtual_nodes,
-            "virtualTracks": virtual_tracks,
-            "blockSections": [],
-            "dpsGroups": dps_groups,
-        }
-        self._validate(result)
-        self._current_build_seed = None
-        return result
+            result = {
+                "nodes": node_defs,
+                "tracks": track_defs,
+                "allocationSections": allocation_sections,
+                "platforms": [],
+                "stoppingLocations": stopping_locations,
+                "speedConstraints": [],
+                "stoppingLocationGroups": stopping_location_groups,
+                "segmentProfiles": segment_profiles,
+                "timingPoints": timing_points,
+                "virtualNodes": virtual_nodes,
+                "virtualTracks": virtual_tracks,
+                "blockSections": [],
+                "dpsGroups": dps_groups,
+            }
+            self._validate(result)
+            return result
+        finally:
+            self._current_build_seed = None
 
     def write_json(
         self,
