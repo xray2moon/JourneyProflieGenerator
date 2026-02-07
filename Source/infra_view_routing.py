@@ -115,20 +115,71 @@ class InfrastructureViewRouting:
         clearance = min(pos, track.length_m - pos)
         return clearance >= self.MIN_REVERSAL_TP_CLEARANCE_M
 
+    def _can_reach_goal_tp_after_reversal(
+        self,
+        turn_node_id: str,
+        *,
+        incoming_track_id: Optional[str],
+        goal_tp_id: Optional[int],
+    ) -> bool:
+        """
+        Validate that, after returning to turn_node_id from a reversal TP, the route
+        can still continue to goal_tp_id while respecting point connections.
+        """
+        if goal_tp_id is None:
+            return True
+
+        model = self._backend.model
+        goal_tp = model.timing_points.get(goal_tp_id)
+        if goal_tp is None:
+            return False
+
+        e_tr = model.tracks.get(goal_tp.track_id)
+        if e_tr is None:
+            return False
+
+        g_v = goal_tp.target_node_id
+        g_u = e_tr.source if g_v == e_tr.target else e_tr.target
+
+        path_a_nodes, path_a_tracks, dist_a = self._shortest_path(
+            turn_node_id,
+            g_u,
+            start_incoming_track_id=incoming_track_id,
+        )
+        if (
+            dist_a != float("inf")
+            and self._entry_transition_ok(g_u, path_a_tracks, incoming_track_id, e_tr.id)
+            and path_a_nodes
+        ):
+            return True
+
+        path_b_nodes, path_b_tracks, dist_b = self._shortest_path(
+            turn_node_id,
+            g_v,
+            start_incoming_track_id=incoming_track_id,
+        )
+        return (
+            dist_b != float("inf")
+            and self._entry_transition_ok(g_v, path_b_tracks, incoming_track_id, e_tr.id)
+            and bool(path_b_nodes)
+        )
+
     def _find_nearest_reversal_tp_after_node(
         self,
         node_id: str,
         *,
         incoming_track_id: Optional[str],
+        goal_tp_id: Optional[int] = None,
         turn_anchor_node_id: Optional[str] = None,
         excluded_tp_ids: set[int],
     ) -> Optional[int]:
         """
         Find the nearest TP where we can reverse safely after passing node_id.
-        Priority:
-        1) A suitable TP on the turn segment itself (incoming_track_id), measured away from node_id.
-        2) If no suitable TP exists on the turn segment, do not fallback to another track.
-           A fallback on a different track can mislabel unrelated points as reversal stops.
+        Candidate constraints:
+        - TP clearance must be >= MIN_REVERSAL_TP_CLEARANCE_M from both segment ends.
+        - Candidate must be reachable from node_id with current incoming_track_id.
+        - Candidate path must depart node_id on a track different from incoming_track_id.
+        - Reversing at the candidate must still allow reaching goal_tp_id.
         """
         model = self._backend.model
         if node_id not in model.nodes:
@@ -148,41 +199,52 @@ class InfrastructureViewRouting:
         if not tps_by_track:
             return None
 
-        # A reversal TP must be on the turn segment itself.
-        # Falling back to other tracks can produce misleading STOP markers.
+        # Prefer reversal points on the turn segment first when they remain valid
+        # for reaching the requested goal TP.
         if incoming_track_id is not None:
             tr_in = model.tracks.get(incoming_track_id)
             if tr_in is not None:
                 anchor_node_id = node_id
                 if turn_anchor_node_id in {tr_in.source, tr_in.target}:
                     anchor_node_id = turn_anchor_node_id
-                local_candidates: List[Tuple[float, int, int]] = []
-                for tp in tps_by_track.get(incoming_track_id, []):
-                    pos = self._tp_position_from_source(tp, tr_in)
-                    if anchor_node_id == tr_in.source:
-                        dist_to_tp = pos
-                    elif anchor_node_id == tr_in.target:
-                        dist_to_tp = tr_in.length_m - pos
-                    else:
-                        continue
-                    if dist_to_tp < 0:
-                        continue
-                    prefer_anchor_facing = 0 if tp.target_node_id == anchor_node_id else 1
-                    local_candidates.append((dist_to_tp, prefer_anchor_facing, tp.id))
-                if local_candidates:
-                    local_candidates.sort(key=lambda x: (x[0], x[1], x[2]))
-                    return local_candidates[0][2]
-            return None
 
-        start_state = (node_id, incoming_track_id)
-        pq: List[Tuple[float, str, Optional[str], bool]] = [(0.0, node_id, incoming_track_id, True)]
-        dist: Dict[Tuple[str, Optional[str], bool], float] = {start_state + (True,): 0.0}
-        seen: set[Tuple[str, Optional[str], bool]] = set()
+                local_goal_ok = self._can_reach_goal_tp_after_reversal(
+                    node_id,
+                    incoming_track_id=incoming_track_id,
+                    goal_tp_id=goal_tp_id,
+                )
+                if local_goal_ok:
+                    local_candidates: List[Tuple[float, int, int]] = []
+                    for tp in tps_by_track.get(incoming_track_id, []):
+                        pos = self._tp_position_from_source(tp, tr_in)
+                        if anchor_node_id == tr_in.source:
+                            dist_to_tp = pos
+                        elif anchor_node_id == tr_in.target:
+                            dist_to_tp = tr_in.length_m - pos
+                        else:
+                            continue
+                        if dist_to_tp < 0 or dist_to_tp > tr_in.length_m:
+                            continue
+                        prefer_anchor_facing = 0 if tp.target_node_id == anchor_node_id else 1
+                        local_candidates.append((dist_to_tp, prefer_anchor_facing, tp.id))
+                    if local_candidates:
+                        local_candidates.sort(key=lambda x: (x[0], x[1], x[2]))
+                        return local_candidates[0][2]
+
+        # Explore outward from turn node and score TP distance along reachable track geometry.
+        # We keep first_departure_track_id so we can validate post-reversal reachability to goal.
+        start_state = (node_id, incoming_track_id, None)
+        pq: List[Tuple[float, str, Optional[str], Optional[str]]] = [
+            (0.0, node_id, incoming_track_id, None)
+        ]
+        dist: Dict[Tuple[str, Optional[str], Optional[str]], float] = {start_state: 0.0}
+        seen: set[Tuple[str, Optional[str], Optional[str]]] = set()
+        can_reach_goal_cache: Dict[Optional[str], bool] = {}
         best: Tuple[float, int] | None = None
 
         while pq:
-            d, u, incoming, first_step = heapq.heappop(pq)
-            state = (u, incoming, first_step)
+            d, u, incoming, first_departure_track_id = heapq.heappop(pq)
+            state = (u, incoming, first_departure_track_id)
             if state in seen:
                 continue
             seen.add(state)
@@ -195,6 +257,12 @@ class InfrastructureViewRouting:
                     continue
 
                 tr = model.tracks.get(track_id)
+                first_out_track_id = first_departure_track_id or track_id
+                if incoming_track_id is not None and first_out_track_id == incoming_track_id:
+                    # Prevent "reversal points" that still require turning on the same
+                    # segment at node_id.
+                    continue
+
                 if tr is not None:
                     for tp in tps_by_track.get(track_id, []):
                         pos = self._tp_position_from_source(tp, tr)
@@ -204,17 +272,29 @@ class InfrastructureViewRouting:
                             dist_to_tp = tr.length_m - pos
                         else:
                             continue
-                        if dist_to_tp < 0:
+                        if dist_to_tp < 0 or dist_to_tp > w:
                             continue
+
+                        can_reach_goal = can_reach_goal_cache.get(first_out_track_id)
+                        if can_reach_goal is None:
+                            can_reach_goal = self._can_reach_goal_tp_after_reversal(
+                                node_id,
+                                incoming_track_id=first_out_track_id,
+                                goal_tp_id=goal_tp_id,
+                            )
+                            can_reach_goal_cache[first_out_track_id] = can_reach_goal
+                        if not can_reach_goal:
+                            continue
+
                         cand = d + dist_to_tp
                         if best is None or cand < best[0]:
                             best = (cand, tp.id)
 
                 nd = d + w
-                nxt_state = (v, track_id, False)
+                nxt_state = (v, track_id, first_out_track_id)
                 if nd < dist.get(nxt_state, float("inf")):
                     dist[nxt_state] = nd
-                    heapq.heappush(pq, (nd, v, track_id, False))
+                    heapq.heappush(pq, (nd, v, track_id, first_out_track_id))
 
         return best[1] if best else None
 
@@ -457,6 +537,7 @@ class InfrastructureViewRouting:
                 reversal_tp_id = self._find_nearest_reversal_tp_after_node(
                     turn_node,
                     incoming_track_id=incoming_track,
+                    goal_tp_id=tp_id,
                     turn_anchor_node_id=tp.target_node_id,
                     excluded_tp_ids={tp_id, start_tp_id},
                 )
@@ -557,6 +638,7 @@ class InfrastructureViewRouting:
                 reversal_tp_id = self._find_nearest_reversal_tp_after_node(
                     turn_node,
                     incoming_track_id=incoming_track,
+                    goal_tp_id=tp_id,
                     turn_anchor_node_id=tp.target_node_id,
                     excluded_tp_ids={tp_id, start_tp_id, *(selection.waypoint_tp_ids or [])},
                 )
