@@ -150,7 +150,18 @@ class InfrastructureViewInteraction:
                         if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
                             self._edit_timing_constraint(item.tp.id)
                         else:
-                            item.setSelected(False)
+                            selection = self._backend.selection
+                            route_tp_ids = set(selection.waypoint_tp_ids)
+                            if selection.start_tp_id is not None:
+                                route_tp_ids.add(selection.start_tp_id)
+                            if selection.end_tp_id is not None:
+                                route_tp_ids.add(selection.end_tp_id)
+
+                            if item.tp.id in route_tp_ids:
+                                self._push_undo_snapshot()
+                                self._remove_tp_from_route(item.tp.id)
+                            else:
+                                item.setSelected(False)
                         return True
 
                 if isinstance(item, StoppingLocationItem):

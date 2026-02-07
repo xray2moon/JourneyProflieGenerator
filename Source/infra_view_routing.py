@@ -313,6 +313,69 @@ class InfrastructureViewRouting:
                 ordered.append(end_tp_id)
         return ordered
 
+    def _ordered_selected_tp_sequence(self) -> List[int]:
+        selection = self._backend.selection
+        ordered: List[int] = []
+        if selection.start_tp_id is not None:
+            ordered.append(selection.start_tp_id)
+        for tp_id in selection.waypoint_tp_ids:
+            if tp_id not in ordered:
+                ordered.append(tp_id)
+        if selection.end_tp_id is not None and selection.end_tp_id not in ordered:
+            ordered.append(selection.end_tp_id)
+        return ordered
+
+    def _is_auto_reversal_waypoint(self, tp_id: int) -> bool:
+        selection = self._backend.selection
+        constraint = selection.timing_constraints.get(tp_id)
+        if not constraint:
+            return False
+        return (
+            constraint.get("pointType") == "STOP"
+            and not constraint.get("arrivalTime")
+            and not constraint.get("departureTime")
+        )
+
+    def _ordered_user_selected_tp_sequence(self) -> List[int]:
+        selection = self._backend.selection
+        ordered: List[int] = []
+        if selection.start_tp_id is not None:
+            ordered.append(selection.start_tp_id)
+
+        for tp_id in selection.waypoint_tp_ids:
+            if self._is_auto_reversal_waypoint(tp_id):
+                continue
+            if tp_id not in ordered:
+                ordered.append(tp_id)
+
+        if selection.end_tp_id is not None and selection.end_tp_id not in ordered:
+            ordered.append(selection.end_tp_id)
+        return ordered
+
+    def _remove_tp_from_route(self, tp_id: int) -> bool:
+        selection = self._backend.selection
+        ordered_all = self._ordered_selected_tp_sequence()
+        if tp_id not in ordered_all:
+            return False
+
+        ordered_user = self._ordered_user_selected_tp_sequence()
+        if tp_id in ordered_user:
+            remaining = [tid for tid in ordered_user if tid != tp_id]
+        else:
+            # Removing an auto-inserted reversal TP: rebuild from explicit user picks.
+            remaining = list(ordered_user)
+
+        if not remaining:
+            selection.set_route([], [])
+            selection.set_start_tp(None)
+            selection.set_end_tp(None)
+            selection.set_waypoint_tp_ids([])
+            return True
+
+        new_start = remaining[0]
+        new_targets = remaining[1:]
+        return self._replay_tp_sequence(new_start, new_targets)
+
     def _mark_tp_as_stop_constraint(self, tp_id: int) -> None:
         model = self._backend.model
         selection = self._backend.selection
