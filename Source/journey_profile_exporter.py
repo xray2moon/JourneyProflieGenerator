@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Any, Optional
 from Source.infra_backend import InfrastructureBackend
-from Source.dynamics import TrainState, simulate_travel
+from Source.Dynamics import TrainState, simulate_travel
 from Source.infra_models import TimingPoint
 
 class JourneyProfileExporter:
