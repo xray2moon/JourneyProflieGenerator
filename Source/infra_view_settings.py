@@ -98,18 +98,18 @@ class InfrastructureViewSettings:
         track_color = ModernColors.TRACK_DEFAULT_D
 
         self._host._legend.setText(
-            "<b>Legende</b><br>"
-            f"<span style='color:{track_color}'>■</span> Gleis&nbsp;&nbsp;"
-            f"<span style='color:{ModernColors.TRACK_TP_VISIBLE}'>■</span> Gleis (TPs an)&nbsp;&nbsp;"
+            "<b>Legend</b><br>"
+            f"<span style='color:{track_color}'>■</span> Track&nbsp;&nbsp;"
+            f"<span style='color:{ModernColors.TRACK_TP_VISIBLE}'>■</span> Track (TPs shown)&nbsp;&nbsp;"
             f"<span style='color:{ModernColors.TRACK_ROUTE}'>■</span> Route<br>"
-            f"<span style='color:purple'>■</span> Mehrfache Durchfahrt&nbsp;&nbsp;"
+            f"<span style='color:purple'>■</span> Multiple pass-through&nbsp;&nbsp;"
             f"<span style='color:{ModernColors.TRACK_HOVER}'>■</span> Hover&nbsp;&nbsp;"
-            f"<span style='color:{ModernColors.NODE_DEFAULT}'>●</span> Bahnhof/Node<br>"
+            f"<span style='color:{ModernColors.NODE_DEFAULT}'>●</span> Station/Node<br>"
             f"<span style='color:{ModernColors.TP_DEFAULT}'>●</span> Timing point&nbsp;&nbsp;"
-            f"<span style='color:{ModernColors.SL_DEFAULT}'>●</span> Halt&nbsp;&nbsp;"
+            f"<span style='color:{ModernColors.SL_DEFAULT}'>●</span> Stop&nbsp;&nbsp;"
             f"<span style='color:{ModernColors.NODE_START}'>●</span> Start&nbsp;&nbsp;"
-            f"<span style='color:{ModernColors.NODE_END}'>●</span> Ende<br>"
-            f"<span style='color:{ModernColors.TRACK_ROUTE}'>▶</span> Fahrtrichtung"
+            f"<span style='color:{ModernColors.NODE_END}'>●</span> End<br>"
+            f"<span style='color:{ModernColors.TRACK_ROUTE}'>▶</span> Direction of travel"
         )
         self._position_overlay_widgets()
 
@@ -125,3 +125,4 @@ class InfrastructureViewSettings:
     # -----------
     # Interaction / event filter
     # -----------
+
