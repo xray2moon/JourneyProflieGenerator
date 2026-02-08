@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 '''
 For each list of acceleration_steps, the time interval is 0.1s, the values are the speed at each time in m/s. So the 
 acceleration of the train at each speed can be calculated.

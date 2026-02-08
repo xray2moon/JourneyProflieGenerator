@@ -1,0 +1,5519 @@
+{
+  "nodes": [
+    {
+      "id": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "coordinate": {
+        "x": 1516.331,
+        "y": 111.891
+      },
+      "numericId": 1
+    },
+    {
+      "id": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "coordinate": {
+        "x": 2345.982,
+        "y": 37.352
+      },
+      "numericId": 2,
+      "simplePoint": {
+        "connections": [
+          {
+            "trackA": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+            "trackB": "fa77c1f7-c5e5-5357-945f-6b850323ae53"
+          }
+        ],
+        "switchDurationSecond": 3,
+        "allocationGroupId": "35"
+      }
+    },
+    {
+      "id": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "coordinate": {
+        "x": 3810.634,
+        "y": -186.825
+      },
+      "numericId": 3
+    },
+    {
+      "id": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "coordinate": {
+        "x": 5005.533,
+        "y": -256.322
+      },
+      "numericId": 4
+    },
+    {
+      "id": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "coordinate": {
+        "x": 6085.945,
+        "y": -191.393
+      },
+      "numericId": 5,
+      "simplePoint": {
+        "connections": [
+          {
+            "trackA": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+            "trackB": "9eacc03f-44f8-53dd-aeae-25d3ce041109"
+          },
+          {
+            "trackA": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+            "trackB": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf"
+          },
+          {
+            "trackA": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+            "trackB": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf"
+          }
+        ],
+        "switchDurationSecond": 1,
+        "allocationGroupId": "36"
+      }
+    },
+    {
+      "id": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "coordinate": {
+        "x": 7566.625,
+        "y": -489.764
+      },
+      "numericId": 6,
+      "simplePoint": {
+        "connections": [
+          {
+            "trackA": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+            "trackB": "a9e71a00-b2e0-524a-bbb2-324329250ae8"
+          },
+          {
+            "trackA": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+            "trackB": "b659ac73-7ca9-5489-af00-05758fcace19"
+          },
+          {
+            "trackA": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+            "trackB": "d6193195-77d7-5238-a003-507f52edcd0f"
+          },
+          {
+            "trackA": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+            "trackB": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf"
+          },
+          {
+            "trackA": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+            "trackB": "b659ac73-7ca9-5489-af00-05758fcace19"
+          },
+          {
+            "trackA": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+            "trackB": "d6193195-77d7-5238-a003-507f52edcd0f"
+          },
+          {
+            "trackA": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+            "trackB": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf"
+          },
+          {
+            "trackA": "b659ac73-7ca9-5489-af00-05758fcace19",
+            "trackB": "d6193195-77d7-5238-a003-507f52edcd0f"
+          },
+          {
+            "trackA": "b659ac73-7ca9-5489-af00-05758fcace19",
+            "trackB": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf"
+          },
+          {
+            "trackA": "d6193195-77d7-5238-a003-507f52edcd0f",
+            "trackB": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf"
+          }
+        ],
+        "switchDurationSecond": 3,
+        "allocationGroupId": "37"
+      }
+    },
+    {
+      "id": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "coordinate": {
+        "x": 9010.232,
+        "y": -232.18
+      },
+      "numericId": 7,
+      "simplePoint": {
+        "connections": [
+          {
+            "trackA": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+            "trackB": "39c137f0-7d78-5ab3-b5b4-ad9874408499"
+          },
+          {
+            "trackA": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+            "trackB": "a9e71a00-b2e0-524a-bbb2-324329250ae8"
+          },
+          {
+            "trackA": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+            "trackB": "ca14f1fc-5780-59a9-84ed-21aacf32ec18"
+          },
+          {
+            "trackA": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+            "trackB": "a9e71a00-b2e0-524a-bbb2-324329250ae8"
+          },
+          {
+            "trackA": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+            "trackB": "ca14f1fc-5780-59a9-84ed-21aacf32ec18"
+          },
+          {
+            "trackA": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+            "trackB": "ca14f1fc-5780-59a9-84ed-21aacf32ec18"
+          }
+        ],
+        "switchDurationSecond": 2,
+        "allocationGroupId": "38"
+      }
+    },
+    {
+      "id": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "coordinate": {
+        "x": 10431.186,
+        "y": -28.841
+      },
+      "numericId": 8
+    },
+    {
+      "id": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "coordinate": {
+        "x": 11958.504,
+        "y": 90.699
+      },
+      "numericId": 9,
+      "simplePoint": {
+        "connections": [
+          {
+            "trackA": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+            "trackB": "1b59ba09-734e-5008-bc26-2fb61308f687"
+          },
+          {
+            "trackA": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+            "trackB": "39c137f0-7d78-5ab3-b5b4-ad9874408499"
+          },
+          {
+            "trackA": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+            "trackB": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf"
+          },
+          {
+            "trackA": "1b59ba09-734e-5008-bc26-2fb61308f687",
+            "trackB": "39c137f0-7d78-5ab3-b5b4-ad9874408499"
+          },
+          {
+            "trackA": "1b59ba09-734e-5008-bc26-2fb61308f687",
+            "trackB": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf"
+          },
+          {
+            "trackA": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+            "trackB": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf"
+          }
+        ],
+        "switchDurationSecond": 2,
+        "allocationGroupId": "39"
+      }
+    },
+    {
+      "id": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "coordinate": {
+        "x": 13118.195,
+        "y": 96.983
+      },
+      "numericId": 10,
+      "simplePoint": {
+        "connections": [
+          {
+            "trackA": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+            "trackB": "d54353f5-be74-55e4-ae6d-d26938f921de"
+          }
+        ],
+        "switchDurationSecond": 1,
+        "allocationGroupId": "40"
+      }
+    },
+    {
+      "id": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "coordinate": {
+        "x": 10950.269,
+        "y": 942.957
+      },
+      "numericId": 20
+    },
+    {
+      "id": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "coordinate": {
+        "x": 7499.37,
+        "y": -1516.177
+      },
+      "numericId": 22
+    },
+    {
+      "id": "f1d2740d-6d07-552a-8b20-9219a6bdbc9e",
+      "coordinate": {
+        "x": 6689.952,
+        "y": 528.507
+      },
+      "numericId": 24
+    },
+    {
+      "id": "7d3e068b-37f2-5d73-8b1e-4c36ef7f5ca4",
+      "coordinate": {
+        "x": 5409.951,
+        "y": -1099.132
+      },
+      "numericId": 26
+    }
+  ],
+  "tracks": [
+    {
+      "id": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "sourceNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "shapingPoints": [],
+      "lengthMeter": 1359.213,
+      "numericId": 11
+    },
+    {
+      "id": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "sourceNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "shapingPoints": [],
+      "lengthMeter": 1500.041,
+      "numericId": 12
+    },
+    {
+      "id": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "sourceNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "shapingPoints": [],
+      "lengthMeter": 1263.44,
+      "numericId": 13
+    },
+    {
+      "id": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "sourceNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "shapingPoints": [
+        {
+          "x": 5419.481,
+          "y": -221.707
+        }
+      ],
+      "lengthMeter": 1418.036,
+      "numericId": 14
+    },
+    {
+      "id": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "sourceNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "shapingPoints": [
+        {
+          "x": 6846.143,
+          "y": -409.52
+        },
+        {
+          "x": 6810.11,
+          "y": -218.387
+        }
+      ],
+      "lengthMeter": 1684.636,
+      "numericId": 15
+    },
+    {
+      "id": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "sourceNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "shapingPoints": [
+        {
+          "x": 8384.666,
+          "y": -188.268
+        }
+      ],
+      "lengthMeter": 2403.709,
+      "numericId": 16
+    },
+    {
+      "id": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "sourceNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "shapingPoints": [
+        {
+          "x": 9472.817,
+          "y": -135.48
+        }
+      ],
+      "lengthMeter": 2290.401,
+      "numericId": 17
+    },
+    {
+      "id": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "sourceNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "shapingPoints": [
+        {
+          "x": 11112.044,
+          "y": -238.964
+        },
+        {
+          "x": 11276.604,
+          "y": 29.794
+        }
+      ],
+      "lengthMeter": 1588.076,
+      "numericId": 18
+    },
+    {
+      "id": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "sourceNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "shapingPoints": [
+        {
+          "x": 12262.182,
+          "y": -34.186
+        }
+      ],
+      "lengthMeter": 1867.493,
+      "numericId": 19
+    },
+    {
+      "id": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "sourceNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "shapingPoints": [
+        {
+          "x": 11448.73,
+          "y": 192.006
+        },
+        {
+          "x": 11595.973,
+          "y": 812.063
+        }
+      ],
+      "lengthMeter": 2031.677,
+      "numericId": 21
+    },
+    {
+      "id": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "sourceNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "shapingPoints": [
+        {
+          "x": 8286.095,
+          "y": -809.706
+        }
+      ],
+      "lengthMeter": 3152.647,
+      "numericId": 23
+    },
+    {
+      "id": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "sourceNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "targetNodeId": "f1d2740d-6d07-552a-8b20-9219a6bdbc9e",
+      "shapingPoints": [
+        {
+          "x": 7345.138,
+          "y": -211.158
+        }
+      ],
+      "lengthMeter": 1430.631,
+      "numericId": 25
+    },
+    {
+      "id": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "sourceNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "targetNodeId": "7d3e068b-37f2-5d73-8b1e-4c36ef7f5ca4",
+      "shapingPoints": [
+        {
+          "x": 5431.965,
+          "y": -439.038
+        }
+      ],
+      "lengthMeter": 1375.882,
+      "numericId": 27
+    },
+    {
+      "id": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "sourceNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "shapingPoints": [
+        {
+          "x": 7099.474,
+          "y": 176.979
+        }
+      ],
+      "lengthMeter": 16730.127,
+      "numericId": 28
+    },
+    {
+      "id": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "sourceNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "shapingPoints": [
+        {
+          "x": 9177.749,
+          "y": -354.643
+        }
+      ],
+      "lengthMeter": 4246.244,
+      "numericId": 29
+    },
+    {
+      "id": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "sourceNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "shapingPoints": [
+        {
+          "x": 10273.273,
+          "y": -208.135
+        }
+      ],
+      "lengthMeter": 4883.751,
+      "numericId": 30
+    },
+    {
+      "id": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "sourceNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "shapingPoints": [
+        {
+          "x": 7367.525,
+          "y": -814.604
+        }
+      ],
+      "lengthMeter": 1358.615,
+      "numericId": 31
+    }
+  ],
+  "allocationSections": [
+    {
+      "extent": {
+        "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+        "referenceNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 1
+    },
+    {
+      "extent": {
+        "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+        "referenceNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 2
+    },
+    {
+      "extent": {
+        "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+        "referenceNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 3
+    },
+    {
+      "extent": {
+        "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+        "referenceNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 4
+    },
+    {
+      "extent": {
+        "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+        "referenceNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 5
+    },
+    {
+      "extent": {
+        "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+        "referenceNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 6
+    },
+    {
+      "extent": {
+        "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+        "referenceNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 7
+    },
+    {
+      "extent": {
+        "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+        "referenceNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 8
+    },
+    {
+      "extent": {
+        "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+        "referenceNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 9
+    },
+    {
+      "extent": {
+        "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+        "referenceNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 10
+    },
+    {
+      "extent": {
+        "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+        "referenceNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 11
+    },
+    {
+      "extent": {
+        "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+        "referenceNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 12
+    },
+    {
+      "extent": {
+        "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+        "referenceNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 13
+    },
+    {
+      "extent": {
+        "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+        "referenceNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 14
+    },
+    {
+      "extent": {
+        "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+        "referenceNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 15
+    },
+    {
+      "extent": {
+        "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+        "referenceNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 16
+    },
+    {
+      "extent": {
+        "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+        "referenceNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 17
+    },
+    {
+      "extent": {
+        "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+        "referenceNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 18
+    },
+    {
+      "extent": {
+        "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+        "referenceNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 19
+    },
+    {
+      "extent": {
+        "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+        "referenceNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 20
+    },
+    {
+      "extent": {
+        "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+        "referenceNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 21
+    },
+    {
+      "extent": {
+        "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+        "referenceNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 22
+    },
+    {
+      "extent": {
+        "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+        "referenceNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 23
+    },
+    {
+      "extent": {
+        "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+        "referenceNodeId": "f1d2740d-6d07-552a-8b20-9219a6bdbc9e",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 24
+    },
+    {
+      "extent": {
+        "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+        "referenceNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 25
+    },
+    {
+      "extent": {
+        "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+        "referenceNodeId": "7d3e068b-37f2-5d73-8b1e-4c36ef7f5ca4",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 26
+    },
+    {
+      "extent": {
+        "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+        "referenceNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 27
+    },
+    {
+      "extent": {
+        "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+        "referenceNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 28
+    },
+    {
+      "extent": {
+        "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+        "referenceNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 29
+    },
+    {
+      "extent": {
+        "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+        "referenceNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 30
+    },
+    {
+      "extent": {
+        "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+        "referenceNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 31
+    },
+    {
+      "extent": {
+        "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+        "referenceNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 32
+    },
+    {
+      "extent": {
+        "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+        "referenceNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 33
+    },
+    {
+      "extent": {
+        "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+        "referenceNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+        "distanceClose": 0.0,
+        "distanceFar": 60.0
+      },
+      "allocationGroupId": 34
+    }
+  ],
+  "platforms": [],
+  "stoppingLocations": [
+    {
+      "id": "362c2549-5a55-5d8c-9eb1-7464d858dac4-SL-A",
+      "targetDirectionNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "position": {
+        "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+        "referenceNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+        "distanceFromRefNode": 503.056
+      },
+      "platformId": ""
+    },
+    {
+      "id": "362c2549-5a55-5d8c-9eb1-7464d858dac4-SL-B",
+      "targetDirectionNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "position": {
+        "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+        "referenceNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+        "distanceFromRefNode": 1222.167
+      },
+      "platformId": ""
+    },
+    {
+      "id": "21b01042-9b51-5994-a14e-7985e2dba660-SL-A",
+      "targetDirectionNodeId": "7d3e068b-37f2-5d73-8b1e-4c36ef7f5ca4",
+      "position": {
+        "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+        "referenceNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+        "distanceFromRefNode": 261.47
+      },
+      "platformId": ""
+    },
+    {
+      "id": "21b01042-9b51-5994-a14e-7985e2dba660-SL-B",
+      "targetDirectionNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "position": {
+        "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+        "referenceNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+        "distanceFromRefNode": 1165.556
+      },
+      "platformId": ""
+    },
+    {
+      "id": "df931923-d1b8-505d-b604-c79c3cdc27d2-SL-A",
+      "targetDirectionNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "position": {
+        "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+        "referenceNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+        "distanceFromRefNode": 358.201
+      },
+      "platformId": ""
+    },
+    {
+      "id": "df931923-d1b8-505d-b604-c79c3cdc27d2-SL-B",
+      "targetDirectionNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "position": {
+        "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+        "referenceNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+        "distanceFromRefNode": 1006.151
+      },
+      "platformId": ""
+    },
+    {
+      "id": "1f1f7f9f-a9d7-5957-9072-c9edb1e6d35d-SL-A",
+      "targetDirectionNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "position": {
+        "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+        "referenceNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+        "distanceFromRefNode": 1136.329
+      },
+      "platformId": ""
+    },
+    {
+      "id": "1f1f7f9f-a9d7-5957-9072-c9edb1e6d35d-SL-B",
+      "targetDirectionNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "position": {
+        "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+        "referenceNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+        "distanceFromRefNode": 3010.797
+      },
+      "platformId": ""
+    }
+  ],
+  "speedConstraints": [],
+  "stoppingLocationGroups": [
+    {
+      "id": "TestStation0",
+      "stoppingLocations": [
+        {
+          "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+          "stoppingLocationId": "362c2549-5a55-5d8c-9eb1-7464d858dac4-SL-A"
+        },
+        {
+          "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+          "stoppingLocationId": "362c2549-5a55-5d8c-9eb1-7464d858dac4-SL-B"
+        }
+      ],
+      "borders": []
+    },
+    {
+      "id": "TestStation1",
+      "stoppingLocations": [
+        {
+          "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+          "stoppingLocationId": "21b01042-9b51-5994-a14e-7985e2dba660-SL-A"
+        },
+        {
+          "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+          "stoppingLocationId": "21b01042-9b51-5994-a14e-7985e2dba660-SL-B"
+        }
+      ],
+      "borders": []
+    },
+    {
+      "id": "TestStation2",
+      "stoppingLocations": [
+        {
+          "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+          "stoppingLocationId": "df931923-d1b8-505d-b604-c79c3cdc27d2-SL-A"
+        },
+        {
+          "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+          "stoppingLocationId": "df931923-d1b8-505d-b604-c79c3cdc27d2-SL-B"
+        }
+      ],
+      "borders": []
+    },
+    {
+      "id": "TestStation3",
+      "stoppingLocations": [
+        {
+          "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+          "stoppingLocationId": "1f1f7f9f-a9d7-5957-9072-c9edb1e6d35d-SL-A"
+        },
+        {
+          "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+          "stoppingLocationId": "1f1f7f9f-a9d7-5957-9072-c9edb1e6d35d-SL-B"
+        }
+      ],
+      "borders": []
+    }
+  ],
+  "segmentProfiles": [
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceSegmentStartToTargetNodeInMeters": 1359.2130024427522,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 2,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceSegmentStartToTargetNodeInMeters": 1359.2130024427522,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 3,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceSegmentStartToTargetNodeInMeters": 1500.0412385346904,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 4,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceSegmentStartToTargetNodeInMeters": 1500.0412385346904,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 5,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceSegmentStartToTargetNodeInMeters": 1263.4403408924838,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 6,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceSegmentStartToTargetNodeInMeters": 1263.4403408924838,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 7,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceSegmentStartToTargetNodeInMeters": 1418.0358777485267,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 8,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceSegmentStartToTargetNodeInMeters": 1418.0358777485267,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 9,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceSegmentStartToTargetNodeInMeters": 1684.6362313577877,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 10,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceSegmentStartToTargetNodeInMeters": 1684.6362313577877,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 11,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceSegmentStartToTargetNodeInMeters": 2403.7087514898312,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 12,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceSegmentStartToTargetNodeInMeters": 2403.7087514898312,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 13,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceSegmentStartToTargetNodeInMeters": 2290.4011454454962,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 14,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceSegmentStartToTargetNodeInMeters": 2290.4011454454962,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 15,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceSegmentStartToTargetNodeInMeters": 1588.076112571149,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 16,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceSegmentStartToTargetNodeInMeters": 1588.076112571149,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 17,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceSegmentStartToTargetNodeInMeters": 1867.4930983033385,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 18,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceSegmentStartToTargetNodeInMeters": 1867.4930983033385,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 19,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceSegmentStartToTargetNodeInMeters": 2031.6769021850268,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 20,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceSegmentStartToTargetNodeInMeters": 2031.6769021850268,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 21,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceSegmentStartToTargetNodeInMeters": 3152.646513492145,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 22,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceSegmentStartToTargetNodeInMeters": 3152.646513492145,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 23,
+      "targetNodeId": "f1d2740d-6d07-552a-8b20-9219a6bdbc9e",
+      "distanceSegmentStartToTargetNodeInMeters": 1430.6310992776596,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 24,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceSegmentStartToTargetNodeInMeters": 1430.6310992776596,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 25,
+      "targetNodeId": "7d3e068b-37f2-5d73-8b1e-4c36ef7f5ca4",
+      "distanceSegmentStartToTargetNodeInMeters": 1375.8822411801837,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 26,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceSegmentStartToTargetNodeInMeters": 1375.8822411801837,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 27,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceSegmentStartToTargetNodeInMeters": 16730.12713091929,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 28,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceSegmentStartToTargetNodeInMeters": 16730.12713091929,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 29,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceSegmentStartToTargetNodeInMeters": 4246.243899731901,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 30,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceSegmentStartToTargetNodeInMeters": 4246.243899731901,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 31,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceSegmentStartToTargetNodeInMeters": 4883.7514800556355,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 32,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceSegmentStartToTargetNodeInMeters": 4883.7514800556355,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 33,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceSegmentStartToTargetNodeInMeters": 1358.6154187768325,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 34,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceSegmentStartToTargetNodeInMeters": 1358.6154187768325,
+      "distanceSegmentEndToTargetNodeInMeters": 0.0
+    }
+  ],
+  "timingPoints": [
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1000,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 1165.684,
+      "stoppingLocationId": "df931923-d1b8-505d-b604-c79c3cdc27d2-SL-A",
+      "segmentProfileId": 1
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1001,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 1163.451,
+      "stoppingLocationId": "df931923-d1b8-505d-b604-c79c3cdc27d2-SL-B",
+      "segmentProfileId": 1
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1002,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 824.385,
+      "stoppingLocationId": "",
+      "segmentProfileId": 1
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1003,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 467.146,
+      "stoppingLocationId": "",
+      "segmentProfileId": 1
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1004,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 415.914,
+      "stoppingLocationId": "",
+      "segmentProfileId": 1
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1005,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 384.084,
+      "stoppingLocationId": "",
+      "segmentProfileId": 1
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1006,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 348.531,
+      "stoppingLocationId": "",
+      "segmentProfileId": 1
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1007,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 276.935,
+      "stoppingLocationId": "",
+      "segmentProfileId": 1
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1008,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 263.194,
+      "stoppingLocationId": "",
+      "segmentProfileId": 1
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1009,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 233.559,
+      "stoppingLocationId": "",
+      "segmentProfileId": 1
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1010,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 129.994,
+      "stoppingLocationId": "",
+      "segmentProfileId": 1
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1011,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 71.985,
+      "stoppingLocationId": "",
+      "segmentProfileId": 1
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1012,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 193.529,
+      "stoppingLocationId": "",
+      "segmentProfileId": 2
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1013,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 195.762,
+      "stoppingLocationId": "",
+      "segmentProfileId": 2
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1014,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 534.828,
+      "stoppingLocationId": "",
+      "segmentProfileId": 2
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1015,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 892.067,
+      "stoppingLocationId": "",
+      "segmentProfileId": 2
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1016,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 943.299,
+      "stoppingLocationId": "",
+      "segmentProfileId": 2
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1017,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 975.129,
+      "stoppingLocationId": "",
+      "segmentProfileId": 2
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1018,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 1010.682,
+      "stoppingLocationId": "",
+      "segmentProfileId": 2
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1019,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 1082.278,
+      "stoppingLocationId": "",
+      "segmentProfileId": 2
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1020,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 1096.019,
+      "stoppingLocationId": "",
+      "segmentProfileId": 2
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1021,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 1125.654,
+      "stoppingLocationId": "",
+      "segmentProfileId": 2
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1022,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 1229.219,
+      "stoppingLocationId": "",
+      "segmentProfileId": 2
+    },
+    {
+      "trackId": "fa77c1f7-c5e5-5357-945f-6b850323ae53",
+      "id": 1023,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 1287.228,
+      "stoppingLocationId": "",
+      "segmentProfileId": 2
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 1024,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 1408.542,
+      "stoppingLocationId": "",
+      "segmentProfileId": 3
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 1025,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 1107.275,
+      "stoppingLocationId": "",
+      "segmentProfileId": 3
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 1026,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 1038.272,
+      "stoppingLocationId": "",
+      "segmentProfileId": 3
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 1027,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 500.248,
+      "stoppingLocationId": "",
+      "segmentProfileId": 3
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 1028,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 485.826,
+      "stoppingLocationId": "",
+      "segmentProfileId": 3
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 1029,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 384.503,
+      "stoppingLocationId": "",
+      "segmentProfileId": 3
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 1030,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 283.395,
+      "stoppingLocationId": "",
+      "segmentProfileId": 3
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 1031,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 91.499,
+      "stoppingLocationId": "",
+      "segmentProfileId": 4
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 1032,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 392.766,
+      "stoppingLocationId": "",
+      "segmentProfileId": 4
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 1033,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 461.769,
+      "stoppingLocationId": "",
+      "segmentProfileId": 4
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 1034,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 999.793,
+      "stoppingLocationId": "",
+      "segmentProfileId": 4
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 1035,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 1014.215,
+      "stoppingLocationId": "",
+      "segmentProfileId": 4
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 1036,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 1115.538,
+      "stoppingLocationId": "",
+      "segmentProfileId": 4
+    },
+    {
+      "trackId": "9de1ab4d-0c7b-5dbb-81c2-fb9eba2a9f35",
+      "id": 1037,
+      "targetNodeId": "d40273d4-93cd-5838-b404-1e57605eaa6f",
+      "distanceToTargetNodeInMeters": 1216.646,
+      "stoppingLocationId": "",
+      "segmentProfileId": 4
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1038,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 1190.703,
+      "stoppingLocationId": "",
+      "segmentProfileId": 5
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1039,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 1187.971,
+      "stoppingLocationId": "",
+      "segmentProfileId": 5
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1040,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 1184.682,
+      "stoppingLocationId": "",
+      "segmentProfileId": 5
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1041,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 1031.651,
+      "stoppingLocationId": "",
+      "segmentProfileId": 5
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1042,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 1014.32,
+      "stoppingLocationId": "",
+      "segmentProfileId": 5
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1043,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 926.764,
+      "stoppingLocationId": "",
+      "segmentProfileId": 5
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1044,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 926.335,
+      "stoppingLocationId": "",
+      "segmentProfileId": 5
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1045,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 863.112,
+      "stoppingLocationId": "",
+      "segmentProfileId": 5
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1046,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 708.013,
+      "stoppingLocationId": "",
+      "segmentProfileId": 5
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1047,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 503.404,
+      "stoppingLocationId": "",
+      "segmentProfileId": 5
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1048,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 325.04,
+      "stoppingLocationId": "",
+      "segmentProfileId": 5
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1049,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 310.748,
+      "stoppingLocationId": "",
+      "segmentProfileId": 5
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1050,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 310.189,
+      "stoppingLocationId": "",
+      "segmentProfileId": 5
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1051,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 72.737,
+      "stoppingLocationId": "",
+      "segmentProfileId": 6
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1052,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 75.469,
+      "stoppingLocationId": "",
+      "segmentProfileId": 6
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1053,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 78.758,
+      "stoppingLocationId": "",
+      "segmentProfileId": 6
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1054,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 231.789,
+      "stoppingLocationId": "",
+      "segmentProfileId": 6
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1055,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 249.12,
+      "stoppingLocationId": "",
+      "segmentProfileId": 6
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1056,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 336.676,
+      "stoppingLocationId": "",
+      "segmentProfileId": 6
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1057,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 337.105,
+      "stoppingLocationId": "",
+      "segmentProfileId": 6
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1058,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 400.328,
+      "stoppingLocationId": "",
+      "segmentProfileId": 6
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1059,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 555.427,
+      "stoppingLocationId": "",
+      "segmentProfileId": 6
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1060,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 760.036,
+      "stoppingLocationId": "",
+      "segmentProfileId": 6
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1061,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 938.4,
+      "stoppingLocationId": "",
+      "segmentProfileId": 6
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1062,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 952.692,
+      "stoppingLocationId": "",
+      "segmentProfileId": 6
+    },
+    {
+      "trackId": "c8fc1b31-f729-5c70-82a8-dc0500284e97",
+      "id": 1063,
+      "targetNodeId": "aa6073ea-0e90-5afd-b639-02b80159b2bb",
+      "distanceToTargetNodeInMeters": 953.251,
+      "stoppingLocationId": "",
+      "segmentProfileId": 6
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1064,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 1244.891,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1065,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 1230.972,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1066,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 1031.064,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1067,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 995.702,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1068,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 901.526,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1069,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 891.522,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1070,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 830.396,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1071,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 741.561,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1072,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 722.33,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1073,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 674.789,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1074,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 613.868,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1075,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 570.155,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1076,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 518.397,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1077,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 476.769,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1078,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 473.246,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1079,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 383.879,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1080,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 367.371,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1081,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 124.365,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1082,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 110.355,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1083,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 94.355,
+      "stoppingLocationId": "",
+      "segmentProfileId": 7
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1084,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 173.145,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1085,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 187.064,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1086,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 386.972,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1087,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 422.334,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1088,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 516.51,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1089,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 526.514,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1090,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 587.64,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1091,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 676.475,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1092,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 695.706,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1093,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 743.247,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1094,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 804.168,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1095,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 847.881,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1096,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 899.639,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1097,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 941.267,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1098,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 944.79,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1099,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 1034.157,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1100,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 1050.665,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1101,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 1293.671,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1102,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 1307.681,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "69875dd5-44da-5238-a41a-1812f2fc4ebb",
+      "id": 1103,
+      "targetNodeId": "fbcdca33-4844-5123-b5fd-7ed850ec7c31",
+      "distanceToTargetNodeInMeters": 1323.681,
+      "stoppingLocationId": "",
+      "segmentProfileId": 8
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1104,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1527.113,
+      "stoppingLocationId": "362c2549-5a55-5d8c-9eb1-7464d858dac4-SL-A",
+      "segmentProfileId": 9
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1105,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1219.621,
+      "stoppingLocationId": "362c2549-5a55-5d8c-9eb1-7464d858dac4-SL-B",
+      "segmentProfileId": 9
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1106,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1174.782,
+      "stoppingLocationId": "",
+      "segmentProfileId": 9
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1107,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1127.211,
+      "stoppingLocationId": "",
+      "segmentProfileId": 9
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1108,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 819.149,
+      "stoppingLocationId": "",
+      "segmentProfileId": 9
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1109,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 459.851,
+      "stoppingLocationId": "",
+      "segmentProfileId": 9
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1110,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 414.47,
+      "stoppingLocationId": "",
+      "segmentProfileId": 9
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1111,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 413.018,
+      "stoppingLocationId": "",
+      "segmentProfileId": 9
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1112,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 402.965,
+      "stoppingLocationId": "",
+      "segmentProfileId": 9
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1113,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 362.638,
+      "stoppingLocationId": "",
+      "segmentProfileId": 9
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1114,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 320.554,
+      "stoppingLocationId": "",
+      "segmentProfileId": 9
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1115,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 157.523,
+      "stoppingLocationId": "",
+      "segmentProfileId": 10
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1116,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 465.015,
+      "stoppingLocationId": "",
+      "segmentProfileId": 10
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1117,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 509.854,
+      "stoppingLocationId": "",
+      "segmentProfileId": 10
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1118,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 557.425,
+      "stoppingLocationId": "",
+      "segmentProfileId": 10
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1119,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 865.487,
+      "stoppingLocationId": "",
+      "segmentProfileId": 10
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1120,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 1224.785,
+      "stoppingLocationId": "",
+      "segmentProfileId": 10
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1121,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 1270.166,
+      "stoppingLocationId": "",
+      "segmentProfileId": 10
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1122,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 1271.618,
+      "stoppingLocationId": "",
+      "segmentProfileId": 10
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1123,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 1281.671,
+      "stoppingLocationId": "",
+      "segmentProfileId": 10
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1124,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 1321.998,
+      "stoppingLocationId": "",
+      "segmentProfileId": 10
+    },
+    {
+      "trackId": "ecfb2aed-9596-5396-a9b6-89268cf5fdbf",
+      "id": 1125,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 1364.082,
+      "stoppingLocationId": "",
+      "segmentProfileId": 10
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1126,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2101.713,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1127,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2049.207,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1128,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2001.938,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1129,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1980.127,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1130,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1816.643,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1131,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1744.501,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1132,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1713.807,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1133,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1676.951,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1134,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1569.075,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1135,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1516.529,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1136,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1482.058,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1137,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1469.608,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1138,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1335.899,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1139,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1324.762,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1140,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1252.18,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1141,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1242.006,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1142,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1204.13,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1143,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1185.993,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1144,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1184.386,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1145,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1089.2,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1146,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 680.428,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1147,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 510.452,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1148,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 441.717,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1149,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 373.662,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1150,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 373.096,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1151,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 366.299,
+      "stoppingLocationId": "",
+      "segmentProfileId": 11
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1152,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 301.996,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1153,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 354.502,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1154,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 401.771,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1155,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 423.582,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1156,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 587.066,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1157,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 659.208,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1158,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 689.902,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1159,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 726.758,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1160,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 834.634,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1161,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 887.18,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1162,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 921.651,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1163,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 934.101,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1164,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1067.81,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1165,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1078.947,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1166,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1151.529,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1167,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1161.703,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1168,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1199.579,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1169,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1217.716,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1170,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1219.323,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1171,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1314.509,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1172,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1723.281,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1173,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1893.257,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1174,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1961.992,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1175,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 2030.047,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1176,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 2030.613,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "a9e71a00-b2e0-524a-bbb2-324329250ae8",
+      "id": 1177,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 2037.41,
+      "stoppingLocationId": "",
+      "segmentProfileId": 12
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1178,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 2156.399,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1179,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 2132.168,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1180,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 2011.856,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1181,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1844.468,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1182,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1826.586,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1183,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1774.037,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1184,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1726.268,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1185,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1719.826,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1186,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1592.844,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1187,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1412.295,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1188,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1217.31,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1189,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1045.378,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1190,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 710.805,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1191,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 686.334,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1192,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 659.044,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1193,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 402.368,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1194,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 386.342,
+      "stoppingLocationId": "",
+      "segmentProfileId": 13
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1195,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 134.002,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1196,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 158.233,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1197,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 278.545,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1198,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 445.933,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1199,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 463.815,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1200,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 516.364,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1201,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 564.133,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1202,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 570.575,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1203,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 697.557,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1204,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 878.106,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1205,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1073.091,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1206,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1245.023,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1207,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1579.596,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1208,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1604.067,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1209,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1631.357,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1210,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1888.033,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "1d7b2b59-687f-571d-a82c-1cf719c719cb",
+      "id": 1211,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1904.059,
+      "stoppingLocationId": "",
+      "segmentProfileId": 14
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1212,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1454.728,
+      "stoppingLocationId": "",
+      "segmentProfileId": 15
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1213,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1442.965,
+      "stoppingLocationId": "",
+      "segmentProfileId": 15
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1214,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1136.651,
+      "stoppingLocationId": "",
+      "segmentProfileId": 15
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1215,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1083.124,
+      "stoppingLocationId": "",
+      "segmentProfileId": 15
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1216,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 935.153,
+      "stoppingLocationId": "",
+      "segmentProfileId": 15
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1217,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 878.086,
+      "stoppingLocationId": "",
+      "segmentProfileId": 15
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1218,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 837.67,
+      "stoppingLocationId": "",
+      "segmentProfileId": 15
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1219,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 667.903,
+      "stoppingLocationId": "",
+      "segmentProfileId": 15
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1220,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 667.566,
+      "stoppingLocationId": "",
+      "segmentProfileId": 15
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1221,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 344.032,
+      "stoppingLocationId": "",
+      "segmentProfileId": 15
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1222,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 268.571,
+      "stoppingLocationId": "",
+      "segmentProfileId": 15
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1223,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 176.751,
+      "stoppingLocationId": "",
+      "segmentProfileId": 15
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1224,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 133.348,
+      "stoppingLocationId": "",
+      "segmentProfileId": 16
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1225,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 145.111,
+      "stoppingLocationId": "",
+      "segmentProfileId": 16
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1226,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 451.425,
+      "stoppingLocationId": "",
+      "segmentProfileId": 16
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1227,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 504.952,
+      "stoppingLocationId": "",
+      "segmentProfileId": 16
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1228,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 652.923,
+      "stoppingLocationId": "",
+      "segmentProfileId": 16
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1229,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 709.99,
+      "stoppingLocationId": "",
+      "segmentProfileId": 16
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1230,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 750.406,
+      "stoppingLocationId": "",
+      "segmentProfileId": 16
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1231,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 920.173,
+      "stoppingLocationId": "",
+      "segmentProfileId": 16
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1232,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 920.51,
+      "stoppingLocationId": "",
+      "segmentProfileId": 16
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1233,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1244.044,
+      "stoppingLocationId": "",
+      "segmentProfileId": 16
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1234,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1319.505,
+      "stoppingLocationId": "",
+      "segmentProfileId": 16
+    },
+    {
+      "trackId": "663df91e-0ce6-5d6e-bb3e-288ad5ccfbcf",
+      "id": 1235,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1411.325,
+      "stoppingLocationId": "",
+      "segmentProfileId": 16
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1236,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 1708.005,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1237,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 1693.195,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1238,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 1337.068,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1239,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 1313.162,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1240,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 1147.018,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1241,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 1025.751,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1242,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 1007.71,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1243,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 778.028,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1244,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 658.564,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1245,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 620.606,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1246,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 569.736,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1247,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 553.256,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1248,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 454.93,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1249,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 255.79,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1250,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 178.399,
+      "stoppingLocationId": "",
+      "segmentProfileId": 17
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1251,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 159.488,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1252,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 174.298,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1253,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 530.425,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1254,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 554.331,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1255,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 720.475,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1256,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 841.742,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1257,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 859.783,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1258,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1089.465,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1259,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1208.929,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1260,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1246.887,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1261,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1297.757,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1262,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1314.237,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1263,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1412.563,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1264,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1611.703,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "0eb460f8-94a5-5fee-b2e4-0af5abafe4bc",
+      "id": 1265,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1689.094,
+      "stoppingLocationId": "",
+      "segmentProfileId": 18
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1266,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 1815.706,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1267,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 1756.781,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1268,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 1726.55,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1269,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 1711.523,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1270,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 1665.518,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1271,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 1663.005,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1272,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 1476.284,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1273,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 1130.035,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1274,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 1067.697,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1275,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 981.624,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1276,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 866.313,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1277,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 772.614,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1278,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 695.408,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1279,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 679.281,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1280,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 576.681,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1281,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 357.862,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1282,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 332.391,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1283,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 287.093,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1284,
+      "targetNodeId": "e8068f73-4ca0-5fc4-9f7b-87e966e9f4ff",
+      "distanceToTargetNodeInMeters": 116.47,
+      "stoppingLocationId": "",
+      "segmentProfileId": 19
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1285,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 215.971,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1286,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 274.896,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1287,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 305.127,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1288,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 320.154,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1289,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 366.159,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1290,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 368.672,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1291,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 555.393,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1292,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 901.642,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1293,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 963.98,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1294,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1050.053,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1295,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1165.364,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1296,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1259.063,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1297,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1336.269,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1298,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1352.396,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1299,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1454.996,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1300,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1673.815,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1301,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1699.286,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1302,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1744.584,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "1b59ba09-734e-5008-bc26-2fb61308f687",
+      "id": 1303,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1915.207,
+      "stoppingLocationId": "",
+      "segmentProfileId": 20
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1304,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 2985.309,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1305,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 2818.428,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1306,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 2400.679,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1307,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1974.708,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1308,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1944.468,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1309,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1935.98,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1310,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1752.949,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1311,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1733.046,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1312,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1661.827,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1313,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1658.036,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1314,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1628.413,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1315,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1620.023,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1316,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1429.218,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1317,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1365.915,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1318,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1320.982,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1319,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1128.92,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1320,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1040.404,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1321,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 844.772,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1322,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 796.367,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1323,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 763.965,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1324,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 615.847,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1325,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 324.251,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1326,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 229.488,
+      "stoppingLocationId": "",
+      "segmentProfileId": 21
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1327,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 167.338,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1328,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 334.219,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1329,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 751.968,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1330,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1177.939,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1331,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1208.179,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1332,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1216.667,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1333,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1399.698,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1334,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1419.601,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1335,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1490.82,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1336,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1494.611,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1337,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1524.234,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1338,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1532.624,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1339,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1723.429,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1340,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1786.732,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1341,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1831.665,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1342,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2023.727,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1343,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2112.243,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1344,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2307.875,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1345,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2356.28,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1346,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2388.682,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1347,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2536.8,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1348,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2828.396,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+      "id": 1349,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2923.159,
+      "stoppingLocationId": "",
+      "segmentProfileId": 22
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1350,
+      "targetNodeId": "f1d2740d-6d07-552a-8b20-9219a6bdbc9e",
+      "distanceToTargetNodeInMeters": 927.962,
+      "stoppingLocationId": "",
+      "segmentProfileId": 23
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1351,
+      "targetNodeId": "f1d2740d-6d07-552a-8b20-9219a6bdbc9e",
+      "distanceToTargetNodeInMeters": 918.853,
+      "stoppingLocationId": "",
+      "segmentProfileId": 23
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1352,
+      "targetNodeId": "f1d2740d-6d07-552a-8b20-9219a6bdbc9e",
+      "distanceToTargetNodeInMeters": 849.315,
+      "stoppingLocationId": "",
+      "segmentProfileId": 23
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1353,
+      "targetNodeId": "f1d2740d-6d07-552a-8b20-9219a6bdbc9e",
+      "distanceToTargetNodeInMeters": 583.903,
+      "stoppingLocationId": "",
+      "segmentProfileId": 23
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1354,
+      "targetNodeId": "f1d2740d-6d07-552a-8b20-9219a6bdbc9e",
+      "distanceToTargetNodeInMeters": 475.515,
+      "stoppingLocationId": "",
+      "segmentProfileId": 23
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1355,
+      "targetNodeId": "f1d2740d-6d07-552a-8b20-9219a6bdbc9e",
+      "distanceToTargetNodeInMeters": 439.192,
+      "stoppingLocationId": "",
+      "segmentProfileId": 23
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1356,
+      "targetNodeId": "f1d2740d-6d07-552a-8b20-9219a6bdbc9e",
+      "distanceToTargetNodeInMeters": 372.93,
+      "stoppingLocationId": "",
+      "segmentProfileId": 23
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1357,
+      "targetNodeId": "f1d2740d-6d07-552a-8b20-9219a6bdbc9e",
+      "distanceToTargetNodeInMeters": 329.641,
+      "stoppingLocationId": "",
+      "segmentProfileId": 23
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1358,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 502.669,
+      "stoppingLocationId": "",
+      "segmentProfileId": 24
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1359,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 511.778,
+      "stoppingLocationId": "",
+      "segmentProfileId": 24
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1360,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 581.316,
+      "stoppingLocationId": "",
+      "segmentProfileId": 24
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1361,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 846.728,
+      "stoppingLocationId": "",
+      "segmentProfileId": 24
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1362,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 955.116,
+      "stoppingLocationId": "",
+      "segmentProfileId": 24
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1363,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 991.439,
+      "stoppingLocationId": "",
+      "segmentProfileId": 24
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1364,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1057.701,
+      "stoppingLocationId": "",
+      "segmentProfileId": 24
+    },
+    {
+      "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+      "id": 1365,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1100.99,
+      "stoppingLocationId": "",
+      "segmentProfileId": 24
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1366,
+      "targetNodeId": "7d3e068b-37f2-5d73-8b1e-4c36ef7f5ca4",
+      "distanceToTargetNodeInMeters": 1191.006,
+      "stoppingLocationId": "21b01042-9b51-5994-a14e-7985e2dba660-SL-A",
+      "segmentProfileId": 25
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1367,
+      "targetNodeId": "7d3e068b-37f2-5d73-8b1e-4c36ef7f5ca4",
+      "distanceToTargetNodeInMeters": 1189.973,
+      "stoppingLocationId": "21b01042-9b51-5994-a14e-7985e2dba660-SL-B",
+      "segmentProfileId": 25
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1368,
+      "targetNodeId": "7d3e068b-37f2-5d73-8b1e-4c36ef7f5ca4",
+      "distanceToTargetNodeInMeters": 1068.388,
+      "stoppingLocationId": "",
+      "segmentProfileId": 25
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1369,
+      "targetNodeId": "7d3e068b-37f2-5d73-8b1e-4c36ef7f5ca4",
+      "distanceToTargetNodeInMeters": 1013.09,
+      "stoppingLocationId": "",
+      "segmentProfileId": 25
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1370,
+      "targetNodeId": "7d3e068b-37f2-5d73-8b1e-4c36ef7f5ca4",
+      "distanceToTargetNodeInMeters": 974.119,
+      "stoppingLocationId": "",
+      "segmentProfileId": 25
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1371,
+      "targetNodeId": "7d3e068b-37f2-5d73-8b1e-4c36ef7f5ca4",
+      "distanceToTargetNodeInMeters": 622.09,
+      "stoppingLocationId": "",
+      "segmentProfileId": 25
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1372,
+      "targetNodeId": "7d3e068b-37f2-5d73-8b1e-4c36ef7f5ca4",
+      "distanceToTargetNodeInMeters": 593.595,
+      "stoppingLocationId": "",
+      "segmentProfileId": 25
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1373,
+      "targetNodeId": "7d3e068b-37f2-5d73-8b1e-4c36ef7f5ca4",
+      "distanceToTargetNodeInMeters": 452.234,
+      "stoppingLocationId": "",
+      "segmentProfileId": 25
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1374,
+      "targetNodeId": "7d3e068b-37f2-5d73-8b1e-4c36ef7f5ca4",
+      "distanceToTargetNodeInMeters": 251.362,
+      "stoppingLocationId": "",
+      "segmentProfileId": 25
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1375,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 184.876,
+      "stoppingLocationId": "",
+      "segmentProfileId": 26
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1376,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 185.909,
+      "stoppingLocationId": "",
+      "segmentProfileId": 26
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1377,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 307.494,
+      "stoppingLocationId": "",
+      "segmentProfileId": 26
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1378,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 362.792,
+      "stoppingLocationId": "",
+      "segmentProfileId": 26
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1379,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 401.763,
+      "stoppingLocationId": "",
+      "segmentProfileId": 26
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1380,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 753.792,
+      "stoppingLocationId": "",
+      "segmentProfileId": 26
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1381,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 782.287,
+      "stoppingLocationId": "",
+      "segmentProfileId": 26
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1382,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 923.648,
+      "stoppingLocationId": "",
+      "segmentProfileId": 26
+    },
+    {
+      "trackId": "9eacc03f-44f8-53dd-aeae-25d3ce041109",
+      "id": 1383,
+      "targetNodeId": "edebfdb0-4be9-5333-a9a3-6a155c93f3df",
+      "distanceToTargetNodeInMeters": 1124.52,
+      "stoppingLocationId": "",
+      "segmentProfileId": 26
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1384,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 14915.789,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1385,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 14532.138,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1386,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 14313.041,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1387,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 14261.488,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1388,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 13632.601,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1389,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 12827.304,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1390,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 12639.904,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1391,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 12095.01,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1392,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 10285.411,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1393,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 10255.11,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1394,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 10077.25,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1395,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 9798.505,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1396,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 8322.836,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1397,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 6137.818,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1398,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 6119.328,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1399,
+      "targetNodeId": "25132422-eb53-58fe-a1ec-ee105ab3dc6f",
+      "distanceToTargetNodeInMeters": 5265.616,
+      "stoppingLocationId": "",
+      "segmentProfileId": 27
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1400,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 1814.338,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1401,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 2197.989,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1402,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 2417.086,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1403,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 2468.639,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1404,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 3097.526,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1405,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 3902.823,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1406,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 4090.223,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1407,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 4635.117,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1408,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 6444.716,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1409,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 6475.017,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1410,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 6652.877,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1411,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 6931.622,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1412,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 8407.291,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1413,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 10592.309,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1414,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 10610.799,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+      "id": 1415,
+      "targetNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+      "distanceToTargetNodeInMeters": 11464.511,
+      "stoppingLocationId": "",
+      "segmentProfileId": 28
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1416,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 4031.735,
+      "stoppingLocationId": "1f1f7f9f-a9d7-5957-9072-c9edb1e6d35d-SL-A",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1417,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 3622.188,
+      "stoppingLocationId": "1f1f7f9f-a9d7-5957-9072-c9edb1e6d35d-SL-B",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1418,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 3014.695,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1419,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 2984.044,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1420,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 2682.685,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1421,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 2518.838,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1422,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 2469.947,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1423,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 2195.897,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1424,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 2137.066,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1425,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 2069.531,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1426,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1979.555,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1427,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1975.619,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1428,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1679.524,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1429,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1454.637,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1430,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1415.494,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1431,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1247.452,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1432,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 1203.083,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1433,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 997.267,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1434,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 871.613,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1435,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 689.875,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1436,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 484.18,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1437,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 456.3,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1438,
+      "targetNodeId": "3833d2b8-8136-58ba-b02f-3755cc156393",
+      "distanceToTargetNodeInMeters": 275.433,
+      "stoppingLocationId": "",
+      "segmentProfileId": 29
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1439,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 214.509,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1440,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 624.056,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1441,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1231.549,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1442,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1262.2,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1443,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1563.559,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1444,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1727.406,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1445,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1776.297,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1446,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 2050.347,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1447,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 2109.178,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1448,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 2176.713,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1449,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 2266.689,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1450,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 2270.625,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1451,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 2566.72,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1452,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 2791.607,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1453,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 2830.75,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1454,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 2998.792,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1455,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 3043.161,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1456,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 3248.977,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1457,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 3374.631,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1458,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 3556.369,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1459,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 3762.064,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1460,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 3789.944,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+      "id": 1461,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 3970.811,
+      "stoppingLocationId": "",
+      "segmentProfileId": 30
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1462,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 4293.776,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1463,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 3607.842,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1464,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 3498.815,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1465,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 3403.487,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1466,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 3323.564,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1467,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 3248.769,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1468,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 2719.125,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1469,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 2469.487,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1470,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 2437.991,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1471,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 2378.897,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1472,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 2140.315,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1473,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 2136.174,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1474,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 2067.81,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1475,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 2059.979,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1476,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 2009.689,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1477,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1990.14,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1478,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1937.764,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1479,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1918.807,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1480,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1731.088,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1481,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1547.403,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1482,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 1377.93,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1483,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 683.152,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1484,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 306.08,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1485,
+      "targetNodeId": "309ccf6f-9836-5cc0-be22-303c5c8d2460",
+      "distanceToTargetNodeInMeters": 258.041,
+      "stoppingLocationId": "",
+      "segmentProfileId": 31
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1486,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 589.975,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1487,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1275.909,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1488,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1384.936,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1489,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1480.264,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1490,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1560.187,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1491,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 1634.982,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1492,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2164.626,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1493,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2414.264,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1494,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2445.76,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1495,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2504.854,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1496,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2743.436,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1497,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2747.577,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1498,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2815.941,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1499,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2823.772,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1500,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2874.062,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1501,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2893.611,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1502,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2945.987,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1503,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 2964.944,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1504,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 3152.663,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1505,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 3336.348,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1506,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 3505.821,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1507,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 4200.599,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1508,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 4577.671,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+      "id": 1509,
+      "targetNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+      "distanceToTargetNodeInMeters": 4625.71,
+      "stoppingLocationId": "",
+      "segmentProfileId": 32
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1510,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1240.78,
+      "stoppingLocationId": "",
+      "segmentProfileId": 33
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1511,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1190.035,
+      "stoppingLocationId": "",
+      "segmentProfileId": 33
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1512,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1111.857,
+      "stoppingLocationId": "",
+      "segmentProfileId": 33
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1513,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 1071.903,
+      "stoppingLocationId": "",
+      "segmentProfileId": 33
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1514,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 962.59,
+      "stoppingLocationId": "",
+      "segmentProfileId": 33
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1515,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 551.748,
+      "stoppingLocationId": "",
+      "segmentProfileId": 33
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1516,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 532.226,
+      "stoppingLocationId": "",
+      "segmentProfileId": 33
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1517,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 482.444,
+      "stoppingLocationId": "",
+      "segmentProfileId": 33
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1518,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 206.272,
+      "stoppingLocationId": "",
+      "segmentProfileId": 33
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1519,
+      "targetNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+      "distanceToTargetNodeInMeters": 113.479,
+      "stoppingLocationId": "",
+      "segmentProfileId": 33
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1520,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 117.835,
+      "stoppingLocationId": "",
+      "segmentProfileId": 34
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1521,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 168.58,
+      "stoppingLocationId": "",
+      "segmentProfileId": 34
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1522,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 246.758,
+      "stoppingLocationId": "",
+      "segmentProfileId": 34
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1523,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 286.712,
+      "stoppingLocationId": "",
+      "segmentProfileId": 34
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1524,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 396.025,
+      "stoppingLocationId": "",
+      "segmentProfileId": 34
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1525,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 806.867,
+      "stoppingLocationId": "",
+      "segmentProfileId": 34
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1526,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 826.389,
+      "stoppingLocationId": "",
+      "segmentProfileId": 34
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1527,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 876.171,
+      "stoppingLocationId": "",
+      "segmentProfileId": 34
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1528,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1152.343,
+      "stoppingLocationId": "",
+      "segmentProfileId": 34
+    },
+    {
+      "trackId": "95d104cf-4a8c-5786-b3c5-3ccbdb14dfb3",
+      "id": 1529,
+      "targetNodeId": "b1c97732-ce82-5f87-8b36-15c9de7fa5ea",
+      "distanceToTargetNodeInMeters": 1245.136,
+      "stoppingLocationId": "",
+      "segmentProfileId": 34
+    }
+  ],
+  "virtualNodes": [],
+  "virtualTracks": [],
+  "blockSections": [],
+  "dpsGroups": [
+    {
+      "id": "321a597d-b0bc-5700-b824-cc320e5e956d",
+      "protectedNodeIds": [
+        "6d971608-d463-534c-badc-d21db50e0dc9"
+      ],
+      "sections": [
+        {
+          "id": "5841d9eb-5425-520f-98b6-1544b8643f6e",
+          "trackSections": [
+            {
+              "trackId": "d6193195-77d7-5238-a003-507f52edcd0f",
+              "referenceNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+              "coordinateStart": 442.617,
+              "coordinateEnd": 684.508
+            }
+          ]
+        }
+      ],
+      "dependencyType": "DRIVE_PROTECTION_SECTION_GROUP_DEPENDENCY_EXCLUSIVE"
+    },
+    {
+      "id": "52eb4e56-ca6c-52a5-b501-fb481f905092",
+      "protectedNodeIds": [
+        "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+        "309ccf6f-9836-5cc0-be22-303c5c8d2460"
+      ],
+      "sections": [
+        {
+          "id": "6d594465-93c7-5612-af85-e0a443af9939",
+          "trackSections": [
+            {
+              "trackId": "39c137f0-7d78-5ab3-b5b4-ad9874408499",
+              "referenceNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+              "coordinateStart": 1160.729,
+              "coordinateEnd": 1800.666
+            }
+          ]
+        }
+      ],
+      "dependencyType": "DRIVE_PROTECTION_SECTION_GROUP_DEPENDENCY_EXCLUSIVE"
+    },
+    {
+      "id": "06650bf9-d7fa-5a9b-bfa0-53fc64feb2d0",
+      "protectedNodeIds": [
+        "855a9c27-620d-5fdd-8af7-f03fd292a3ec"
+      ],
+      "sections": [
+        {
+          "id": "edbddb7d-5479-50f1-873e-6e233d4f6edb",
+          "trackSections": [
+            {
+              "trackId": "d54353f5-be74-55e4-ae6d-d26938f921de",
+              "referenceNodeId": "855a9c27-620d-5fdd-8af7-f03fd292a3ec",
+              "coordinateStart": 6889.284,
+              "coordinateEnd": 8705.974
+            }
+          ]
+        }
+      ],
+      "dependencyType": "DRIVE_PROTECTION_SECTION_GROUP_DEPENDENCY_EXCLUSIVE"
+    },
+    {
+      "id": "c47ed138-ac64-5934-a50d-63807ccd8b0d",
+      "protectedNodeIds": [
+        "6d971608-d463-534c-badc-d21db50e0dc9"
+      ],
+      "sections": [
+        {
+          "id": "f8333d01-47da-5f1b-bf5d-a4f8c5f9f91b",
+          "trackSections": [
+            {
+              "trackId": "b659ac73-7ca9-5489-af00-05758fcace19",
+              "referenceNodeId": "6d971608-d463-534c-badc-d21db50e0dc9",
+              "coordinateStart": 313.367,
+              "coordinateEnd": 1472.706
+            }
+          ]
+        }
+      ],
+      "dependencyType": "DRIVE_PROTECTION_SECTION_GROUP_DEPENDENCY_EXCLUSIVE"
+    },
+    {
+      "id": "392ff5c0-edb4-546c-97c0-e09330da4583",
+      "protectedNodeIds": [
+        "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+        "b1c97732-ce82-5f87-8b36-15c9de7fa5ea"
+      ],
+      "sections": [
+        {
+          "id": "e6765959-3fc6-54a2-b55a-b5c0f8a9d1cb",
+          "trackSections": [
+            {
+              "trackId": "ca14f1fc-5780-59a9-84ed-21aacf32ec18",
+              "referenceNodeId": "add8a388-d92c-53e8-b96f-e3e54c2bf443",
+              "coordinateStart": 1271.38,
+              "coordinateEnd": 1561.192
+            }
+          ]
+        }
+      ],
+      "dependencyType": "DRIVE_PROTECTION_SECTION_GROUP_DEPENDENCY_EXCLUSIVE"
+    }
+  ]
+}
