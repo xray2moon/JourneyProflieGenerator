@@ -51,13 +51,23 @@ class InfrastructureViewRouting:
         start: str,
         goal: str,
         *, 
-        start_incoming_track_id: Optional[str] = None
+        start_incoming_track_id: Optional[str] = None,
+        required_outgoing_track_id: Optional[str] = None,
     ) -> Tuple[List[str], List[str], float]:
         """
         Dijkstra over (node, incomingTrack) states, returning (node_path, track_path, distance).
         node_path includes both endpoints.
         """
         if start == goal:
+            if (
+                required_outgoing_track_id is not None
+                and not self._is_transition_allowed(
+                    start,
+                    start_incoming_track_id,
+                    required_outgoing_track_id,
+                )
+            ):
+                return [start], [], float("inf")
             return [start], [], 0.0
 
         start_state = (start, start_incoming_track_id)  # (nodeId, incomingTrackId)
@@ -74,8 +84,17 @@ class InfrastructureViewRouting:
             seen.add(state)
             u, incoming_track_id = state
             if u == goal:
-                end_state = state
-                break
+                if (
+                    required_outgoing_track_id is None
+                    or self._is_transition_allowed(
+                        u,
+                        incoming_track_id,
+                        required_outgoing_track_id,
+                    )
+                ):
+                    end_state = state
+                    break
+                continue
             for v, track_id, w in self._graph.get(u, []):
                 if not self._is_transition_allowed(u, incoming_track_id, track_id):
                     continue
@@ -145,10 +164,10 @@ class InfrastructureViewRouting:
             turn_node_id,
             g_u,
             start_incoming_track_id=incoming_track_id,
+            required_outgoing_track_id=e_tr.id,
         )
         if (
             dist_a != float("inf")
-            and self._entry_transition_ok(g_u, path_a_tracks, incoming_track_id, e_tr.id)
             and path_a_nodes
         ):
             return True
@@ -157,10 +176,10 @@ class InfrastructureViewRouting:
             turn_node_id,
             g_v,
             start_incoming_track_id=incoming_track_id,
+            required_outgoing_track_id=e_tr.id,
         )
         return (
             dist_b != float("inf")
-            and self._entry_transition_ok(g_v, path_b_tracks, incoming_track_id, e_tr.id)
             and bool(path_b_nodes)
         )
 
@@ -661,27 +680,47 @@ class InfrastructureViewRouting:
             
             # Goal Entry Options: Enter via g_u or g_v
             # Combination 1: Exit vA, Enter g_u
-            path1_nodes, path1_tracks, dist1 = self._shortest_path(vA, g_u, start_incoming_track_id=s_tr.id)
+            path1_nodes, path1_tracks, dist1 = self._shortest_path(
+                vA,
+                g_u,
+                start_incoming_track_id=s_tr.id,
+                required_outgoing_track_id=e_tr.id,
+            )
             cost1 = dA + dist1 + (e_tr.length_m - tp.distance_to_target_m)
-            if dist1 == float("inf") or not self._entry_transition_ok(g_u, path1_tracks, s_tr.id, e_tr.id):
+            if dist1 == float("inf"):
                 cost1 = float("inf")
 
             # Combination 2: Exit vB, Enter g_u
-            path2_nodes, path2_tracks, dist2 = self._shortest_path(vB, g_u, start_incoming_track_id=s_tr.id)
+            path2_nodes, path2_tracks, dist2 = self._shortest_path(
+                vB,
+                g_u,
+                start_incoming_track_id=s_tr.id,
+                required_outgoing_track_id=e_tr.id,
+            )
             cost2 = dB + dist2 + (e_tr.length_m - tp.distance_to_target_m)
-            if dist2 == float("inf") or not self._entry_transition_ok(g_u, path2_tracks, s_tr.id, e_tr.id):
+            if dist2 == float("inf"):
                 cost2 = float("inf")
 
             # Combination 3: Exit vA, Enter g_v
-            path3_nodes, path3_tracks, dist3 = self._shortest_path(vA, g_v, start_incoming_track_id=s_tr.id)
+            path3_nodes, path3_tracks, dist3 = self._shortest_path(
+                vA,
+                g_v,
+                start_incoming_track_id=s_tr.id,
+                required_outgoing_track_id=e_tr.id,
+            )
             cost3 = dA + dist3 + tp.distance_to_target_m
-            if dist3 == float("inf") or not self._entry_transition_ok(g_v, path3_tracks, s_tr.id, e_tr.id):
+            if dist3 == float("inf"):
                 cost3 = float("inf")
 
             # Combination 4: Exit vB, Enter g_v
-            path4_nodes, path4_tracks, dist4 = self._shortest_path(vB, g_v, start_incoming_track_id=s_tr.id)
+            path4_nodes, path4_tracks, dist4 = self._shortest_path(
+                vB,
+                g_v,
+                start_incoming_track_id=s_tr.id,
+                required_outgoing_track_id=e_tr.id,
+            )
             cost4 = dB + dist4 + tp.distance_to_target_m
-            if dist4 == float("inf") or not self._entry_transition_ok(g_v, path4_tracks, s_tr.id, e_tr.id):
+            if dist4 == float("inf"):
                 cost4 = float("inf")
 
             options = [
@@ -799,15 +838,25 @@ class InfrastructureViewRouting:
             g_u = e_tr.source if g_v == e_tr.target else e_tr.target
 
             # Option A: Enter via g_u
-            pathA_nodes, pathA_tracks, distA = self._shortest_path(last_node, g_u, start_incoming_track_id=last_track)
+            pathA_nodes, pathA_tracks, distA = self._shortest_path(
+                last_node,
+                g_u,
+                start_incoming_track_id=last_track,
+                required_outgoing_track_id=e_tr.id,
+            )
             costA = distA + (e_tr.length_m - tp.distance_to_target_m)
-            if distA == float("inf") or not self._entry_transition_ok(g_u, pathA_tracks, last_track, e_tr.id):
+            if distA == float("inf"):
                 costA = float("inf")
 
             # Option B: Enter via g_v
-            pathB_nodes, pathB_tracks, distB = self._shortest_path(last_node, g_v, start_incoming_track_id=last_track)
+            pathB_nodes, pathB_tracks, distB = self._shortest_path(
+                last_node,
+                g_v,
+                start_incoming_track_id=last_track,
+                required_outgoing_track_id=e_tr.id,
+            )
             costB = distB + tp.distance_to_target_m
-            if distB == float("inf") or not self._entry_transition_ok(g_v, pathB_tracks, last_track, e_tr.id):
+            if distB == float("inf"):
                 costB = float("inf")
 
             if costA <= costB and distA != float("inf"):
