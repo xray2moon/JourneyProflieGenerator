@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from typing import List, Optional, Set, Tuple
+from typing import List, Optional, Sequence, Set, Tuple
 
 from PyQt6.QtCore import Qt, QPointF
 from PyQt6.QtGui import QBrush, QColor, QPainterPath, QPen, QTransform
@@ -91,9 +91,27 @@ class TimingPointItem(QGraphicsEllipseItem):
     Used for timing constraints input.
     """
 
-    def __init__(self, tp: TimingPoint, pos: QPointF, radius: float = 5.0):
+    def __init__(
+        self,
+        tp: TimingPoint,
+        pos: QPointF,
+        radius: float = 5.0,
+        variants: Optional[Sequence[TimingPoint]] = None,
+        track_source_node_id: str = "",
+        track_target_node_id: str = "",
+        track_length_m: float = 0.0,
+    ):
         super().__init__(-radius, -radius, 2 * radius, 2 * radius)
-        self.tp = tp
+        ordered_variants = sorted(
+            list(variants) if variants else [tp],
+            key=lambda t: int(t.id),
+        )
+        self.tp = ordered_variants[0]
+        self._variants: Tuple[TimingPoint, ...] = tuple(ordered_variants)
+        self._tp_id_set = {int(v.id) for v in self._variants}
+        self._track_source_node_id = track_source_node_id
+        self._track_target_node_id = track_target_node_id
+        self._track_length_m = float(track_length_m or 0.0)
         self.setPos(pos)
         self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, True)
@@ -118,11 +136,53 @@ class TimingPointItem(QGraphicsEllipseItem):
         self._has_constraint = False
         self._point_type: Optional[str] = None
 
-    def hoverEnterEvent(self, event):
-        self.setToolTip(
-            f"TimingPoint {self.tp.id}\ntrack={self.tp.track_id}\n"
-            f"targetNode={self.tp.target_node_id}\ndistToTarget(m)={self.tp.distance_to_target_m:.3f}"
+    def tp_ids(self) -> Tuple[int, ...]:
+        return tuple(int(tp.id) for tp in self._variants)
+
+    def tp_variants(self) -> Tuple[TimingPoint, ...]:
+        return self._variants
+
+    def contains_tp_id(self, tp_id: int) -> bool:
+        return int(tp_id) in self._tp_id_set
+
+    def _tooltip_text(self) -> str:
+        lines = [
+            "{",
+            '  "track": {',
+            f'    "id": "{self.tp.track_id}",',
+            f'    "sourceNodeId": "{self._track_source_node_id}",',
+            f'    "targetNodeId": "{self._track_target_node_id}",',
+            f'    "lengthMeter": {float(self._track_length_m):.3f}',
+            "  },",
+            '  "timingPoints": [',
+        ]
+
+        for idx, var in enumerate(self._variants):
+            comma = "," if idx < len(self._variants) - 1 else ""
+            stopping_location_id = str(var.stopping_location_id or "")
+            lines.extend(
+                [
+                    "    {",
+                    f'      "id": {int(var.id)},',
+                    f'      "trackId": "{var.track_id}",',
+                    f'      "targetNodeId": "{var.target_node_id}",',
+                    f'      "distanceToTargetNodeInMeters": {float(var.distance_to_target_m):.3f},',
+                    f'      "stoppingLocationId": "{stopping_location_id}",',
+                    f'      "segmentProfileId": {int(var.segment_profile_id)}',
+                    f"    }}{comma}",
+                ]
+            )
+
+        lines.extend(
+            [
+                "  ]",
+                "}",
+            ]
         )
+        return "\n".join(lines)
+
+    def hoverEnterEvent(self, event):
+        self.setToolTip(self._tooltip_text())
         super().hoverEnterEvent(event)
 
     def set_highlight(self, enabled: bool) -> None:

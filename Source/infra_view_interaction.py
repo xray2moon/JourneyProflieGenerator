@@ -27,6 +27,68 @@ class InfrastructureViewInteraction:
     def __getattr__(self, name):
         return getattr(self._view, name)
 
+    def _iter_unique_tp_items(self) -> List[TimingPointItem]:
+        seen: set[int] = set()
+        items: List[TimingPointItem] = []
+        for item in self._tp_items.values():
+            item_key = id(item)
+            if item_key in seen:
+                continue
+            seen.add(item_key)
+            items.append(item)
+        return items
+
+    def _tp_ids_for_item(self, item: TimingPointItem) -> List[int]:
+        if hasattr(item, "tp_ids"):
+            return [int(tp_id) for tp_id in item.tp_ids()]
+        return [int(item.tp.id)]
+
+    def _resolve_click_tp_id(self, item: TimingPointItem) -> Optional[int]:
+        selection = self._backend.selection
+        candidate_ids = self._tp_ids_for_item(item)
+        if not candidate_ids:
+            return None
+        if selection.end_tp_id in candidate_ids:
+            return int(selection.end_tp_id)
+        chosen = self._choose_best_tp_candidate(candidate_ids)
+        if chosen is not None:
+            return int(chosen)
+        return min(candidate_ids)
+
+    def _resolve_existing_member_tp_id(self, item: TimingPointItem) -> Optional[int]:
+        selection = self._backend.selection
+        candidate_ids = set(self._tp_ids_for_item(item))
+        if not candidate_ids:
+            return None
+
+        if selection.end_tp_id in candidate_ids:
+            return int(selection.end_tp_id)
+        for waypoint_tp_id in selection.waypoint_tp_ids:
+            if waypoint_tp_id in candidate_ids:
+                return int(waypoint_tp_id)
+        if selection.start_tp_id in candidate_ids:
+            return int(selection.start_tp_id)
+        for constrained_tp_id in selection.timing_constraints.keys():
+            if constrained_tp_id in candidate_ids:
+                return int(constrained_tp_id)
+        return self._resolve_click_tp_id(item)
+
+    def _constraint_point_type_for_item(self, item: TimingPointItem) -> Optional[str]:
+        selection = self._backend.selection
+        marker_point_types: List[str] = []
+        for tp_id in self._tp_ids_for_item(item):
+            constraint = selection.timing_constraints.get(tp_id)
+            if not isinstance(constraint, dict):
+                continue
+            point_type = str(constraint.get("pointType", "")).upper()
+            if point_type in {"STOP", "PASS"}:
+                marker_point_types.append(point_type)
+        if "STOP" in marker_point_types:
+            return "STOP"
+        if "PASS" in marker_point_types:
+            return "PASS"
+        return None
+
     def _set_hovered_track(self, track_id: Optional[str]) -> None:
         prev = getattr(self, "_hover_track_id", None)
         if prev == track_id:
@@ -89,14 +151,20 @@ class InfrastructureViewInteraction:
         end_tp_id = selection.end_tp_id
         waypoint_tp_ids = set(selection.waypoint_tp_ids)
         for tpi in self._tp_track_map.get(track_id, []):
-            has_stop = False
-            if tpi.tp.id in selection.timing_constraints:
-                c = selection.timing_constraints[tpi.tp.id]
-                if c.get("pointType") == "STOP":
-                    has_stop = True
+            tp_ids = self._tp_ids_for_item(tpi)
+            has_stop = any(
+                (
+                    tp_id in selection.timing_constraints
+                    and selection.timing_constraints[tp_id].get("pointType") == "STOP"
+                )
+                for tp_id in tp_ids
+            )
 
             # Keep route-defining timing points always visible.
-            is_route_selected_tp = tpi.tp.id in {start_tp_id, end_tp_id} or tpi.tp.id in waypoint_tp_ids
+            is_route_selected_tp = any(
+                tp_id in {start_tp_id, end_tp_id} or tp_id in waypoint_tp_ids
+                for tp_id in tp_ids
+            )
             should_show = self._show_all_tp or visible or has_stop or is_route_selected_tp
             tpi.setVisible(should_show)
             
@@ -145,12 +213,17 @@ class InfrastructureViewInteraction:
 
                 if isinstance(item, TimingPointItem):
                     if event.button() == Qt.MouseButton.LeftButton:
+                        resolved_tp_id = self._resolve_click_tp_id(item)
+                        if resolved_tp_id is None:
+                            return True
                         self._push_undo_snapshot()
-                        self._extend_route_with_tp(item.tp.id)
+                        self._extend_route_with_tp(resolved_tp_id)
                         return True
                     if event.button() == Qt.MouseButton.RightButton:
                         if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
-                            self._edit_timing_constraint(item.tp.id)
+                            resolved_tp_id = self._resolve_existing_member_tp_id(item)
+                            if resolved_tp_id is not None:
+                                self._edit_timing_constraint(resolved_tp_id)
                         else:
                             selection = self._backend.selection
                             route_tp_ids = set(selection.waypoint_tp_ids)
@@ -159,9 +232,27 @@ class InfrastructureViewInteraction:
                             if selection.end_tp_id is not None:
                                 route_tp_ids.add(selection.end_tp_id)
 
-                            if item.tp.id in route_tp_ids:
+                            candidate_ids = self._tp_ids_for_item(item)
+                            tp_id_to_remove: Optional[int] = None
+                            for preferred_tp_id in (
+                                [selection.end_tp_id]
+                                + list(selection.waypoint_tp_ids)
+                                + [selection.start_tp_id]
+                            ):
+                                if preferred_tp_id is None:
+                                    continue
+                                if preferred_tp_id in route_tp_ids and preferred_tp_id in candidate_ids:
+                                    tp_id_to_remove = int(preferred_tp_id)
+                                    break
+                            if tp_id_to_remove is None:
+                                for candidate_tp_id in candidate_ids:
+                                    if candidate_tp_id in route_tp_ids:
+                                        tp_id_to_remove = int(candidate_tp_id)
+                                        break
+
+                            if tp_id_to_remove is not None:
                                 self._push_undo_snapshot()
-                                self._remove_tp_from_route(item.tp.id)
+                                self._remove_tp_from_route(tp_id_to_remove)
                             else:
                                 item.setSelected(False)
                         return True
@@ -196,12 +287,20 @@ class InfrastructureViewInteraction:
         if isinstance(item, NodeItem):
             info = {"type": "node", "id": item.node.id, "numericId": item.node.numeric_id}
         elif isinstance(item, TimingPointItem):
+            marker_tp_ids = self._tp_ids_for_item(item)
+            resolved_tp_id = self._resolve_click_tp_id(item)
             info = {
                 "type": "timingPoint",
-                "id": item.tp.id,
+                "id": resolved_tp_id if resolved_tp_id is not None else item.tp.id,
+                "timingPointIds": marker_tp_ids,
                 "trackId": item.tp.track_id,
-                "targetNodeId": item.tp.target_node_id,
             }
+            if resolved_tp_id is not None:
+                resolved_tp = self._backend.model.timing_points.get(resolved_tp_id)
+                if resolved_tp is not None:
+                    info["targetNodeId"] = resolved_tp.target_node_id
+            if "targetNodeId" not in info:
+                info["targetNodeId"] = item.tp.target_node_id
         self.selectionChanged.emit(info)
 
     def clear_route(self) -> None:
@@ -214,7 +313,7 @@ class InfrastructureViewInteraction:
         # Reset action should hide all TPs immediately.
         for track_item in self._track_items.values():
             track_item.set_timing_points_visible(False)
-        for tpi in self._tp_items.values():
+        for tpi in self._iter_unique_tp_items():
             tpi.set_constraint_point_type(None)
             tpi.setVisible(False)
             tpi.setSelected(False)
@@ -477,20 +576,26 @@ class InfrastructureViewInteraction:
             role = "end" if sl_id == selected_sp_id else None
             item.set_route_role(role)
 
-        for tp_id, item in self._tp_items.items():
+        for item in self._iter_unique_tp_items():
+            member_ids = set(self._tp_ids_for_item(item))
             role = None
-            if tp_id == start_tp_id:
+            if start_tp_id in member_ids:
                 role = "start"
-            elif tp_id == end_tp_id:
+            elif end_tp_id in member_ids:
                 role = "end"
-            is_waypoint = tp_id in waypoint_tp_ids
+            is_waypoint = bool(member_ids.intersection(waypoint_tp_ids))
             is_route_selected_tp = role is not None or is_waypoint
 
             item.set_route_role(role)
             item.set_highlight(is_waypoint)
 
-            constraint = selection.timing_constraints.get(tp_id)
-            has_stop_constraint = bool(constraint and constraint.get("pointType") == "STOP")
+            has_stop_constraint = any(
+                (
+                    member_id in selection.timing_constraints
+                    and selection.timing_constraints[member_id].get("pointType") == "STOP"
+                )
+                for member_id in member_ids
+            )
             is_track_visible = item.tp.track_id in selection.visible_tp_tracks
 
             should_show = (
@@ -530,11 +635,10 @@ class InfrastructureViewInteraction:
         end_label.setText(f"End TP: {end_text}")
 
     def _restore_timing_point_markers(self) -> None:
-        selection = self._backend.selection
-        for tp_id, constraint in selection.timing_constraints.items():
-            item = self._tp_items.get(tp_id)
-            if item:
-                item.set_constraint_point_type(constraint.get("pointType"))
+        for item in self._iter_unique_tp_items():
+            marker_point_type = self._constraint_point_type_for_item(item)
+            item.set_constraint_point_type(marker_point_type)
+            if marker_point_type is not None:
                 item.setVisible(True)
 
     def _edit_timing_constraint(self, tp_id: int) -> None:
@@ -571,7 +675,7 @@ class InfrastructureViewInteraction:
 
         item = self._tp_items.get(tp_id)
         if item:
-            item.set_constraint_point_type(c["pointType"])
+            item.set_constraint_point_type(self._constraint_point_type_for_item(item))
             is_track_visible = tp.track_id in selection.visible_tp_tracks
             self._apply_track_tp_visibility(tp.track_id, is_track_visible)
 
@@ -586,7 +690,7 @@ class InfrastructureViewInteraction:
         
         item = self._tp_items.get(tp_id)
         if item:
-            item.set_constraint_point_type(None)
+            item.set_constraint_point_type(self._constraint_point_type_for_item(item))
             is_track_visible = track_id in selection.visible_tp_tracks
             self._apply_track_tp_visibility(track_id, is_track_visible)
 

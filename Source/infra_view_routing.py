@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import heapq
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, Tuple
 
 from PyQt6.QtWidgets import QMessageBox
 
@@ -126,6 +126,180 @@ class InfrastructureViewRouting:
         if tp.target_node_id == track.target:
             return track.length_m - tp.distance_to_target_m
         return tp.distance_to_target_m
+
+    def _estimate_extension_cost(self, tp_id: int) -> float:
+        model = self._backend.model
+        selection = self._backend.selection
+        tp = model.timing_points.get(tp_id)
+        if tp is None:
+            return float("inf")
+
+        start_tp_id = selection.start_tp_id
+        end_tp_id = selection.end_tp_id
+        current_route = list(selection.current_route)
+        current_tracks = list(selection.current_tracks)
+
+        if start_tp_id is None:
+            return 0.0
+
+        if not current_route:
+            if tp_id == start_tp_id:
+                return 0.0
+
+            start_tp = model.timing_points.get(start_tp_id)
+            if start_tp is None:
+                return float("inf")
+
+            s_tr = model.tracks.get(start_tp.track_id)
+            e_tr = model.tracks.get(tp.track_id)
+            if s_tr is None or e_tr is None:
+                return float("inf")
+
+            v_a = start_tp.target_node_id
+            u_a = s_tr.source if v_a == s_tr.target else s_tr.target
+            d_a = start_tp.distance_to_target_m
+
+            v_b = u_a
+            u_b = v_a
+            d_b = s_tr.length_m - d_a
+
+            g_v = tp.target_node_id
+            g_u = e_tr.source if g_v == e_tr.target else e_tr.target
+
+            _n1, _t1, dist1 = self._shortest_path(
+                v_a,
+                g_u,
+                start_incoming_track_id=s_tr.id,
+                required_outgoing_track_id=e_tr.id,
+            )
+            cost1 = d_a + dist1 + (e_tr.length_m - tp.distance_to_target_m)
+            if dist1 == float("inf"):
+                cost1 = float("inf")
+
+            _n2, _t2, dist2 = self._shortest_path(
+                v_b,
+                g_u,
+                start_incoming_track_id=s_tr.id,
+                required_outgoing_track_id=e_tr.id,
+            )
+            cost2 = d_b + dist2 + (e_tr.length_m - tp.distance_to_target_m)
+            if dist2 == float("inf"):
+                cost2 = float("inf")
+
+            _n3, _t3, dist3 = self._shortest_path(
+                v_a,
+                g_v,
+                start_incoming_track_id=s_tr.id,
+                required_outgoing_track_id=e_tr.id,
+            )
+            cost3 = d_a + dist3 + tp.distance_to_target_m
+            if dist3 == float("inf"):
+                cost3 = float("inf")
+
+            _n4, _t4, dist4 = self._shortest_path(
+                v_b,
+                g_v,
+                start_incoming_track_id=s_tr.id,
+                required_outgoing_track_id=e_tr.id,
+            )
+            cost4 = d_b + dist4 + tp.distance_to_target_m
+            if dist4 == float("inf"):
+                cost4 = float("inf")
+
+            costs = [cost1, cost2, cost3, cost4]
+
+            if s_tr.id == e_tr.id and s_tr.length_m > 0:
+                pos_start = self._tp_position_from_source(start_tp, s_tr)
+                pos_end = self._tp_position_from_source(tp, e_tr)
+                if pos_end >= pos_start:
+                    costs.append(pos_end - pos_start)
+                pos_start_inv = s_tr.length_m - pos_start
+                pos_end_inv = s_tr.length_m - pos_end
+                if pos_end_inv >= pos_start_inv:
+                    costs.append(pos_end_inv - pos_start_inv)
+
+            finite_costs = [c for c in costs if c < float("inf")]
+            if not finite_costs:
+                return float("inf")
+            return min(finite_costs)
+
+        if tp_id == end_tp_id:
+            return 0.0
+
+        e_tr = model.tracks.get(tp.track_id)
+        if e_tr is None:
+            return float("inf")
+
+        previous_end_tp = model.timing_points.get(end_tp_id) if end_tp_id is not None else None
+        if (
+            previous_end_tp is not None
+            and previous_end_tp.track_id == tp.track_id
+            and current_tracks
+            and current_tracks[-1] == tp.track_id
+            and len(current_route) >= 2
+        ):
+            prev_pos = self._tp_position_from_source(previous_end_tp, e_tr)
+            next_pos = self._tp_position_from_source(tp, e_tr)
+            last_u = current_route[-2]
+            last_v = current_route[-1]
+            if last_u == e_tr.source and last_v == e_tr.target and next_pos >= prev_pos:
+                return next_pos - prev_pos
+            if last_u == e_tr.target and last_v == e_tr.source and next_pos <= prev_pos:
+                return prev_pos - next_pos
+
+        if not current_route:
+            return float("inf")
+
+        last_node = current_route[-1]
+        last_track = current_tracks[-1] if current_tracks else None
+
+        g_v = tp.target_node_id
+        g_u = e_tr.source if g_v == e_tr.target else e_tr.target
+
+        _na, _ta, dist_a = self._shortest_path(
+            last_node,
+            g_u,
+            start_incoming_track_id=last_track,
+            required_outgoing_track_id=e_tr.id,
+        )
+        cost_a = dist_a + (e_tr.length_m - tp.distance_to_target_m)
+        if dist_a == float("inf"):
+            cost_a = float("inf")
+
+        _nb, _tb, dist_b = self._shortest_path(
+            last_node,
+            g_v,
+            start_incoming_track_id=last_track,
+            required_outgoing_track_id=e_tr.id,
+        )
+        cost_b = dist_b + tp.distance_to_target_m
+        if dist_b == float("inf"):
+            cost_b = float("inf")
+
+        return min(cost_a, cost_b)
+
+    def _choose_best_tp_candidate(self, candidate_tp_ids: Iterable[int]) -> Optional[int]:
+        model = self._backend.model
+        unique_candidates: List[int] = []
+        for tp_id in candidate_tp_ids:
+            if tp_id in unique_candidates:
+                continue
+            if tp_id not in model.timing_points:
+                continue
+            unique_candidates.append(int(tp_id))
+        if not unique_candidates:
+            return None
+        if len(unique_candidates) == 1:
+            return unique_candidates[0]
+
+        scored: List[Tuple[float, int]] = []
+        for tp_id in unique_candidates:
+            scored.append((self._estimate_extension_cost(tp_id), tp_id))
+        scored.sort(key=lambda x: (x[0], x[1]))
+        best_cost, best_tp_id = scored[0]
+        if best_cost == float("inf"):
+            return min(unique_candidates)
+        return best_tp_id
 
     def _is_tp_suitable_reversal_point(self, tp, track) -> bool:
         if track.length_m <= 0:

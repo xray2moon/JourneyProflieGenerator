@@ -105,10 +105,13 @@ class JourneyProfileExporter:
 
             i_prev, i_next = reversal_pair
             s_prev, _ = ranges[i_prev]
-            ranges[i_prev] = (s_prev, pct_a)
+            # Anchor clipping at the reversal TP (tp_b), not tp_a.
+            # This preserves both directional traversals around a same-track reversal
+            # so mirrored TP IDs (e.g. 216/259) can both appear when physically passed.
+            ranges[i_prev] = (s_prev, pct_b)
 
             _, e_next = ranges[i_next]
-            ranges[i_next] = (pct_a, pct_b if route_tracks[i_next] == tp_b.track_id else e_next)
+            ranges[i_next] = (pct_b, e_next)
             search_from = i_next
 
         return ranges
@@ -238,10 +241,18 @@ class JourneyProfileExporter:
                     if tp.id in selected_tp_rank
                 ]
                 if selected_members:
-                    selected_members.sort(key=lambda x: x[0])
-                    _rank, selected_pos, selected_tp = selected_members[0]
-                    track_tps.append(("TP", selected_tp, curr_route_pos + selected_pos, curr_track_dir))
-                    continue
+                    # Keep selected IDs only when they also match traversal direction.
+                    if preferred_target_node_id is not None:
+                        selected_members = [
+                            item
+                            for item in selected_members
+                            if item[2].target_node_id == preferred_target_node_id
+                        ]
+                    if selected_members:
+                        selected_members.sort(key=lambda x: x[0])
+                        _rank, selected_pos, selected_tp = selected_members[0]
+                        track_tps.append(("TP", selected_tp, curr_route_pos + selected_pos, curr_track_dir))
+                        continue
                 
                 # Priority: target node that matches traversal direction.
                 preferred = []

@@ -90,36 +90,73 @@ class InfrastructureSceneBuilder:
                 return tr_obj.length_m - tp_obj.distance_to_target_m
             return tp_obj.distance_to_target_m
 
-        ordered_tps = sorted(
-            timing_points.values(),
-            key=lambda tp_obj: (
-                tp_obj.track_id,
-                _tp_pos_from_source(tp_obj),
-                tp_obj.id,
+        tp_groups: Dict[Tuple[str, float], List[TimingPoint]] = {}
+        for tp in timing_points.values():
+            pos_from_source = _tp_pos_from_source(tp)
+            if pos_from_source == float("inf"):
+                continue
+            key = (tp.track_id, round(pos_from_source, 6))
+            tp_groups.setdefault(key, []).append(tp)
+
+        ordered_groups = sorted(
+            tp_groups.values(),
+            key=lambda group: (
+                group[0].track_id,
+                _tp_pos_from_source(group[0]),
+                min(tp_obj.id for tp_obj in group),
             ),
         )
 
-        for tp in ordered_tps:
-            tp_id = tp.id
-            pos = tp_positions.get(tp_id)
-            if pos is None: continue
-            
-            tpi = TimingPointItem(tp, pos)
+        for tp_group in ordered_groups:
+            variants = sorted(tp_group, key=lambda tp_obj: tp_obj.id)
+            primary_tp = variants[0]
+            pos = tp_positions.get(primary_tp.id)
+            if pos is None:
+                fallback = None
+                for tp_obj in variants:
+                    fallback = tp_positions.get(tp_obj.id)
+                    if fallback is not None:
+                        break
+                pos = fallback
+            if pos is None:
+                continue
+
+            track_obj = tracks.get(primary_tp.track_id)
+            tpi = TimingPointItem(
+                primary_tp,
+                pos,
+                variants=variants,
+                track_source_node_id=track_obj.source if track_obj else "",
+                track_target_node_id=track_obj.target if track_obj else "",
+                track_length_m=track_obj.length_m if track_obj else 0.0,
+            )
             tpi.set_theme(self._current_theme)
-            
-            has_stop = False
-            if tp.id in timing_constraints:
-                c = timing_constraints[tp.id]
-                if c.get("pointType") == "STOP":
-                    has_stop = True
+
+            tp_ids = {tp_obj.id for tp_obj in variants}
+            has_stop = any(
+                (
+                    tp_id in timing_constraints
+                    and timing_constraints[tp_id].get("pointType") == "STOP"
+                )
+                for tp_id in tp_ids
+            )
 
             waypoint_ids = waypoint_tp_ids or set()
-            is_route_selected_tp = tp.id in {start_tp_id, end_tp_id} or tp.id in waypoint_ids
-            is_visible = (show_all_tp or (tp.track_id in visible_tp_tracks) or has_stop or is_route_selected_tp)
+            is_route_selected_tp = any(
+                tp_id in waypoint_ids or tp_id in {start_tp_id, end_tp_id}
+                for tp_id in tp_ids
+            )
+            is_visible = (
+                show_all_tp
+                or (primary_tp.track_id in visible_tp_tracks)
+                or has_stop
+                or is_route_selected_tp
+            )
             tpi.setVisible(is_visible)
             self._scene.addItem(tpi)
-            results["tp_items"][tp.id] = tpi
-            results["tp_track_map"].setdefault(tp.track_id, []).append(tpi)
+            for tp_obj in variants:
+                results["tp_items"][tp_obj.id] = tpi
+            results["tp_track_map"].setdefault(primary_tp.track_id, []).append(tpi)
 
         # Stopping locations
         for sl_id, sl in stopping_locations.items():
