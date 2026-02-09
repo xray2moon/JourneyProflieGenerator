@@ -205,6 +205,7 @@ class InfrastructureViewInteraction:
     def clear_route(self) -> None:
         self._push_undo_snapshot()
         selection = self._backend.selection
+        selection.clear_timing_constraints()
         selection.clear_selection()
         selection.set_visible_tp_tracks(set())
 
@@ -212,6 +213,7 @@ class InfrastructureViewInteraction:
         for track_item in self._track_items.values():
             track_item.set_timing_points_visible(False)
         for tpi in self._tp_items.values():
+            tpi.set_constraint_point_type(None)
             tpi.setVisible(False)
             tpi.setSelected(False)
 

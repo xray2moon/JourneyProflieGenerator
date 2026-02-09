@@ -78,6 +78,12 @@ class InfrastructureSelectionModel(QObject):
             self._timing_constraints[tp_id] = constraint
         self.timingConstraintsChanged.emit(self._timing_constraints)
 
+    def clear_timing_constraints(self):
+        if not self._timing_constraints:
+            return
+        self._timing_constraints.clear()
+        self.timingConstraintsChanged.emit(self._timing_constraints)
+
     @property
     def visible_tp_tracks(self) -> Set[str]:
         return self._visible_tp_tracks

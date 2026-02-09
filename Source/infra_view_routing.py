@@ -269,8 +269,11 @@ class InfrastructureViewRouting:
                             continue
                         if dist_to_tp < min_dist_from_anchor - 1e-6:
                             continue
-                        prefer_anchor_facing = 0 if tp.target_node_id == anchor_node_id else 1
-                        local_candidates.append((dist_to_tp, prefer_anchor_facing, tp.id))
+                        # Pick the nearest valid reversal point to the turn node
+                        # (not the earliest from the entry side) to minimize detour.
+                        dist_from_turn = tr_in.length_m - dist_to_tp
+                        prefer_turn_facing = 0 if tp.target_node_id == node_id else 1
+                        local_candidates.append((dist_from_turn, prefer_turn_facing, tp.id))
                     if local_candidates:
                         local_candidates.sort(key=lambda x: (x[0], x[1], x[2]))
                         return local_candidates[0][2]
@@ -438,6 +441,11 @@ class InfrastructureViewRouting:
             "departureTime": existing.get("departureTime"),
         }
         selection.set_timing_constraint(tp_id, constraint)
+        # Recompute route clipping after auto-inserted reversal STOP updates.
+        # Same-track reversal rendering uses STOP waypoints as anchors.
+        refresh_ui = getattr(self._view, "update_route_highlights_ui", None)
+        if callable(refresh_ui):
+            refresh_ui()
 
     def _find_node_uturn(self, route_nodes: List[str], route_tracks: List[str]) -> Optional[Tuple[str, str]]:
         """
@@ -543,11 +551,9 @@ class InfrastructureViewRouting:
         )
         insert_at = len(ordered_targets) - 1 if ordered_targets else 0
         ordered_targets.insert(insert_at, reversal_tp_id)
-        # Mark STOP before replay so the constraint is visible
-        # when update_route_highlights_ui runs during the replay.
-        self._mark_tp_as_stop_constraint(reversal_tp_id)
         if not self._replay_tp_sequence(start_tp_id, ordered_targets):
             return False
+        self._mark_tp_as_stop_constraint(reversal_tp_id)
         return True
 
     def _entry_transition_ok(
@@ -602,6 +608,11 @@ class InfrastructureViewRouting:
         old_start = selection.start_tp_id
         old_end = selection.end_tp_id
         old_waypoints = list(selection.waypoint_tp_ids)
+        old_timing_constraints: Dict[int, dict] = {
+            tp_id: dict(constraint)
+            for tp_id, constraint in selection.timing_constraints.items()
+            if isinstance(constraint, dict)
+        }
 
         setattr(self, "_replaying_tp_sequence", True)
         try:
@@ -614,6 +625,12 @@ class InfrastructureViewRouting:
                     selection.set_start_tp(old_start)
                     selection.set_end_tp(old_end)
                     selection.set_waypoint_tp_ids(old_waypoints)
+                    # Replay may have inserted auto-stop constraints; restore original set.
+                    for existing_tp_id in list(selection.timing_constraints.keys()):
+                        if existing_tp_id not in old_timing_constraints:
+                            selection.set_timing_constraint(existing_tp_id, None)
+                    for saved_tp_id, saved_constraint in old_timing_constraints.items():
+                        selection.set_timing_constraint(saved_tp_id, dict(saved_constraint))
                     QMessageBox.warning(
                         self._view,
                         "Waypoint not reachable",
@@ -768,9 +785,6 @@ class InfrastructureViewRouting:
                         f"DEBUG: inserting reversal TP {reversal_tp_id} before TP {tp_id} (turn node {turn_node})",
                         flush=True,
                     )
-                    # Mark STOP before replay so the constraint is visible
-                    # when update_route_highlights_ui runs during the replay.
-                    self._mark_tp_as_stop_constraint(reversal_tp_id)
                     replay_targets = [reversal_tp_id, tp_id]
                     if self._replay_tp_sequence(start_tp_id, replay_targets):
                         if self._resolve_remaining_uturns_after_replay(
@@ -780,6 +794,7 @@ class InfrastructureViewRouting:
                             base_track_len=0,
                             final_goal_tp_id=tp_id,
                         ):
+                            self._mark_tp_as_stop_constraint(reversal_tp_id)
                             return
                 else:
                     print(
@@ -917,9 +932,6 @@ class InfrastructureViewRouting:
                     if reversal_tp_id not in ordered_targets:
                         ordered_targets.append(reversal_tp_id)
                     ordered_targets.append(tp_id)
-                    # Mark STOP before replay so the constraint is visible
-                    # when update_route_highlights_ui runs during the replay.
-                    self._mark_tp_as_stop_constraint(reversal_tp_id)
                     if self._replay_tp_sequence(start_tp_id, ordered_targets):
                         if self._resolve_remaining_uturns_after_replay(
                             start_tp_id=start_tp_id,
@@ -928,6 +940,7 @@ class InfrastructureViewRouting:
                             base_track_len=len(current_tracks),
                             final_goal_tp_id=tp_id,
                         ):
+                            self._mark_tp_as_stop_constraint(reversal_tp_id)
                             return
                 else:
                     print(

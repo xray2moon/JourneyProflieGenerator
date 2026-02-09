@@ -249,18 +249,46 @@ class InfrastructureView(QWidget):
             selection = self._backend.selection
             start_selected = selected_tp_ids[0]
             end_selected = selected_tp_ids[-1]
-            waypoint_selected: List[int] = []
+            selected_waypoints: List[int] = []
             for tp_id in selected_tp_ids[1:-1]:
+                if tp_id not in selected_waypoints:
+                    selected_waypoints.append(tp_id)
+
+            # Preserve imported STOP turn anchors even when generatorRouteSelection
+            # omits them. This keeps loaded reversals clipped at the TP, not the node.
+            merged_waypoint_ids: set[int] = set(selected_waypoints)
+            for tp_id in replay_tp_ids[1:-1]:
+                constraint = stop_constraints.get(tp_id)
+                if not isinstance(constraint, dict):
+                    continue
+                if str(constraint.get("pointType", "")).upper() != "STOP":
+                    continue
+                merged_waypoint_ids.add(tp_id)
+
+            waypoint_selected: List[int] = []
+            for tp_id in replay_tp_ids[1:-1]:
+                if tp_id in {start_selected, end_selected}:
+                    continue
+                if tp_id in merged_waypoint_ids and tp_id not in waypoint_selected:
+                    waypoint_selected.append(tp_id)
+            for tp_id in selected_waypoints:
+                if tp_id in {start_selected, end_selected}:
+                    continue
                 if tp_id not in waypoint_selected:
                     waypoint_selected.append(tp_id)
             selection.set_start_tp(start_selected)
             selection.set_end_tp(end_selected)
             selection.set_waypoint_tp_ids(waypoint_selected)
 
-            for tp_id in list(selection.timing_constraints.keys()):
-                selection.set_timing_constraint(tp_id, None)
+            clear_constraints = getattr(selection, "clear_timing_constraints", None)
+            if callable(clear_constraints):
+                clear_constraints()
+            else:
+                for tp_id in list(selection.timing_constraints.keys()):
+                    selection.set_timing_constraint(tp_id, None)
             for tp_id, constraint in stop_constraints.items():
                 selection.set_timing_constraint(tp_id, constraint)
+            self.update_route_highlights_ui()
 
             self._tabs.setCurrentIndex(0)
 
