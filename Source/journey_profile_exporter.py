@@ -158,6 +158,14 @@ class JourneyProfileExporter:
             # Absolute direction on this track relative to its definition
             # Swapped as per user request: if track.target == v, it was NOMINAL, now REVERSE
             curr_track_dir = "REVERSE" if track.target == v else "NOMINAL"
+            # Prefer TP identity that matches movement direction on this traversal.
+            # On mirrored TP pairs (same physical point, opposite targetNodeId),
+            # this keeps export consistent with route direction.
+            preferred_target_node_id = None
+            if v == track.target:
+                preferred_target_node_id = track.target
+            elif v == track.source:
+                preferred_target_node_id = track.source
             
             if last_track_dir is not None and last_track_dir != curr_track_dir:
                 # REVERSAL at node u
@@ -235,8 +243,14 @@ class JourneyProfileExporter:
                     track_tps.append(("TP", selected_tp, curr_route_pos + selected_pos, curr_track_dir))
                     continue
                 
-                # Priority: target == track.target, with deterministic TP-ID tie-break.
-                preferred = [(pos, tp) for pos, tp in group if tp.target_node_id == track.target]
+                # Priority: target node that matches traversal direction.
+                preferred = []
+                if preferred_target_node_id is not None:
+                    preferred = [
+                        (pos, tp)
+                        for pos, tp in group
+                        if tp.target_node_id == preferred_target_node_id
+                    ]
                 if preferred:
                     preferred.sort(key=lambda x: x[1].id)
                     selected_pos, selected_tp = preferred[0]
