@@ -20,7 +20,9 @@ class InfrastructureViewInteraction:
     def __init__(self, view):
         self._view = view
         self._undo_stack: List[dict] = []
+        self._redo_stack: List[dict] = []
         self._restoring_undo = False
+        self._update_history_buttons()
 
     def __getattr__(self, name):
         return getattr(self._view, name)
@@ -598,13 +600,41 @@ class InfrastructureViewInteraction:
         self._undo_stack.append(snapshot)
         if len(self._undo_stack) > self.MAX_UNDO_STEPS:
             self._undo_stack.pop(0)
+        self._redo_stack.clear()
+        self._update_history_buttons()
 
     def undo_last_change(self) -> None:
         if not self._undo_stack:
             return
+        current_state = self._backend.selection.snapshot_state()
         previous_state = self._undo_stack.pop()
+        self._redo_stack.append(current_state)
+        if len(self._redo_stack) > self.MAX_UNDO_STEPS:
+            self._redo_stack.pop(0)
         self._restoring_undo = True
         try:
             self._backend.selection.restore_state(previous_state)
         finally:
             self._restoring_undo = False
+        self._update_history_buttons()
+
+    def redo_last_change(self) -> None:
+        if not self._redo_stack:
+            return
+        current_state = self._backend.selection.snapshot_state()
+        next_state = self._redo_stack.pop()
+        self._undo_stack.append(current_state)
+        if len(self._undo_stack) > self.MAX_UNDO_STEPS:
+            self._undo_stack.pop(0)
+        self._restoring_undo = True
+        try:
+            self._backend.selection.restore_state(next_state)
+        finally:
+            self._restoring_undo = False
+        self._update_history_buttons()
+
+    def _update_history_buttons(self) -> None:
+        self._view.update_history_buttons(
+            can_undo=bool(self._undo_stack),
+            can_redo=bool(self._redo_stack),
+        )

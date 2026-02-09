@@ -69,6 +69,11 @@ class InfrastructureView(QWidget):
         # Toolbar
         self._clear_route_btn = QPushButton("Clear route")
         self._clear_route_btn.clicked.connect(self.clear_route)
+
+        self._undo_btn = QPushButton("Undo")
+        self._undo_btn.clicked.connect(self.undo_last_change)
+        self._redo_btn = QPushButton("Redo")
+        self._redo_btn.clicked.connect(self.redo_last_change)
         
         self._route_start_label = QLabel("Start: -")
         self._route_end_label = QLabel("End: -")
@@ -77,6 +82,8 @@ class InfrastructureView(QWidget):
         toolbar.setContentsMargins(8, 4, 8, 4)
         toolbar.setSpacing(10)
         toolbar.addWidget(self._clear_route_btn)
+        toolbar.addWidget(self._undo_btn)
+        toolbar.addWidget(self._redo_btn)
         toolbar.addStretch(1)
         toolbar.addWidget(self._route_start_label)
         toolbar.addSpacing(8)
@@ -138,6 +145,10 @@ class InfrastructureView(QWidget):
         self._undo_shortcut = QShortcut(QKeySequence.StandardKey.Undo, self)
         self._undo_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
         self._undo_shortcut.activated.connect(self.undo_last_change)
+        self._redo_shortcut = QShortcut(QKeySequence("Ctrl+Y"), self)
+        self._redo_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
+        self._redo_shortcut.activated.connect(self.redo_last_change)
+        self.update_history_buttons(can_undo=False, can_redo=False)
 
         if json_path:
             self.load_infrastructure(json_path)
@@ -165,6 +176,14 @@ class InfrastructureView(QWidget):
 
     def resizeEvent(self, event):
         self._settings.resizeEvent(event)
+
+    def update_history_buttons(self, can_undo: bool, can_redo: bool) -> None:
+        undo_btn = getattr(self, "_undo_btn", None)
+        redo_btn = getattr(self, "_redo_btn", None)
+        if undo_btn is not None:
+            undo_btn.setEnabled(can_undo)
+        if redo_btn is not None:
+            redo_btn.setEnabled(can_redo)
 
     def load_infrastructure(self, json_path: str):
         print(f"DEBUG: load_infrastructure requested for {json_path}", flush=True)
