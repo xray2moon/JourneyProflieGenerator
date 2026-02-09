@@ -170,8 +170,8 @@ class InfrastructureViewRouting:
         *,
         incoming_track_id: Optional[str],
         goal_tp_id: Optional[int] = None,
-        turn_anchor_node_id: Optional[str] = None,
         excluded_tp_ids: set[int],
+        route_start_tp_id: Optional[int] = None,
     ) -> Optional[int]:
         """
         Find the nearest TP where we can reverse safely after passing node_id.
@@ -180,6 +180,10 @@ class InfrastructureViewRouting:
         - Candidate must be reachable from node_id with current incoming_track_id.
         - Candidate path must depart node_id on a track different from incoming_track_id.
         - Reversing at the candidate must still allow reaching goal_tp_id.
+        - If route_start_tp_id is given and lies on the incoming track, only
+          candidates at or beyond the start TP (measured from the entry end)
+          are considered.  This prevents selecting TPs the train has not yet
+          reached on its forward journey.
         """
         model = self._backend.model
         if node_id not in model.nodes:
@@ -200,13 +204,32 @@ class InfrastructureViewRouting:
             return None
 
         # Prefer reversal points on the turn segment first when they remain valid
-        # for reaching the requested goal TP.
+        # for reaching the requested goal TP.  Anchor at the *entry* node
+        # (opposite end of the incoming track from the turn node) so we pick
+        # the earliest eligible TP the train encounters on its way toward
+        # the turn checkpoint.
         if incoming_track_id is not None:
             tr_in = model.tracks.get(incoming_track_id)
             if tr_in is not None:
-                anchor_node_id = node_id
-                if turn_anchor_node_id in {tr_in.source, tr_in.target}:
-                    anchor_node_id = turn_anchor_node_id
+                # entry node = the end of the track the train comes from
+                if node_id == tr_in.source:
+                    anchor_node_id = tr_in.target
+                elif node_id == tr_in.target:
+                    anchor_node_id = tr_in.source
+                else:
+                    anchor_node_id = node_id
+
+                # Compute the minimum distance from the anchor (entry node)
+                # so we skip TPs the train has not yet reached.
+                min_dist_from_anchor = 0.0
+                if route_start_tp_id is not None:
+                    start_tp_obj = model.timing_points.get(route_start_tp_id)
+                    if start_tp_obj and start_tp_obj.track_id == incoming_track_id:
+                        s_pos = self._tp_position_from_source(start_tp_obj, tr_in)
+                        if anchor_node_id == tr_in.source:
+                            min_dist_from_anchor = s_pos
+                        elif anchor_node_id == tr_in.target:
+                            min_dist_from_anchor = tr_in.length_m - s_pos
 
                 local_goal_ok = self._can_reach_goal_tp_after_reversal(
                     node_id,
@@ -224,6 +247,8 @@ class InfrastructureViewRouting:
                         else:
                             continue
                         if dist_to_tp < 0 or dist_to_tp > tr_in.length_m:
+                            continue
+                        if dist_to_tp < min_dist_from_anchor - 1e-6:
                             continue
                         prefer_anchor_facing = 0 if tp.target_node_id == anchor_node_id else 1
                         local_candidates.append((dist_to_tp, prefer_anchor_facing, tp.id))
@@ -484,6 +509,7 @@ class InfrastructureViewRouting:
             incoming_track_id=incoming_track,
             goal_tp_id=final_goal_tp_id,
             excluded_tp_ids=excluded_tp_ids,
+            route_start_tp_id=start_tp_id,
         )
         if reversal_tp_id is None:
             print(
@@ -498,9 +524,11 @@ class InfrastructureViewRouting:
         )
         insert_at = len(ordered_targets) - 1 if ordered_targets else 0
         ordered_targets.insert(insert_at, reversal_tp_id)
+        # Mark STOP before replay so the constraint is visible
+        # when update_route_highlights_ui runs during the replay.
+        self._mark_tp_as_stop_constraint(reversal_tp_id)
         if not self._replay_tp_sequence(start_tp_id, ordered_targets):
             return False
-        self._mark_tp_as_stop_constraint(reversal_tp_id)
         return True
 
     def _entry_transition_ok(
@@ -693,17 +721,19 @@ class InfrastructureViewRouting:
                     turn_node,
                     incoming_track_id=incoming_track,
                     goal_tp_id=tp_id,
-                    turn_anchor_node_id=tp.target_node_id,
                     excluded_tp_ids={tp_id, start_tp_id},
+                    route_start_tp_id=start_tp_id,
                 )
                 if reversal_tp_id is not None:
                     print(
                         f"DEBUG: inserting reversal TP {reversal_tp_id} before TP {tp_id} (turn node {turn_node})",
                         flush=True,
                     )
+                    # Mark STOP before replay so the constraint is visible
+                    # when update_route_highlights_ui runs during the replay.
+                    self._mark_tp_as_stop_constraint(reversal_tp_id)
                     replay_targets = [reversal_tp_id, tp_id]
                     if self._replay_tp_sequence(start_tp_id, replay_targets):
-                        self._mark_tp_as_stop_constraint(reversal_tp_id)
                         if self._resolve_remaining_uturns_after_replay(
                             start_tp_id=start_tp_id,
                             ordered_targets=replay_targets,
@@ -793,18 +823,42 @@ class InfrastructureViewRouting:
 
             # Avoid reversing direction exactly on a node (same track traversed back-to-back).
             # Insert a valid reversal TP (>=50 m from both nodes) past that node and replay.
-            extension_nodes = new_nodes[len(current_route) - 1:] if current_route else new_nodes
-            extension_tracks = new_tracks[len(current_tracks):]
-            uturn = self._find_node_uturn(extension_nodes, extension_tracks)
+            # Include the last segment of the existing route in the U-turn check so
+            # that "boundary" U-turns (same track in both existing route and extension)
+            # are detected.  This lets us find the earliest reversal TP the train
+            # encounters – which may be on the existing route's last track, not
+            # just on the extension tracks.
+            if current_route and len(current_route) >= 2 and current_tracks:
+                check_nodes = new_nodes[len(current_route) - 2:]
+                check_tracks = new_tracks[len(current_tracks) - 1:]
+            else:
+                check_nodes = new_nodes if not current_route else new_nodes[len(current_route) - 1:]
+                check_tracks = new_tracks if not current_route else new_tracks[len(current_tracks):]
+            uturn = self._find_node_uturn(check_nodes, check_tracks)
             if uturn is not None and not replay_mode and start_tp_id is not None:
                 turn_node, incoming_track = uturn
-                reversal_tp_id = self._find_nearest_reversal_tp_after_node(
-                    turn_node,
-                    incoming_track_id=incoming_track,
-                    goal_tp_id=tp_id,
-                    turn_anchor_node_id=tp.target_node_id,
-                    excluded_tp_ids={tp_id, start_tp_id, *(selection.waypoint_tp_ids or [])},
-                )
+
+                # For boundary U-turns (the incoming track is the same as the
+                # last track of the existing route), the previous end TP is
+                # already on that track and was explicitly selected by the user.
+                # Prefer it as the reversal point when it is suitable.
+                reversal_tp_id = None
+                if (
+                    previous_end_tp is not None
+                    and previous_end_tp.track_id == incoming_track
+                ):
+                    tr_in = model.tracks.get(incoming_track)
+                    if tr_in and self._is_tp_suitable_reversal_point(previous_end_tp, tr_in):
+                        reversal_tp_id = previous_end_tp_id
+
+                if reversal_tp_id is None:
+                    reversal_tp_id = self._find_nearest_reversal_tp_after_node(
+                        turn_node,
+                        incoming_track_id=incoming_track,
+                        goal_tp_id=tp_id,
+                        excluded_tp_ids={tp_id, start_tp_id, *(selection.waypoint_tp_ids or [])},
+                        route_start_tp_id=start_tp_id,
+                    )
                 if reversal_tp_id is not None:
                     print(
                         f"DEBUG: inserting reversal TP {reversal_tp_id} before TP {tp_id} (turn node {turn_node})",
@@ -814,8 +868,10 @@ class InfrastructureViewRouting:
                     if reversal_tp_id not in ordered_targets:
                         ordered_targets.append(reversal_tp_id)
                     ordered_targets.append(tp_id)
+                    # Mark STOP before replay so the constraint is visible
+                    # when update_route_highlights_ui runs during the replay.
+                    self._mark_tp_as_stop_constraint(reversal_tp_id)
                     if self._replay_tp_sequence(start_tp_id, ordered_targets):
-                        self._mark_tp_as_stop_constraint(reversal_tp_id)
                         if self._resolve_remaining_uturns_after_replay(
                             start_tp_id=start_tp_id,
                             ordered_targets=ordered_targets,

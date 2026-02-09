@@ -383,6 +383,18 @@ class InfrastructureViewInteraction:
 
             i_prev, i_next = reversal_pair
 
+            # Only clip when the direction change is consistent with a
+            # reversal at tp_a's position.  If both TPs are on the same
+            # side of the turn (e.g. both before the track endpoint where
+            # the actual U-turn occurs), skip and let the per-waypoint
+            # loop below handle clipping at the real reversal TP.
+            dir_prev = route_traversal_sequence[i_prev][1]
+            dir_next = route_traversal_sequence[i_next][1]
+            if dir_prev == "forward" and dir_next == "backward" and pct_a < pct_b:
+                continue
+            if dir_prev == "backward" and dir_next == "forward" and pct_a > pct_b:
+                continue
+
             prev_tid = route_traversal_sequence[i_prev][0]
             prev_local = traversal_local_indices[i_prev]
             prev_s, prev_e = track_to_ranges[prev_tid][prev_local]
@@ -397,8 +409,13 @@ class InfrastructureViewInteraction:
 
         # Also anchor any direction change on the same track to an explicit waypoint TP
         # (even when adjacent selected TPs are on different tracks).
+        # Only process waypoints that are actual reversal/STOP points so that
+        # pass-through waypoints do not incorrectly consume a direction change.
         search_from = 0
         for wp_id in selection.waypoint_tp_ids:
+            constraint = selection.timing_constraints.get(wp_id)
+            if not constraint or constraint.get("pointType") != "STOP":
+                continue
             wp = model.timing_points.get(wp_id)
             if not wp:
                 continue

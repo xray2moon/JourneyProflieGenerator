@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c:*)",
+      "Bash(.venv\\\\Scripts\\\\python.exe:*)",
+      "Bash(C:\\\\Users\\\\iamfa\\\\JourneyProflieGenerator\\\\.venv\\\\Scripts\\\\python.exe:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(sort:*)"
+    ]
+  }
+}

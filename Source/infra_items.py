@@ -583,30 +583,70 @@ class TrackItem(QGraphicsPathItem):
         res_full = QPainterPath(new_pts[0])
         for pt in new_pts[1:]:
             res_full.lineTo(pt)
-            
+
         if s_pct == 0.0 and e_pct == 1.0:
             return res_full
-            
-        # Create a partial path
-        res = QPainterPath()
-        if total_len < 1e-6: return res
-        
-        # Approximate partial path by sampling
-        steps = 100
-        res_full_len = res_full.length()
-        first = True
-        for step in range(steps + 1):
-            p = s_pct + (e_pct - s_pct) * (step / steps)
-            if hasattr(res_full, "percentAtLength") and res_full_len > 1e-6:
-                t = res_full.percentAtLength(min(res_full_len, max(0.0, p * res_full_len)))
-            else:
-                t = p
-            pt = res_full.pointAtPercent(t)
-            if first:
-                res.moveTo(pt)
-                first = False
-            else:
-                res.lineTo(pt)
+
+        # Create a partial path by clipping offset points using original-
+        # track fractions.  Using percentAtLength on the offset path would
+        # drift because its total length differs from the original track.
+        if total_len < 1e-6:
+            return QPainterPath()
+
+        lo = min(s_pct, e_pct)
+        hi = max(s_pct, e_pct)
+        backward = s_pct > e_pct
+
+        # Recompute original fractions for each refined point.
+        cum = 0.0
+        prev_f = 0.0
+        clipped: List[QPointF] = []
+        for i in range(len(new_pts)):
+            f = cum / total_len if total_len > 1e-6 else 0.0
+            in_range = lo - 1e-9 <= f <= hi + 1e-9
+
+            if in_range:
+                # Interpolate entry boundary when the previous point was
+                # outside the range.
+                if not clipped and i > 0 and prev_f < lo - 1e-9 and f > prev_f:
+                    t = (lo - prev_f) / (f - prev_f)
+                    clipped.append(new_pts[i - 1] + (new_pts[i] - new_pts[i - 1]) * t)
+                clipped.append(new_pts[i])
+            elif f > hi + 1e-9:
+                # Past range – interpolate exit boundary.
+                if i > 0 and f > prev_f:
+                    t = (hi - prev_f) / (f - prev_f)
+                    clipped.append(new_pts[i - 1] + (new_pts[i] - new_pts[i - 1]) * t)
+                break
+
+            prev_f = f
+            if i < len(segment_lengths):
+                cum += segment_lengths[i]
+
+        if len(clipped) < 2:
+            # Range falls between two consecutive points – interpolate both ends.
+            cum2 = 0.0
+            for i in range(1, len(new_pts)):
+                f_prev = cum2 / total_len if total_len > 1e-6 else 0.0
+                cum2 += segment_lengths[i - 1] if i - 1 < len(segment_lengths) else 0
+                f_cur = cum2 / total_len if total_len > 1e-6 else 1.0
+                if f_cur >= lo - 1e-9 and f_prev <= lo + 1e-9:
+                    span = f_cur - f_prev if f_cur > f_prev else 1e-9
+                    t_lo = max(0.0, min(1.0, (lo - f_prev) / span))
+                    t_hi = max(0.0, min(1.0, (hi - f_prev) / span))
+                    p1 = new_pts[i - 1] + (new_pts[i] - new_pts[i - 1]) * t_lo
+                    p2 = new_pts[i - 1] + (new_pts[i] - new_pts[i - 1]) * t_hi
+                    clipped = [p1, p2]
+                    break
+            if len(clipped) < 2:
+                return res_full  # fallback
+
+        if backward:
+            clipped.reverse()
+
+        res = QPainterPath(clipped[0])
+        for pt in clipped[1:]:
+            res.lineTo(pt)
         return res
 
     def _create_arrow(self, pos: QPointF, tangent: QPointF, color: QColor) -> None:
