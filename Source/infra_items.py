@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from typing import List, Optional, Sequence, Set, Tuple
+from typing import Dict, List, Optional, Sequence, Set, Tuple
 
 from PyQt6.QtCore import Qt, QPointF
 from PyQt6.QtGui import QBrush, QColor, QPainterPath, QPen, QTransform
@@ -100,6 +100,7 @@ class TimingPointItem(QGraphicsEllipseItem):
         track_source_node_id: str = "",
         track_target_node_id: str = "",
         track_length_m: float = 0.0,
+        node_numeric_ids: Optional[Dict[str, Optional[int]]] = None,
     ):
         super().__init__(-radius, -radius, 2 * radius, 2 * radius)
         ordered_variants = sorted(
@@ -112,6 +113,7 @@ class TimingPointItem(QGraphicsEllipseItem):
         self._track_source_node_id = track_source_node_id
         self._track_target_node_id = track_target_node_id
         self._track_length_m = float(track_length_m or 0.0)
+        self._node_numeric_ids: Dict[str, Optional[int]] = dict(node_numeric_ids or {})
         self.setPos(pos)
         self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, True)
@@ -146,39 +148,16 @@ class TimingPointItem(QGraphicsEllipseItem):
         return int(tp_id) in self._tp_id_set
 
     def _tooltip_text(self) -> str:
-        lines = [
-            "{",
-            '  "track": {',
-            f'    "id": "{self.tp.track_id}",',
-            f'    "sourceNodeId": "{self._track_source_node_id}",',
-            f'    "targetNodeId": "{self._track_target_node_id}",',
-            f'    "lengthMeter": {float(self._track_length_m):.3f}',
-            "  },",
-            '  "timingPoints": [',
-        ]
-
+        lines = ["Timing Points:"]
         for idx, var in enumerate(self._variants):
-            comma = "," if idx < len(self._variants) - 1 else ""
-            stopping_location_id = str(var.stopping_location_id or "")
-            lines.extend(
-                [
-                    "    {",
-                    f'      "id": {int(var.id)},',
-                    f'      "trackId": "{var.track_id}",',
-                    f'      "targetNodeId": "{var.target_node_id}",',
-                    f'      "distanceToTargetNodeInMeters": {float(var.distance_to_target_m):.3f},',
-                    f'      "stoppingLocationId": "{stopping_location_id}",',
-                    f'      "segmentProfileId": {int(var.segment_profile_id)}',
-                    f"    }}{comma}",
-                ]
-            )
-
-        lines.extend(
-            [
-                "  ]",
-                "}",
-            ]
-        )
+            numeric_id = self._node_numeric_ids.get(var.target_node_id)
+            target_node_display = str(numeric_id) if numeric_id is not None else str(var.target_node_id)
+            lines.append(f"ID: {int(var.id)}")
+            lines.append(f"\tTarget Node: {target_node_display}")
+            lines.append(f"\tDistance to Target Node: {float(var.distance_to_target_m):.3f}")
+            lines.append(f"\tSegmentProfileID: {int(var.segment_profile_id)}")
+            if idx < len(self._variants) - 1:
+                lines.append("")
         return "\n".join(lines)
 
     def hoverEnterEvent(self, event):

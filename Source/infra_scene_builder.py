@@ -14,6 +14,9 @@ class InfrastructureSceneBuilder:
     def __init__(self, scene: QGraphicsScene):
         self._scene = scene
         self._current_theme = "light" # Default
+        # Merge nearly co-located timing points on the same track into one marker.
+        # This keeps hidden/overlapping points discoverable via the aggregated tooltip.
+        self._tp_aggregation_tolerance_m = 0.25
 
     def set_theme(self, theme: str):
         self._current_theme = theme
@@ -90,22 +93,47 @@ class InfrastructureSceneBuilder:
                 return tr_obj.length_m - tp_obj.distance_to_target_m
             return tp_obj.distance_to_target_m
 
-        tp_groups: Dict[Tuple[str, float], List[TimingPoint]] = {}
+        tp_positions_by_track: Dict[str, List[Tuple[float, TimingPoint]]] = {}
         for tp in timing_points.values():
             pos_from_source = _tp_pos_from_source(tp)
             if pos_from_source == float("inf"):
                 continue
-            key = (tp.track_id, round(pos_from_source, 6))
-            tp_groups.setdefault(key, []).append(tp)
+            tp_positions_by_track.setdefault(tp.track_id, []).append((pos_from_source, tp))
 
-        ordered_groups = sorted(
-            tp_groups.values(),
-            key=lambda group: (
-                group[0].track_id,
-                _tp_pos_from_source(group[0]),
-                min(tp_obj.id for tp_obj in group),
-            ),
-        )
+        ordered_groups: List[List[TimingPoint]] = []
+        for track_id in sorted(tp_positions_by_track.keys()):
+            members = sorted(
+                tp_positions_by_track[track_id],
+                key=lambda entry: (entry[0], int(entry[1].id)),
+            )
+            current_group: List[TimingPoint] = []
+            current_center: Optional[float] = None
+            current_count = 0
+
+            for pos_from_source, tp in members:
+                if not current_group:
+                    current_group = [tp]
+                    current_center = float(pos_from_source)
+                    current_count = 1
+                    continue
+
+                if (
+                    current_center is not None
+                    and abs(float(pos_from_source) - current_center) <= self._tp_aggregation_tolerance_m
+                ):
+                    current_group.append(tp)
+                    current_count += 1
+                    # Keep a stable running center for the current cluster.
+                    current_center += (float(pos_from_source) - current_center) / float(current_count)
+                    continue
+
+                ordered_groups.append(current_group)
+                current_group = [tp]
+                current_center = float(pos_from_source)
+                current_count = 1
+
+            if current_group:
+                ordered_groups.append(current_group)
 
         for tp_group in ordered_groups:
             variants = sorted(tp_group, key=lambda tp_obj: tp_obj.id)
@@ -129,6 +157,7 @@ class InfrastructureSceneBuilder:
                 track_source_node_id=track_obj.source if track_obj else "",
                 track_target_node_id=track_obj.target if track_obj else "",
                 track_length_m=track_obj.length_m if track_obj else 0.0,
+                node_numeric_ids={node_id: node.numeric_id for node_id, node in nodes.items()},
             )
             tpi.set_theme(self._current_theme)
 
