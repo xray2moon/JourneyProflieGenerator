@@ -116,6 +116,24 @@ class JourneyProfileExporter:
 
         return ranges
 
+    def _is_tp_stop_event(
+        self,
+        *,
+        tp: TimingPoint,
+        event_index: int,
+        last_tp_index: int,
+        reversal_tp_ids: set[int],
+    ) -> bool:
+        selection = self._backend.selection
+        if event_index == last_tp_index:
+            return True
+        if tp.id in reversal_tp_ids:
+            return True
+        user_c = selection.timing_constraints.get(tp.id)
+        if isinstance(user_c, dict):
+            return str(user_c.get("pointType", "")).upper() == "STOP"
+        return False
+
     def export_journey_profile(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
         selection = self._backend.selection
         model = self._backend.model
@@ -334,11 +352,12 @@ class JourneyProfileExporter:
                 is_stop = True
             else:
                 tp = edata
-                user_c = selection.timing_constraints.get(tp.id)
-                if user_c:
-                    is_stop = (user_c.get("pointType") == "STOP")
-                else:
-                    is_stop = bool(tp.stopping_location_id) or (tp.id in reversal_tp_ids)
+                is_stop = self._is_tp_stop_event(
+                    tp=tp,
+                    event_index=i,
+                    last_tp_index=last_tp_index,
+                    reversal_tp_ids=reversal_tp_ids,
+                )
             
             if is_stop:
                 stop_positions.append(abs_pos)
@@ -360,11 +379,12 @@ class JourneyProfileExporter:
                 is_stop = True
             else:
                 tp = edata
-                user_c = selection.timing_constraints.get(tp.id)
-                if user_c:
-                    is_stop = (user_c.get("pointType") == "STOP")
-                else:
-                    is_stop = bool(tp.stopping_location_id) or (tp.id in reversal_tp_ids)
+                is_stop = self._is_tp_stop_event(
+                    tp=tp,
+                    event_index=i,
+                    last_tp_index=last_tp_index,
+                    reversal_tp_ids=reversal_tp_ids,
+                )
             
             # Find distance to next stop for look-ahead
             next_stop_pos = float('inf')
