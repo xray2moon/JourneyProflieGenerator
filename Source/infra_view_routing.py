@@ -443,11 +443,11 @@ class InfrastructureViewRouting:
                             continue
                         if dist_to_tp < min_dist_from_anchor - 1e-6:
                             continue
-                        # Pick the nearest valid reversal point to the turn node
-                        # (not the earliest from the entry side) to minimize detour.
-                        dist_from_turn = tr_in.length_m - dist_to_tp
+                        # Pick the first valid reversal point encountered from the
+                        # entry side toward the turn node.
+                        dist_from_entry = dist_to_tp
                         prefer_turn_facing = 0 if tp.target_node_id == node_id else 1
-                        local_candidates.append((dist_from_turn, prefer_turn_facing, tp.id))
+                        local_candidates.append((dist_from_entry, prefer_turn_facing, tp.id))
                     if local_candidates:
                         local_candidates.sort(key=lambda x: (x[0], x[1], x[2]))
                         return local_candidates[0][2]

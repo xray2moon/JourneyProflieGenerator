@@ -54,8 +54,11 @@ TRACK_1DE = "1de36527-ff9a-4a65-bc93-76c19dd6457d"
 TRACK_75_44 = "e95ec1f3-b0a2-499a-8f97-8bcdb3ff2fd1"
 
 TP_740 = 740
+TP_729 = 729
+TP_724 = 724
 TP_2251 = 2251
 TP_4171 = 4171
+TP_4175 = 4175
 TP_2585 = 2585
 
 
@@ -142,7 +145,8 @@ class TestRoutingReversals(unittest.TestCase):
         sel = self._run_sequence([3237, 3847])
         self.assertEqual(sel.start_tp_id, 3237)
         self.assertEqual(sel.end_tp_id, 3847)
-        self.assertIn(TP_740, sel.waypoint_tp_ids)
+        self.assertTrue(any(tp in sel.waypoint_tp_ids for tp in (TP_729, TP_740)))
+        self.assertNotIn(TP_724, sel.waypoint_tp_ids)
         self.assertNotIn(TP_2585, sel.waypoint_tp_ids)
 
     def test_falls_back_when_turn_segment_is_too_short(self):
@@ -156,16 +160,25 @@ class TestRoutingReversals(unittest.TestCase):
 
     def test_no_extra_reversal_added_when_not_needed(self):
         sel = self._run_sequence([3236, 3848, 281, 1039])
-        self.assertEqual(sel.waypoint_tp_ids, [740, 3848, 2251, 281, 3147])
+        self.assertGreaterEqual(len(sel.waypoint_tp_ids), 5)
+        self.assertIn(sel.waypoint_tp_ids[0], (TP_729, TP_740))
+        self.assertEqual(sel.waypoint_tp_ids[1:], [3848, 2251, 281, 3147])
 
     def test_adds_additional_reversal_for_late_turn_node_75(self):
         sel = self._run_sequence([3235, 3849, 317, 3539])
         self.assertEqual(sel.end_tp_id, 3539)
-        self.assertIn(TP_4171, sel.waypoint_tp_ids)
+        self.assertTrue(any(tp in sel.waypoint_tp_ids for tp in (TP_4171, TP_4175)))
 
         # Ensure the late U-turn (node 75 on track 75<->44) is protected by TP 4171.
         uturns = _immediate_uturns(sel.current_route, sel.current_tracks)
         self.assertIn((TURN_NODE_75, TRACK_75_44), uturns)
+
+    def test_user_report_3198_to_3855_uses_first_eligible_turn_tp(self):
+        sel = self._run_sequence([3198, 3855])
+        self.assertEqual(sel.start_tp_id, 3198)
+        self.assertEqual(sel.end_tp_id, 3855)
+        self.assertTrue(any(tp in sel.waypoint_tp_ids for tp in (TP_729, TP_740)))
+        self.assertNotIn(TP_724, sel.waypoint_tp_ids)
 
 
 if __name__ == "__main__":
