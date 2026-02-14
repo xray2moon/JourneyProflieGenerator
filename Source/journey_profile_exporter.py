@@ -485,7 +485,7 @@ class JourneyProfileExporter:
                 "eventId": f"JP.{uuid.uuid4()}",
                 "eventType": "JourneyProfile",
                 "createdAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
-                "createdBy": "JourneyProfileGenerator-CLI",
+                "createdBy": "JourneyProfileGenerator",
                 "correlation": [str(uuid.uuid4()), str(uuid.uuid4())]
             },
             "tmsHeader": {
