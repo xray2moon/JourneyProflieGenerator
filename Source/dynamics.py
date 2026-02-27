@@ -42,6 +42,17 @@ class TrainState:
     decel_idx: int = 0
     braking_triggered: bool = False
 
+
+def _clamp_idx(idx: int, size: int) -> int:
+    """Clamp array index into valid bounds."""
+    if size <= 0:
+        return 0
+    if idx < 0:
+        return 0
+    if idx >= size:
+        return size - 1
+    return idx
+
 def get_braking_distance(train_type: str, velocity: float) -> float:
     """
     Calculates the distance required to stop from a given velocity.
@@ -53,9 +64,7 @@ def get_braking_distance(train_type: str, velocity: float) -> float:
     v_steps = data["decel"]
     
     # Find the index where v_steps is closest to velocity
-    idx = np.searchsorted(v_steps, velocity)
-    if idx >= len(v_steps):
-        idx = len(v_steps) - 1
+    idx = _clamp_idx(int(np.searchsorted(v_steps, velocity)), len(v_steps))
         
     # Braking distance is the sum of speeds in the curve from idx down to 0, times time_step (0.1s)
     dist = np.sum(v_steps[:idx+1]) * 0.1
@@ -110,14 +119,14 @@ def simulate_travel(
         # 2. Get current velocity step
         if current_mode == "accel":
             v_steps = accel_v
-            v_idx = min(state.accel_idx, len(v_steps) - 1)
+            v_idx = _clamp_idx(int(state.accel_idx), len(v_steps))
             cur_v = v_steps[v_idx]
-            state.decel_idx = np.searchsorted(decel_v, cur_v)
+            state.decel_idx = _clamp_idx(int(np.searchsorted(decel_v, cur_v)), len(decel_v))
         else:
             v_steps = decel_v
-            v_idx = max(0, state.decel_idx)
+            v_idx = _clamp_idx(int(state.decel_idx), len(v_steps))
             cur_v = v_steps[v_idx]
-            state.accel_idx = np.searchsorted(accel_v, cur_v)
+            state.accel_idx = _clamp_idx(int(np.searchsorted(accel_v, cur_v)), len(accel_v))
 
         # 3. Apply speed restriction
         effective_v = min(cur_v, speed_restriction)
