@@ -221,10 +221,6 @@ class InfrastructureViewInteraction:
                         return True
                     if event.button() == Qt.MouseButton.RightButton:
                         if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
-                            resolved_tp_id = self._resolve_existing_member_tp_id(item)
-                            if resolved_tp_id is not None:
-                                self._edit_timing_constraint(resolved_tp_id)
-                        else:
                             selection = self._backend.selection
                             route_tp_ids = set(selection.waypoint_tp_ids)
                             if selection.start_tp_id is not None:
@@ -255,6 +251,10 @@ class InfrastructureViewInteraction:
                                 self._remove_tp_from_route(tp_id_to_remove)
                             else:
                                 item.setSelected(False)
+                        else:
+                            resolved_tp_id = self._resolve_existing_member_tp_id(item)
+                            if resolved_tp_id is not None:
+                                self._edit_timing_constraint(resolved_tp_id)
                         return True
 
                 if isinstance(item, StoppingLocationItem):
