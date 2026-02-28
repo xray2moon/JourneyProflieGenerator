@@ -1,15 +1,35 @@
 site_name: Journey Profile Generator
 site_description: Interactive train journey planning and JSON generation.
+docs_dir: .  # Suche im Hauptverzeichnis nach .md Dateien
 theme:
   name: material
+  language: en
+  icon:
+    logo: material/train
   palette:
-    primary: indigo
-    accent: indigo
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
   features:
     - navigation.sections
     - navigation.expand
+    - navigation.top  # "Nach oben"-Button
     - content.code.copy
     - search.suggest
+    - search.highlight
 
 nav:
   - Welcome: README.md
