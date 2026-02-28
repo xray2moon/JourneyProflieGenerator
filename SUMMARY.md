@@ -1,8 +1,16 @@
 # Table of contents
 
-* [README](README.md)
-* [docs](docs/README.md)
-  * [Journey Profile Generator](docs/controls.md)
-  * [Getting Started](docs/getting_started.md)
-* [testing](testing/README.md)
-  * [Detailed Testing Plan for Journey Profile Generator](testing/TESTING_PLAN.md)
+* [Introduction](README.md)
+
+### User Documentation
+* [Getting Started](docs/user_documentation/getting_started.md)
+* [Controls & Navigation](docs/user_documentation/controls.md)
+* [Parameters](docs/user_documentation/controlling.md)
+
+### Code Documentation 
+* [Architecture Overview](docs/code_documentation/architecture_overview.md)
+* [1. Models (State & Data)](docs/code_documentation/models.md)
+* [2. Views (UI & Rendering)](docs/code_documentation/views.md)
+* [3. Controllers (Logic & Input)](docs/code_documentation/controllers.md)
+* [4. Services (I/O & Export)](docs/code_documentation/services.md)
+
