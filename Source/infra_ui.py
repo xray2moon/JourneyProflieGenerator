@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import Optional
 from collections.abc import Callable
 
-from PyQt6.QtCore import Qt, QPointF, pyqtSignal
-from PyQt6.QtGui import QBrush, QPainter
+from PyQt6.QtCore import Qt, QPointF, pyqtSignal, QEvent
+from PyQt6.QtGui import QBrush, QPainter, QNativeGestureEvent, QTransform
 from PyQt6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -338,12 +338,41 @@ class PanZoomGraphicsView(QGraphicsView):
         self._space_pressed = False
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
+    def viewportEvent(self, event: QEvent) -> bool:
+        if event.type() == QEvent.Type.NativeGesture:
+            gesture_event = event # QNativeGestureEvent is passed as QEvent
+            if gesture_event.gestureType() == Qt.NativeGestureType.ZoomNativeGesture:
+                # Get the scale factor from the gesture
+                scale_factor = gesture_event.value()
+                if scale_factor != 0:
+                    # Apply zoom centered at the gesture position
+                    # We use transformationAnchor = AnchorUnderMouse, so it should work.
+                    self.scale(1.0 + scale_factor, 1.0 + scale_factor)
+                return True
+        return super().viewportEvent(event)
+
     def wheelEvent(self, event):
-        angle = event.angleDelta().y()
-        if angle == 0:
-            return
-        factor = 1.0015 ** angle
-        self.scale(factor, factor)
+        # On touchpads, angleDelta() provides both x and y for 2-finger scroll.
+        # If Ctrl is pressed, we zoom. Otherwise, we pan.
+        modifiers = event.modifiers()
+        if modifiers & Qt.KeyboardModifier.ControlModifier:
+            angle = event.angleDelta().y()
+            if angle == 0:
+                return
+            factor = 1.0015 ** angle
+            self.scale(factor, factor)
+            event.accept()
+        else:
+            # Panning mode
+            delta = event.pixelDelta()
+            if delta.isNull():
+                # Fallback for mice/emulated scrolling
+                delta = event.angleDelta() / 8 # Standard factor for angle to pixel conversion
+            
+            if not delta.isNull():
+                self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() - delta.x())
+                self.verticalScrollBar().setValue(self.verticalScrollBar().value() - delta.y())
+                event.accept()
 
     def set_can_start_background_pan(self, predicate: Optional[Callable[[QPointF], bool]]) -> None:
         self._can_start_background_pan = predicate

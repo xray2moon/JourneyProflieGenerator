@@ -1,0 +1,33 @@
+site_name: Journey Profile Generator
+site_description: Interactive train journey planning and JSON generation.
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: indigo
+  features:
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+    - search.suggest
+
+nav:
+  - Welcome: README.md
+  - User Guide:
+      - Getting Started: getting_started.md
+      - Controls & Navigation: controls.md
+      - Parameter Configuration: controlling.md
+  - Developer Documentation:
+      - Architecture Overview: DEVELOPMENT.md
+      - Testing & Verification: testing/TESTING_PLAN.md
+  - Data Formats:
+      - Journey Profile JSON: data_examples/readme.txt
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - details
