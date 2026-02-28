@@ -4,8 +4,7 @@
 
 ### User Documentation
 * [Getting Started](docs/user_documentation/getting_started.md)
-* [Controls & Navigation](docs/user_documentation/controls.md)
-* [Parameters](docs/user_documentation/controlling.md)
+* [Controls & Navigation](docs/user_documentation/controls_and_navigation.md)
 
 ### Code Documentation 
 * [Architecture Overview](docs/code_documentation/architecture_overview.md)
