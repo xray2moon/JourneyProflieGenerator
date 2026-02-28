@@ -1,6 +1,11 @@
-# Getting Started: Generate Your First JP JSON
+---
+description: >-
+  This guide walks you once through the full process of creating and exporting a
+  Journey Profile JSON.
+---
 
-This guide walks you once through the full process of creating and exporting a Journey Profile JSON.
+# Getting Started
+
 ## 1. Start the Application
 
 From the project root, run:
@@ -9,7 +14,7 @@ From the project root, run:
 python3 Source/InfrastructureView.py
 ```
 
-Alternatively start the JPGen.exe. 
+Alternatively start the JPGen.exe.
 
 The main window opens with three tabs:
 
@@ -30,8 +35,8 @@ Tip: You can use `data_examples/ebd_v7_3_stations-infrastructure-description.jso
 
 1. Switch to the `Infrastructure View` tab.
 2. Make Timing Points visible:
-   - Option A: Go to `Settings` and enable `Show all timing points`.
-   - Option B: Left-click a track section to show Timing Points (TPs) on that section only.
+   * Option A: Go to `Settings` and enable `Show all timing points`.
+   * Option B: Left-click a track section to show Timing Points (TPs) on that section only.
 3. Left-click a TP to set the start of the route.
 4. Left-click additional TPs to extend the route step by step.
 
@@ -45,9 +50,9 @@ Useful controls while building:
 
 1. Right-click a TP on your route.
 2. In the timing dialog, set:
-   - `Point type`: `STOP` or `PASS`
-   - `Arrival time` (optional)
-   - `Departure time` (optional)
+   * `Point type`: `STOP` or `PASS`
+   * `Arrival time` (optional)
+   * `Departure time` (optional)
 3. Confirm with `OK`.
 4. Repeat for each TP where timing or stop behavior is needed.
 
