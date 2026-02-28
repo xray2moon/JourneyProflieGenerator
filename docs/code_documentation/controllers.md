@@ -1,4 +1,4 @@
-# 3. Controllers (Logic & Input)
+# Controllers (Logic & Input)
 
 Controllers act as the middlemen. They listen to user inputs from the Views, execute the necessary logic, and update the Models accordingly.
 

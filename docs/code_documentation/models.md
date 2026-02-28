@@ -1,4 +1,4 @@
-# 1. Models (State & Data)
+# Models (State & Data)
 
 Models are responsible for holding the application's state, data structures, and core physics logic. They do not know about the UI.
 

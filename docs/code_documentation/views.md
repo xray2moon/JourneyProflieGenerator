@@ -1,4 +1,4 @@
-# 2. Views (UI & Rendering)
+# Views (UI & Rendering)
 
 Views are responsible for everything the user sees on the screen. They take data from the Models (usually via Controllers) and render it.
 

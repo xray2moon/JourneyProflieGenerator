@@ -1,4 +1,4 @@
-# 4. Services (I/O & Communication)
+# Services (I/O & Communication)
 
 Services handle communication with the outside world, such as reading from or writing to files.
 
