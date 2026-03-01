@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
+from math import exp
 from pathlib import Path
 from typing import Optional
 from collections.abc import Callable
 
-from PyQt6.QtCore import Qt, QPointF, pyqtSignal
+from PyQt6.QtCore import Qt, QPointF, QEvent, pyqtSignal
 from PyQt6.QtGui import QBrush, QPainter
 from PyQt6.QtWidgets import (
     QWidget,
@@ -349,7 +350,10 @@ class SettingsView(QWidget):
 
 
 class PanZoomGraphicsView(QGraphicsView):
-    """QGraphicsView with mouse-wheel zoom and two pan modes:
+    """QGraphicsView with canvas controls similar to established design/map tools:
+    - Wheel/trackpad scroll pans
+    - Ctrl/Cmd + wheel zooms under cursor
+    - Trackpad pinch zoom (native gesture)
     - Middle mouse button drag
     - Hold Space and drag with left mouse (hand tool)
     - Left mouse drag on empty background
@@ -384,12 +388,52 @@ class PanZoomGraphicsView(QGraphicsView):
         # Space-to-pan state (Space is NOT a Qt "modifier", we track it ourselves)
         self._space_pressed = False
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self._zoom_step_base = 1.0015
+        self._min_zoom = 0.05
+        self._max_zoom = 40.0
+
+    def event(self, event):
+        if event.type() == QEvent.Type.NativeGesture:
+            if event.gestureType() == Qt.NativeGestureType.ZoomNativeGesture:
+                # Qt reports pinch zoom as small deltas. Exponential mapping keeps it smooth.
+                self._apply_zoom_factor(exp(float(event.value())))
+                event.accept()
+                return True
+        return super().event(event)
 
     def wheelEvent(self, event):
-        angle = event.angleDelta().y()
-        if angle == 0:
+        zoom_modifiers = (
+            Qt.KeyboardModifier.ControlModifier
+            | Qt.KeyboardModifier.MetaModifier
+        )
+        if event.modifiers() & zoom_modifiers:
+            delta = event.angleDelta().y()
+            if delta == 0:
+                delta = event.pixelDelta().y()
+            if delta != 0:
+                self._apply_zoom_factor(self._zoom_step_base ** float(delta))
+                event.accept()
+                return
+        super().wheelEvent(event)
+
+    def _apply_zoom_factor(self, requested_factor: float) -> None:
+        if requested_factor <= 0.0:
             return
-        factor = 1.0015 ** angle
+
+        current_scale = float(self.transform().m11())
+        if current_scale <= 0.0:
+            return
+
+        target_scale = current_scale * requested_factor
+        if target_scale < self._min_zoom:
+            factor = self._min_zoom / current_scale
+        elif target_scale > self._max_zoom:
+            factor = self._max_zoom / current_scale
+        else:
+            factor = requested_factor
+
+        if abs(factor - 1.0) < 1e-6:
+            return
         self.scale(factor, factor)
 
     def set_can_start_background_pan(self, predicate: Optional[Callable[[QPointF], bool]]) -> None:
