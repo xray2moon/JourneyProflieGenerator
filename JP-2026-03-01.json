@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "eventId": "JP.848e16f6-29f5-46c8-a2a4-036e67c1d6ba",
+    "eventType": "JourneyProfile",
+    "createdAt": "2026-03-01T14:30:33.368Z",
+    "createdBy": "JourneyProfileGenerator",
+    "correlation": [
+      "e60fbf71-aee5-4df0-a548-e7c7feef606f",
+      "7be02e70-bd9e-4512-8d5b-58ee822a2b7a"
+    ]
+  },
+  "tmsHeader": {
+    "tmsId": 0,
+    "countryId": 96,
+    "timezoneOffset": "+00:00"
+  },
+  "atoTracksideDestination": {
+    "atoTsId": 1
+  },
+  "atoOnboardDestination": {
+    "nidOperational": "FFFFFFF1"
+  },
+  "status": "VALID",
+  "dataId": "FFFFFFF1.2026-03-01",
+  "operatingDay": "2026-03-01",
+  "generatorRouteSelection": {
+    "startTimingPointId": 213,
+    "endTimingPointId": 258,
+    "waypointTimingPointIds": []
+  },
+  "generatorTimingConstraints": [
+    {
+      "timingPointId": 260,
+      "pointType": "STOP",
+      "arrivalTime": "09:30",
+      "departureTime": "10:30"
+    }
+  ],
+  "segmentProfileReferences": [
+    {
+      "countryId": 0,
+      "segmentProfileId": 18,
+      "version": 0,
+      "direction": "REVERSE",
+      "timingPointConstraints": [
+        {
+          "tpType": "PASS",
+          "timingPointId": 262,
+          "latestArrivalTimestamp": "2026-03-01T08:30:00.000Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 261,
+          "latestArrivalTimestamp": "2026-03-01T08:30:23.801Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "STOP",
+          "timingPointId": 260,
+          "latestArrivalTimestamp": "2026-03-01T09:30:00.000Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true,
+          "openingDoorSide": "NONE",
+          "centralisedOpening": false,
+          "relaxedCoupler": false,
+          "stoppingPointDepartureDetails": {
+            "trainHold": false,
+            "departureTimestamp": "2026-03-01T10:30:00.000Z",
+            "minimumDwellTime": 20,
+            "automaticDoorClosing": false
+          }
+        },
+        {
+          "tpType": "PASS",
+          "timingPointId": 259,
+          "latestArrivalTimestamp": "2026-03-01T10:30:23.801Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": false,
+          "daylightSaving": true
+        },
+        {
+          "tpType": "STOP",
+          "timingPointId": 258,
+          "latestArrivalTimestamp": "2026-03-01T10:30:47.343Z",
+          "arrivalWindow": 0,
+          "alignment": "FRONT",
+          "endOfJourney": true,
+          "daylightSaving": true,
+          "openingDoorSide": "NONE",
+          "centralisedOpening": false,
+          "relaxedCoupler": false,
+          "stoppingPointDepartureDetails": {
+            "trainHold": false,
+            "departureTimestamp": "2026-03-01T10:31:07.343Z",
+            "minimumDwellTime": 20,
+            "automaticDoorClosing": false
+          }
+        }
+      ]
+    }
+  ]
+}

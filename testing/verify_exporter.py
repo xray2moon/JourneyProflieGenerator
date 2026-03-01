@@ -52,6 +52,39 @@ class TestJourneyProfileExporter(unittest.TestCase):
         
         self.exporter = JourneyProfileExporter(self.backend)
 
+    def _setup_linear_three_tp_route(self):
+        track1 = Track(id="T1", source="NodeA", target="NodeB", shaping_points=[], length_m=1000.0)
+        self.model.tracks["T1"] = track1
+        tp_start = TimingPoint(
+            id=1,
+            track_id="T1",
+            target_node_id="NodeA",
+            distance_to_target_m=0.0,
+            stopping_location_id=None,
+            segment_profile_id=10,
+        )
+        tp_mid = TimingPoint(
+            id=2,
+            track_id="T1",
+            target_node_id="NodeA",
+            distance_to_target_m=500.0,
+            stopping_location_id="StopMid",
+            segment_profile_id=10,
+        )
+        tp_end = TimingPoint(
+            id=3,
+            track_id="T1",
+            target_node_id="NodeB",
+            distance_to_target_m=0.0,
+            stopping_location_id="StopEnd",
+            segment_profile_id=10,
+        )
+        self.model.timing_points = {1: tp_start, 2: tp_mid, 3: tp_end}
+        self.selection.set_route(["NodeA", "NodeB"], ["T1"])
+        self.selection.set_start_tp(1)
+        self.selection.set_waypoint_tp_ids([2])
+        self.selection.set_end_tp(3)
+
     def test_simple_A_to_B_journey(self):
         """
         Suite B.1: Simple 1-track journey profile generation.
@@ -179,6 +212,50 @@ class TestJourneyProfileExporter(unittest.TestCase):
         print(f"  > Arrival at Reversal: {t_mid}")
         print(f"  > Departure/Arrival Return: {t_return}")
         self.assertLess(t_mid, t_return)
+
+    def test_invalid_arrival_time_format_raises(self):
+        self._setup_linear_three_tp_route()
+        self.selection._timing_constraints = {
+            2: {"pointType": "STOP", "arrivalTime": "99:99", "departureTime": ""},
+            3: {"pointType": "STOP", "arrivalTime": "", "departureTime": ""},
+        }
+
+        with self.assertRaisesRegex(ValueError, "Invalid arrivalTime"):
+            self.exporter.export_journey_profile({"startTime": "2025-01-01T10:00:00Z"})
+
+    def test_non_monotonic_route_arrival_times_raise(self):
+        self._setup_linear_three_tp_route()
+        self.selection._timing_constraints = {
+            2: {"pointType": "STOP", "arrivalTime": "12:00:00", "departureTime": "12:10:00"},
+            3: {"pointType": "STOP", "arrivalTime": "11:00:00", "departureTime": ""},
+        }
+
+        with self.assertRaisesRegex(ValueError, "Invalid route time order"):
+            self.exporter.export_journey_profile({"startTime": "2025-01-01T10:00:00Z"})
+
+    def test_departure_before_arrival_raises(self):
+        self._setup_linear_three_tp_route()
+        self.selection._timing_constraints = {
+            2: {"pointType": "STOP", "arrivalTime": "12:00:00", "departureTime": "11:00:00"},
+            3: {"pointType": "STOP", "arrivalTime": "", "departureTime": ""},
+        }
+
+        with self.assertRaisesRegex(ValueError, "Invalid route time order"):
+            self.exporter.export_journey_profile({"startTime": "2025-01-01T10:00:00Z"})
+
+    def test_time_only_start_time_is_supported(self):
+        self._setup_linear_three_tp_route()
+        self.selection._timing_constraints = {
+            2: {"pointType": "STOP", "arrivalTime": "", "departureTime": ""},
+            3: {"pointType": "STOP", "arrivalTime": "", "departureTime": ""},
+        }
+
+        profile = self.exporter.export_journey_profile({"startTime": "8:30"})
+        segments = profile.get("segmentProfileReferences", [])
+        self.assertTrue(segments)
+        constraints = segments[0].get("timingPointConstraints", [])
+        self.assertTrue(constraints)
+        self.assertIn("T08:30:", constraints[0]["latestArrivalTimestamp"])
 
 if __name__ == '__main__':
     unittest.main()

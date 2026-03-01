@@ -7,6 +7,8 @@ from PyQt6.QtCore import Qt, QPointF, QEvent
 from PyQt6.QtWidgets import (
     QGraphicsItem,
     QDialog,
+    QInputDialog,
+    QMessageBox,
     QWidget,
 )
 
@@ -72,6 +74,110 @@ class InfrastructureViewInteraction:
             if constrained_tp_id in candidate_ids:
                 return int(constrained_tp_id)
         return self._resolve_click_tp_id(item)
+
+    def _route_matching_tp_ids(self, candidate_tp_ids: List[int]) -> List[int]:
+        selection = self._backend.selection
+        model = self._backend.model
+
+        if not selection.current_tracks or len(selection.current_route) < 2:
+            return []
+
+        unique_candidates: List[int] = []
+        for tp_id in candidate_tp_ids:
+            if tp_id in unique_candidates:
+                continue
+            if tp_id not in model.timing_points:
+                continue
+            unique_candidates.append(int(tp_id))
+        if not unique_candidates:
+            return []
+
+        from Source.journey_profile_exporter import JourneyProfileExporter
+        exporter = JourneyProfileExporter(self._backend)
+        traversal_ranges = exporter._compute_traversal_ranges(selection, model)
+
+        matched: List[int] = []
+        for tp_id in unique_candidates:
+            tp = model.timing_points.get(tp_id)
+            tp_pct = exporter._tp_pct_from_source(tp_id)
+            if tp is None or tp_pct is None:
+                continue
+
+            is_on_route = False
+            for i, track_id in enumerate(selection.current_tracks):
+                if tp.track_id != track_id:
+                    continue
+                if i + 1 >= len(selection.current_route):
+                    continue
+
+                track = model.tracks.get(track_id)
+                if track is None:
+                    continue
+
+                s_pct, e_pct = traversal_ranges[i] if i < len(traversal_ranges) else (0.0, 1.0)
+                lo = min(s_pct, e_pct) - 1e-6
+                hi = max(s_pct, e_pct) + 1e-6
+                if tp_pct < lo or tp_pct > hi:
+                    continue
+
+                v = selection.current_route[i + 1]
+                preferred_target_node_id = track.target if v == track.target else track.source
+                if tp.target_node_id != preferred_target_node_id:
+                    continue
+
+                is_on_route = True
+                break
+
+            if is_on_route:
+                matched.append(tp_id)
+
+        return matched
+
+    def _node_display_id(self, node_id: str) -> str:
+        node = self._backend.model.nodes.get(node_id)
+        numeric_id = getattr(node, "numeric_id", None) if node is not None else None
+        return str(numeric_id) if numeric_id is not None else str(node_id)
+
+    def _prompt_stop_tp_choice(
+        self,
+        route_tp_ids: List[int],
+        *,
+        preferred_tp_id: Optional[int] = None,
+    ) -> Optional[int]:
+        model = self._backend.model
+        options: List[Tuple[str, int]] = []
+        for tp_id in route_tp_ids:
+            tp = model.timing_points.get(tp_id)
+            if tp is None:
+                continue
+            target_node_display = self._node_display_id(tp.target_node_id)
+            options.append((f"TP {int(tp.id)} (towards node {target_node_display})", int(tp.id)))
+        if not options:
+            return None
+
+        initial_index = 0
+        if preferred_tp_id is not None:
+            for idx, (_, tp_id) in enumerate(options):
+                if tp_id == int(preferred_tp_id):
+                    initial_index = idx
+                    break
+
+        labels = [label for label, _ in options]
+        chosen_label, ok = QInputDialog.getItem(
+            self._view,
+            "Choose Route Direction TP",
+            "This marker is on the route in both directions.\nChoose which TP to mark as STOP:",
+            labels,
+            initial_index,
+            False,
+        )
+        if not ok:
+            return None
+
+        for label, tp_id in options:
+            if label == chosen_label:
+                return tp_id
+        return None
 
     def _constraint_point_type_for_item(self, item: TimingPointItem) -> Optional[str]:
         selection = self._backend.selection
@@ -254,7 +360,10 @@ class InfrastructureViewInteraction:
                         else:
                             resolved_tp_id = self._resolve_existing_member_tp_id(item)
                             if resolved_tp_id is not None:
-                                self._edit_timing_constraint(resolved_tp_id)
+                                self._edit_timing_constraint(
+                                    resolved_tp_id,
+                                    marker_tp_ids=self._tp_ids_for_item(item),
+                                )
                         return True
 
                 if isinstance(item, StoppingLocationItem):
@@ -641,12 +750,21 @@ class InfrastructureViewInteraction:
             if marker_point_type is not None:
                 item.setVisible(True)
 
-    def _edit_timing_constraint(self, tp_id: int) -> None:
+    def _edit_timing_constraint(
+        self,
+        tp_id: int,
+        *,
+        marker_tp_ids: Optional[List[int]] = None,
+    ) -> None:
         model = self._backend.model
         selection = self._backend.selection
         tp = model.timing_points.get(tp_id)
         if tp is None:
             return
+
+        marker_ids = [int(x) for x in (marker_tp_ids or [tp_id])]
+        if tp_id not in marker_ids:
+            marker_ids.append(tp_id)
 
         existing = selection.timing_constraints.get(tp_id)
         dlg = TimingConstraintDialog(self._view, tp_id, existing=existing)
@@ -654,30 +772,56 @@ class InfrastructureViewInteraction:
             return
 
         c = dlg.result_constraint()
+        target_tp_id = tp_id
+        if c.get("pointType") == "STOP":
+            route_tp_ids = self._route_matching_tp_ids(marker_ids)
+            if not route_tp_ids:
+                QMessageBox.warning(
+                    self._view,
+                    "Stop Not On Route",
+                    "STOP constraints can only be set on timing points that are on the current route.",
+                )
+                return
+            if len(route_tp_ids) == 1:
+                target_tp_id = route_tp_ids[0]
+            else:
+                chosen_tp_id = self._prompt_stop_tp_choice(
+                    route_tp_ids,
+                    preferred_tp_id=tp_id,
+                )
+                if chosen_tp_id is None:
+                    return
+                target_tp_id = chosen_tp_id
+
         if c.get("pointType") == "PASS" and not c.get("arrivalTime") and not c.get("departureTime"):
-            self._remove_timing_constraint(tp_id)
+            self._remove_timing_constraint(target_tp_id)
             return
-            
+
+        target_tp = model.timing_points.get(target_tp_id)
+        if target_tp is None:
+            return
+
         constraint = {
-            "timingPointId": tp_id,
-            "trackId": tp.track_id,
-            "targetNodeId": tp.target_node_id,
-            "distanceToTargetNodeInMeters": tp.distance_to_target_m,
+            "timingPointId": target_tp_id,
+            "trackId": target_tp.track_id,
+            "targetNodeId": target_tp.target_node_id,
+            "distanceToTargetNodeInMeters": target_tp.distance_to_target_m,
             "pointType": c["pointType"],
             "arrivalTime": c["arrivalTime"],
             "departureTime": c["departureTime"],
         }
-        if existing == constraint:
+        existing_target = selection.timing_constraints.get(target_tp_id)
+        if existing_target == constraint:
             return
 
         self._push_undo_snapshot()
-        selection.set_timing_constraint(tp_id, constraint)
+        selection.set_timing_constraint(target_tp_id, constraint)
 
-        item = self._tp_items.get(tp_id)
+        item = self._tp_items.get(target_tp_id)
         if item:
             item.set_constraint_point_type(self._constraint_point_type_for_item(item))
-            is_track_visible = tp.track_id in selection.visible_tp_tracks
-            self._apply_track_tp_visibility(tp.track_id, is_track_visible)
+            is_track_visible = target_tp.track_id in selection.visible_tp_tracks
+            self._apply_track_tp_visibility(target_tp.track_id, is_track_visible)
 
     def _remove_timing_constraint(self, tp_id: int) -> None:
         selection = self._backend.selection

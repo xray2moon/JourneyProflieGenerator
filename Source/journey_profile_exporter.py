@@ -1,7 +1,7 @@
 from __future__ import annotations
 import json
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, time, timedelta, timezone
 from typing import Dict, List, Any, Optional
 from Source.infra_backend import InfrastructureBackend
 from Source.dynamics import TrainState, simulate_travel
@@ -133,6 +133,71 @@ class JourneyProfileExporter:
         if isinstance(user_c, dict):
             return str(user_c.get("pointType", "")).upper() == "STOP"
         return False
+
+    @staticmethod
+    def _parse_constraint_clock_time(
+        tp_id: int,
+        field_name: str,
+        raw_value: Any,
+    ) -> Optional[time]:
+        text = str(raw_value or "").strip()
+        if not text:
+            return None
+        for fmt in ("%H:%M:%S", "%H:%M"):
+            try:
+                return datetime.strptime(text, fmt).time()
+            except ValueError:
+                continue
+        raise ValueError(
+            f"Invalid {field_name} for TP {tp_id}: '{text}'. Use HH:MM or HH:MM:SS."
+        )
+
+    @staticmethod
+    def _apply_user_clock_time(
+        *,
+        baseline: datetime,
+        user_clock_time: time,
+        tp_id: int,
+        field_name: str,
+    ) -> datetime:
+        candidate = datetime.combine(
+            baseline.date(),
+            user_clock_time,
+        ).replace(tzinfo=baseline.tzinfo)
+        if candidate < baseline:
+            raise ValueError(
+                "Invalid route time order: "
+                f"{field_name} for TP {tp_id} ({candidate.strftime('%H:%M:%S')}) "
+                f"is earlier than prior event time ({baseline.strftime('%H:%M:%S')})."
+            )
+        return candidate
+
+    @staticmethod
+    def _parse_start_time(raw_value: Any) -> datetime:
+        text = str(raw_value or "").strip()
+        if not text:
+            return datetime.now(timezone.utc)
+
+        try:
+            dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt
+        except ValueError:
+            pass
+
+        for fmt in ("%H:%M:%S", "%H:%M"):
+            try:
+                t = datetime.strptime(text, fmt).time()
+                now_utc = datetime.now(timezone.utc)
+                return datetime.combine(now_utc.date(), t).replace(tzinfo=timezone.utc)
+            except ValueError:
+                continue
+
+        raise ValueError(
+            "Invalid startTime format. Use ISO datetime "
+            "(e.g. 2026-03-01T08:30:00Z) or HH:MM / HH:MM:SS."
+        )
 
     def export_journey_profile(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
         selection = self._backend.selection
@@ -316,10 +381,7 @@ class JourneyProfileExporter:
 
         # 2. Physics Simulation
         start_time_str = parameters.get("startTime", datetime.now(timezone.utc).isoformat())
-        try:
-            current_time = datetime.fromisoformat(start_time_str.replace('Z', '+00:00'))
-        except ValueError:
-            current_time = datetime.now(timezone.utc)
+        current_time = self._parse_start_time(start_time_str)
 
         train_type = parameters.get("trainType", "S1")
         dwell_time_s = float(parameters.get("dwellTime", 20.0))
@@ -401,14 +463,26 @@ class JourneyProfileExporter:
             if etype == "TP":
                 # If user provided a specific arrival time, use it to override/align the simulation
                 user_c = selection.timing_constraints.get(tp.id)
-                if user_c and user_c.get("arrivalTime"):
-                    try:
-                        user_time_str = user_c["arrivalTime"]
-                        fmt = "%H:%M:%S" if user_time_str.count(":") == 2 else "%H:%M"
-                        user_t = datetime.strptime(user_time_str, fmt).time()
-                        current_time = datetime.combine(current_time.date(), user_t).replace(tzinfo=current_time.tzinfo)
-                    except ValueError:
-                        pass
+                user_arrival_time = None
+                user_departure_time = None
+                if isinstance(user_c, dict):
+                    user_arrival_time = self._parse_constraint_clock_time(
+                        tp.id,
+                        "arrivalTime",
+                        user_c.get("arrivalTime"),
+                    )
+                    user_departure_time = self._parse_constraint_clock_time(
+                        tp.id,
+                        "departureTime",
+                        user_c.get("departureTime"),
+                    )
+                if user_arrival_time is not None:
+                    current_time = self._apply_user_clock_time(
+                        baseline=current_time,
+                        user_clock_time=user_arrival_time,
+                        tp_id=tp.id,
+                        field_name="arrivalTime",
+                    )
                 
                 arrival_ts_str = current_time.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
@@ -425,15 +499,14 @@ class JourneyProfileExporter:
                 if is_stop:
                     # Handle departure/dwell
                     dep_ts_str = None
-                    if user_c and user_c.get("departureTime"):
-                        try:
-                            user_time_str = user_c["departureTime"]
-                            fmt = "%H:%M:%S" if user_time_str.count(":") == 2 else "%H:%M"
-                            user_t = datetime.strptime(user_time_str, fmt).time()
-                            current_time = datetime.combine(current_time.date(), user_t).replace(tzinfo=current_time.tzinfo)
-                            dep_ts_str = current_time.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
-                        except ValueError:
-                            pass
+                    if user_departure_time is not None:
+                        current_time = self._apply_user_clock_time(
+                            baseline=current_time,
+                            user_clock_time=user_departure_time,
+                            tp_id=tp.id,
+                            field_name="departureTime",
+                        )
+                        dep_ts_str = current_time.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
                     if not dep_ts_str:
                         current_time += timedelta(seconds=dwell_time_s)

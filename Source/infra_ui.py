@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 from collections.abc import Callable
@@ -37,6 +38,8 @@ class TimingConstraintDialog(QDialog):
 
         self._arrival = QLineEdit()
         self._departure = QLineEdit()
+        self._arrival.setPlaceholderText("HH:MM or HH:MM:SS")
+        self._departure.setPlaceholderText("HH:MM or HH:MM:SS")
         self._ptype = QComboBox()
         self._ptype.addItems(["STOP", "PASS"])
 
@@ -70,6 +73,50 @@ class TimingConstraintDialog(QDialog):
             "arrivalTime": self._arrival.text().strip(),
             "departureTime": self._departure.text().strip(),
         }
+
+    @staticmethod
+    def _parse_clock_time(raw_value: str):
+        text = raw_value.strip()
+        if not text:
+            return None
+        for fmt in ("%H:%M:%S", "%H:%M"):
+            try:
+                return datetime.strptime(text, fmt).time()
+            except ValueError:
+                continue
+        return None
+
+    def accept(self) -> None:
+        arrival_raw = self._arrival.text().strip()
+        departure_raw = self._departure.text().strip()
+
+        arrival_time = self._parse_clock_time(arrival_raw)
+        if arrival_raw and arrival_time is None:
+            QMessageBox.warning(
+                self,
+                "Invalid arrival time",
+                f"Arrival time '{arrival_raw}' is invalid. Use HH:MM or HH:MM:SS.",
+            )
+            return
+
+        departure_time = self._parse_clock_time(departure_raw)
+        if departure_raw and departure_time is None:
+            QMessageBox.warning(
+                self,
+                "Invalid departure time",
+                f"Departure time '{departure_raw}' is invalid. Use HH:MM or HH:MM:SS.",
+            )
+            return
+
+        if arrival_time is not None and departure_time is not None and departure_time < arrival_time:
+            QMessageBox.warning(
+                self,
+                "Invalid stop times",
+                "Departure time cannot be earlier than arrival time for the same timing point.",
+            )
+            return
+
+        super().accept()
 
 
 class ParameterView(QWidget):
