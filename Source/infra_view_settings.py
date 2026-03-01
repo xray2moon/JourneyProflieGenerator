@@ -97,6 +97,8 @@ class InfrastructureViewSettings:
         # Use dark theme track color since legend is now always dark
         track_color = ModernColors.TRACK_DEFAULT_D
         stop_icon_path = str((Path(__file__).parent / "assets" / "stop_sign.svg").resolve()).replace("\\", "/")
+        legend_icon_size = 12
+        stop_icon_style = "vertical-align:middle;"
 
         self._host._legend.setText(
             "<b>Legend</b><br>"
@@ -106,7 +108,7 @@ class InfrastructureViewSettings:
             f"<span style='color:{ModernColors.NODE_DEFAULT}'>●</span> Node&nbsp;&nbsp;"
             f"<span style='color:{ModernColors.SL_DEFAULT}'>●</span> Station<br>"
             f"<span style='color:{ModernColors.TP_DEFAULT}'>●</span> Timing point&nbsp;&nbsp;"
-            f"<img src='{stop_icon_path}' width='14' height='14'/>&nbsp;Stop (TP)&nbsp;&nbsp;"
+            f"<img src='{stop_icon_path}' width='{legend_icon_size}' height='{legend_icon_size}' style='{stop_icon_style}'/>&nbsp;Stop (TP)&nbsp;&nbsp;"
             f"<span style='color:{ModernColors.NODE_START}'>●</span> Start&nbsp;&nbsp;"
             f"<span style='color:{ModernColors.NODE_END}'>●</span> End<br>"
             f"<span style='color:{ModernColors.TRACK_ROUTE}'>▶</span> Direction of travel"
