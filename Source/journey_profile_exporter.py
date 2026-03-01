@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, time, timedelta, timezone
 from typing import Dict, List, Any, Optional
 from Source.infra_backend import InfrastructureBackend
-from Source.dynamics import TrainState, simulate_travel
+from Source.dynamics import TrainState, simulate_travel, train_data
 from Source.infra_models import TimingPoint
 
 class JourneyProfileExporter:
@@ -12,6 +12,8 @@ class JourneyProfileExporter:
     Exports the current state (route, timing constraints, parameters)
     to a Journey Profile JSON file matching story3-initial-journeyprofile1.json style.
     """
+    ARRIVAL_TOLERANCE_S = 1.0
+
     def __init__(self, backend: InfrastructureBackend):
         self._backend = backend
 
@@ -197,6 +199,117 @@ class JourneyProfileExporter:
         raise ValueError(
             "Invalid startTime format. Use ISO datetime "
             "(e.g. 2026-03-01T08:30:00Z) or HH:MM / HH:MM:SS."
+        )
+
+    @staticmethod
+    def _clone_train_state(state: TrainState) -> TrainState:
+        return TrainState(
+            velocity=float(state.velocity),
+            elapsed_time=float(state.elapsed_time),
+            total_distance=float(state.total_distance),
+            accel_idx=int(state.accel_idx),
+            decel_idx=int(state.decel_idx),
+            braking_triggered=bool(state.braking_triggered),
+        )
+
+    def _simulate_leg_time(
+        self,
+        *,
+        train_type: str,
+        distance: float,
+        start_state: TrainState,
+        distance_to_stop: float,
+        speed_restriction: float,
+    ) -> float:
+        probe = self._clone_train_state(start_state)
+        return simulate_travel(
+            train_type,
+            distance,
+            probe,
+            mode="accel",
+            speed_restriction=speed_restriction,
+            distance_to_stop=distance_to_stop,
+        )
+
+    def _find_speed_restriction_for_target_arrival(
+        self,
+        *,
+        train_type: str,
+        distance: float,
+        start_state: TrainState,
+        distance_to_stop: float,
+        target_travel_s: float,
+        tp_id: int,
+        target_arrival: datetime,
+        current_time: datetime,
+    ) -> float:
+        tolerance_s = self.ARRIVAL_TOLERANCE_S
+        fastest_s = self._simulate_leg_time(
+            train_type=train_type,
+            distance=distance,
+            start_state=start_state,
+            distance_to_stop=distance_to_stop,
+            speed_restriction=float("inf"),
+        )
+        slowest_s = self._simulate_leg_time(
+            train_type=train_type,
+            distance=distance,
+            start_state=start_state,
+            distance_to_stop=distance_to_stop,
+            speed_restriction=0.0,
+        )
+
+        if target_travel_s < fastest_s - tolerance_s:
+            earliest = current_time + timedelta(seconds=fastest_s)
+            raise ValueError(
+                f"Cannot reach TP {tp_id} by {target_arrival.strftime('%H:%M:%S')} by driving. "
+                f"Earliest feasible arrival is {earliest.strftime('%H:%M:%S')}."
+            )
+        if target_travel_s > slowest_s + tolerance_s:
+            latest = current_time + timedelta(seconds=slowest_s)
+            raise ValueError(
+                f"Cannot reach TP {tp_id} by driving as late as {target_arrival.strftime('%H:%M:%S')}. "
+                f"Latest feasible arrival is {latest.strftime('%H:%M:%S')}."
+            )
+
+        if abs(target_travel_s - fastest_s) <= tolerance_s:
+            return float("inf")
+        if abs(target_travel_s - slowest_s) <= tolerance_s:
+            return 0.0
+
+        curve = train_data.get(train_type, train_data["S1"])
+        max_restriction = float(max(curve["accel"])) if len(curve["accel"]) else 1.0
+        low = 0.0
+        high = max_restriction
+        best_restriction = high
+        best_error = abs(fastest_s - target_travel_s)
+
+        for _ in range(40):
+            mid = (low + high) / 2.0
+            mid_time = self._simulate_leg_time(
+                train_type=train_type,
+                distance=distance,
+                start_state=start_state,
+                distance_to_stop=distance_to_stop,
+                speed_restriction=mid,
+            )
+            mid_error = abs(mid_time - target_travel_s)
+            if mid_error < best_error:
+                best_error = mid_error
+                best_restriction = mid
+            if mid_error <= tolerance_s:
+                return mid
+            if mid_time > target_travel_s:
+                low = mid
+            else:
+                high = mid
+
+        if best_error <= tolerance_s:
+            return best_restriction
+
+        raise ValueError(
+            f"Cannot match TP {tp_id} arrival {target_arrival.strftime('%H:%M:%S')} within "
+            f"+/-{int(tolerance_s)} second by driving."
         )
 
     def export_journey_profile(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
@@ -457,16 +570,14 @@ class JourneyProfileExporter:
             
             distance_to_stop = next_stop_pos - last_pos
 
-            travel_time = simulate_travel(train_type, distance_delta, train_state, mode="accel", distance_to_stop=distance_to_stop)
-            current_time += timedelta(seconds=travel_time)
-            
-            if etype == "TP":
-                # If user provided a specific arrival time, use it to override/align the simulation
+            leg_start_time = current_time
+            current_user_arrival_time = None
+            user_departure_time = None
+            speed_restriction = float("inf")
+            if etype == "TP" and tp is not None:
                 user_c = selection.timing_constraints.get(tp.id)
-                user_arrival_time = None
-                user_departure_time = None
                 if isinstance(user_c, dict):
-                    user_arrival_time = self._parse_constraint_clock_time(
+                    current_user_arrival_time = self._parse_constraint_clock_time(
                         tp.id,
                         "arrivalTime",
                         user_c.get("arrivalTime"),
@@ -476,14 +587,83 @@ class JourneyProfileExporter:
                         "departureTime",
                         user_c.get("departureTime"),
                     )
-                if user_arrival_time is not None:
-                    current_time = self._apply_user_clock_time(
-                        baseline=current_time,
-                        user_clock_time=user_arrival_time,
+
+            for j in range(i, len(events)):
+                if len(events[j]) == 5:
+                    e_j_type, e_j_data, e_j_abs_pos, _e_j_dir, _e_j_seg = events[j]
+                else:
+                    e_j_type, e_j_data, e_j_abs_pos, _e_j_dir = events[j]
+
+                if e_j_type != "TP":
+                    break
+
+                tp_j = e_j_data
+                target_is_stop = self._is_tp_stop_event(
+                    tp=tp_j,
+                    event_index=j,
+                    last_tp_index=last_tp_index,
+                    reversal_tp_ids=reversal_tp_ids,
+                )
+
+                user_c_j = selection.timing_constraints.get(tp_j.id)
+                user_arrival_time_j = None
+                if isinstance(user_c_j, dict):
+                    user_arrival_time_j = self._parse_constraint_clock_time(
+                        tp_j.id,
+                        "arrivalTime",
+                        user_c_j.get("arrivalTime"),
+                    )
+
+                if user_arrival_time_j is not None:
+                    target_arrival_dt = self._apply_user_clock_time(
+                        baseline=leg_start_time,
+                        user_clock_time=user_arrival_time_j,
+                        tp_id=tp_j.id,
+                        field_name="arrivalTime",
+                    )
+                    target_travel_s = (target_arrival_dt - leg_start_time).total_seconds()
+                    remaining_distance = max(0.0, e_j_abs_pos - last_pos)
+                    target_distance_to_stop = remaining_distance if target_is_stop else float("inf")
+                    speed_restriction = self._find_speed_restriction_for_target_arrival(
+                        train_type=train_type,
+                        distance=remaining_distance,
+                        start_state=train_state,
+                        distance_to_stop=target_distance_to_stop,
+                        target_travel_s=target_travel_s,
+                        tp_id=tp_j.id,
+                        target_arrival=target_arrival_dt,
+                        current_time=leg_start_time,
+                    )
+                    break
+
+                if target_is_stop:
+                    break
+
+            travel_time = simulate_travel(
+                train_type,
+                distance_delta,
+                train_state,
+                mode="accel",
+                speed_restriction=speed_restriction,
+                distance_to_stop=distance_to_stop,
+            )
+            current_time += timedelta(seconds=travel_time)
+            
+            if etype == "TP":
+                if current_user_arrival_time is not None:
+                    required_arrival_dt = self._apply_user_clock_time(
+                        baseline=leg_start_time,
+                        user_clock_time=current_user_arrival_time,
                         tp_id=tp.id,
                         field_name="arrivalTime",
                     )
-                
+                    arrival_error = abs((current_time - required_arrival_dt).total_seconds())
+                    if arrival_error > self.ARRIVAL_TOLERANCE_S:
+                        raise ValueError(
+                            f"TP {tp.id} arrival target {required_arrival_dt.strftime('%H:%M:%S')} "
+                            f"cannot be met by driving within +/-{int(self.ARRIVAL_TOLERANCE_S)} second."
+                        )
+
                 arrival_ts_str = current_time.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
                 tp_constraint = {

@@ -1,12 +1,12 @@
 {
   "meta": {
-    "eventId": "JP.848e16f6-29f5-46c8-a2a4-036e67c1d6ba",
+    "eventId": "JP.69ac59f6-85d8-4572-957c-a85832c6d19b",
     "eventType": "JourneyProfile",
-    "createdAt": "2026-03-01T14:30:33.368Z",
+    "createdAt": "2026-03-01T14:52:09.886Z",
     "createdBy": "JourneyProfileGenerator",
     "correlation": [
-      "e60fbf71-aee5-4df0-a548-e7c7feef606f",
-      "7be02e70-bd9e-4512-8d5b-58ee822a2b7a"
+      "128de252-99c4-4cb8-abfb-660ccc93eace",
+      "34e56ed8-2f2d-42db-a256-cb4125f84acd"
     ]
   },
   "tmsHeader": {
@@ -32,7 +32,7 @@
     {
       "timingPointId": 260,
       "pointType": "STOP",
-      "arrivalTime": "09:30",
+      "arrivalTime": "9:30",
       "departureTime": "10:30"
     }
   ],
@@ -55,7 +55,7 @@
         {
           "tpType": "PASS",
           "timingPointId": 261,
-          "latestArrivalTimestamp": "2026-03-01T08:30:23.801Z",
+          "latestArrivalTimestamp": "2026-03-01T09:00:00.418Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,
@@ -64,7 +64,7 @@
         {
           "tpType": "STOP",
           "timingPointId": 260,
-          "latestArrivalTimestamp": "2026-03-01T09:30:00.000Z",
+          "latestArrivalTimestamp": "2026-03-01T09:30:00.820Z",
           "arrivalWindow": 0,
           "alignment": "FRONT",
           "endOfJourney": false,

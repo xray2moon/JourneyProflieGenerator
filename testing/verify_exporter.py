@@ -2,6 +2,7 @@ import sys
 import os
 import unittest
 import json
+from datetime import datetime
 from unittest.mock import MagicMock
 
 # Inject Mock Numpy first
@@ -226,8 +227,8 @@ class TestJourneyProfileExporter(unittest.TestCase):
     def test_non_monotonic_route_arrival_times_raise(self):
         self._setup_linear_three_tp_route()
         self.selection._timing_constraints = {
-            2: {"pointType": "STOP", "arrivalTime": "12:00:00", "departureTime": "12:10:00"},
-            3: {"pointType": "STOP", "arrivalTime": "11:00:00", "departureTime": ""},
+            2: {"pointType": "STOP", "arrivalTime": "10:40:00", "departureTime": "10:41:00"},
+            3: {"pointType": "STOP", "arrivalTime": "10:30:00", "departureTime": ""},
         }
 
         with self.assertRaisesRegex(ValueError, "Invalid route time order"):
@@ -236,7 +237,7 @@ class TestJourneyProfileExporter(unittest.TestCase):
     def test_departure_before_arrival_raises(self):
         self._setup_linear_three_tp_route()
         self.selection._timing_constraints = {
-            2: {"pointType": "STOP", "arrivalTime": "12:00:00", "departureTime": "11:00:00"},
+            2: {"pointType": "STOP", "arrivalTime": "10:40:00", "departureTime": "10:30:00"},
             3: {"pointType": "STOP", "arrivalTime": "", "departureTime": ""},
         }
 
@@ -256,6 +257,62 @@ class TestJourneyProfileExporter(unittest.TestCase):
         constraints = segments[0].get("timingPointConstraints", [])
         self.assertTrue(constraints)
         self.assertIn("T08:30:", constraints[0]["latestArrivalTimestamp"])
+
+    def test_infeasible_late_arrival_raises(self):
+        self._setup_linear_three_tp_route()
+        self.selection._timing_constraints = {
+            2: {"pointType": "STOP", "arrivalTime": "12:00:00", "departureTime": ""},
+            3: {"pointType": "STOP", "arrivalTime": "", "departureTime": ""},
+        }
+
+        with self.assertRaisesRegex(ValueError, "Latest feasible arrival"):
+            self.exporter.export_journey_profile({"startTime": "2025-01-01T10:00:00Z"})
+
+    def test_infeasible_early_arrival_raises(self):
+        self._setup_linear_three_tp_route()
+        self.selection._timing_constraints = {
+            2: {"pointType": "STOP", "arrivalTime": "10:00:05", "departureTime": ""},
+            3: {"pointType": "STOP", "arrivalTime": "", "departureTime": ""},
+        }
+
+        with self.assertRaisesRegex(ValueError, "Earliest feasible arrival"):
+            self.exporter.export_journey_profile({"startTime": "2025-01-01T10:00:00Z"})
+
+    def test_feasible_arrival_hits_target_within_one_second(self):
+        self._setup_linear_three_tp_route()
+        self.selection._timing_constraints = {
+            2: {"pointType": "STOP", "arrivalTime": "10:40:00", "departureTime": "10:40:20"},
+            3: {"pointType": "STOP", "arrivalTime": "", "departureTime": ""},
+        }
+
+        profile = self.exporter.export_journey_profile({"startTime": "2025-01-01T10:00:00Z"})
+        constraints = profile["segmentProfileReferences"][0]["timingPointConstraints"]
+        tp2 = next(c for c in constraints if c["timingPointId"] == 2)
+        arrival_tp2 = datetime.fromisoformat(
+            tp2["latestArrivalTimestamp"].replace("Z", "+00:00")
+        )
+        target = datetime.fromisoformat("2025-01-01T10:40:00+00:00")
+        self.assertLessEqual(abs((arrival_tp2 - target).total_seconds()), 1.0)
+
+    def test_pacing_is_distributed_before_constrained_arrival(self):
+        self._setup_linear_three_tp_route()
+        self.selection._timing_constraints = {
+            2: {"pointType": "PASS", "arrivalTime": "", "departureTime": ""},
+            3: {"pointType": "STOP", "arrivalTime": "10:40:00", "departureTime": ""},
+        }
+
+        profile = self.exporter.export_journey_profile({"startTime": "2025-01-01T10:00:00Z"})
+        constraints = profile["segmentProfileReferences"][0]["timingPointConstraints"]
+        tp2 = next(c for c in constraints if c["timingPointId"] == 2)
+        tp3 = next(c for c in constraints if c["timingPointId"] == 3)
+
+        arrival_tp2 = datetime.fromisoformat(tp2["latestArrivalTimestamp"].replace("Z", "+00:00"))
+        arrival_tp3 = datetime.fromisoformat(tp3["latestArrivalTimestamp"].replace("Z", "+00:00"))
+        target_tp3 = datetime.fromisoformat("2025-01-01T10:40:00+00:00")
+
+        # Intermediate TP should also be paced (not the baseline ~24s sprint).
+        self.assertGreater(arrival_tp2, datetime.fromisoformat("2025-01-01T10:05:00+00:00"))
+        self.assertLessEqual(abs((arrival_tp3 - target_tp3).total_seconds()), 1.0)
 
 if __name__ == '__main__':
     unittest.main()
