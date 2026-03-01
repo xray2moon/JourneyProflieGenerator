@@ -3,8 +3,8 @@ from __future__ import annotations
 import math
 from typing import Dict, List, Optional, Sequence, Set, Tuple
 
-from PyQt6.QtCore import Qt, QPointF
-from PyQt6.QtGui import QBrush, QColor, QPainterPath, QPen, QTransform
+from PyQt6.QtCore import Qt, QPointF, QRectF
+from PyQt6.QtGui import QBrush, QColor, QPainter, QPainterPath, QPen, QPolygonF, QTransform
 from PyQt6.QtWidgets import (
     QGraphicsEllipseItem,
     QGraphicsItem,
@@ -121,6 +121,7 @@ class TimingPointItem(QGraphicsEllipseItem):
         self._base_pen = QPen(QColor(ModernColors.L_TEXT))
         self._base_pen.setWidthF(1.0)
         self._base_brush = QBrush(QColor(ModernColors.TP_DEFAULT))
+        self._stop_brush = QBrush(QColor("#c62828"))
         
         self._route_selected = False
         self._route_role: Optional[str] = None
@@ -175,6 +176,11 @@ class TimingPointItem(QGraphicsEllipseItem):
         self._apply_route_style()
 
     def _apply_route_style(self) -> None:
+        if self._point_type == "STOP":
+            self.setBrush(self._stop_brush)
+        else:
+            self.setBrush(self._base_brush)
+
         if self._route_role == "start":
             self.setPen(self._start_pen)
         elif self._route_role == "end":
@@ -184,9 +190,47 @@ class TimingPointItem(QGraphicsEllipseItem):
         else:
             pen = QPen(self._base_pen)
             if self._point_type == "STOP":
-                pen.setColor(Qt.GlobalColor.black)
-                pen.setWidthF(2.5)
+                pen.setColor(Qt.GlobalColor.white)
+                pen.setWidthF(1.2)
             self.setPen(pen)
+
+        self.update()
+
+    def _stop_sign_polygon(self, rect: QRectF, scale: float = 1.0) -> QPolygonF:
+        radius = min(rect.width(), rect.height()) * 0.5 * scale
+        center = rect.center()
+        points = []
+        for i in range(8):
+            angle = math.radians(22.5 + i * 45.0)
+            points.append(
+                QPointF(
+                    center.x() + math.cos(angle) * radius,
+                    center.y() + math.sin(angle) * radius,
+                )
+            )
+        return QPolygonF(points)
+
+    def paint(self, painter: QPainter, option, widget=None) -> None:
+        if self._point_type != "STOP":
+            super().paint(painter, option, widget)
+            return
+
+        painter.save()
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+
+        stop_rect = self.rect().adjusted(-1.4, -1.4, 1.4, 1.4)
+        polygon = self._stop_sign_polygon(stop_rect, 1.0)
+        painter.setPen(self.pen())
+        painter.setBrush(self.brush())
+        painter.drawPolygon(polygon)
+
+        painter.setPen(QPen(Qt.GlobalColor.white))
+        font = painter.font()
+        font.setBold(True)
+        font.setPointSizeF(max(4.0, stop_rect.width() * 0.20))
+        painter.setFont(font)
+        painter.drawText(stop_rect, Qt.AlignmentFlag.AlignCenter, "STOP")
+        painter.restore()
 
     def set_constraint_point_type(self, point_type: Optional[str]) -> None:
         self._point_type = point_type
@@ -220,7 +264,7 @@ class StoppingLocationItem(QGraphicsEllipseItem):
         self._end_pen.setWidthF(3.0)
 
         self.setPen(self._default_pen)
-        self.setBrush(QBrush(Qt.GlobalColor.darkRed))
+        self.setBrush(QBrush(QColor(ModernColors.SL_DEFAULT)))
         self.setZValue(15)
 
         self._label_item = QGraphicsSimpleTextItem(label)

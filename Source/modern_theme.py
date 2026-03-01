@@ -35,7 +35,7 @@ class ModernColors:
     NODE_END = "#ff9500"
     
     TP_DEFAULT = "#007aff"
-    SL_DEFAULT = "#af52de"
+    SL_DEFAULT = "#8b0000"
 
 def get_stylesheet(theme="light"):
     if theme == "light":

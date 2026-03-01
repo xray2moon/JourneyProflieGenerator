@@ -96,17 +96,17 @@ class InfrastructureViewSettings:
         
         # Use dark theme track color since legend is now always dark
         track_color = ModernColors.TRACK_DEFAULT_D
+        stop_icon_path = str((Path(__file__).parent / "assets" / "stop_sign.svg").resolve()).replace("\\", "/")
 
         self._host._legend.setText(
             "<b>Legend</b><br>"
             f"<span style='color:{track_color}'>■</span> Track&nbsp;&nbsp;"
-            f"<span style='color:{ModernColors.TRACK_TP_VISIBLE}'>■</span> Track (TPs shown)&nbsp;&nbsp;"
             f"<span style='color:{ModernColors.TRACK_ROUTE}'>■</span> Route<br>"
-            f"<span style='color:purple'>■</span> Multiple pass-through&nbsp;&nbsp;"
-            f"<span style='color:{ModernColors.TRACK_HOVER}'>■</span> Hover&nbsp;&nbsp;"
-            f"<span style='color:{ModernColors.NODE_DEFAULT}'>●</span> Station/Node<br>"
+            f"<span style='color:purple'>■</span> Multi-pass<br>"
+            f"<span style='color:{ModernColors.NODE_DEFAULT}'>●</span> Node&nbsp;&nbsp;"
+            f"<span style='color:{ModernColors.SL_DEFAULT}'>●</span> Station<br>"
             f"<span style='color:{ModernColors.TP_DEFAULT}'>●</span> Timing point&nbsp;&nbsp;"
-            f"<span style='color:{ModernColors.SL_DEFAULT}'>●</span> Stop&nbsp;&nbsp;"
+            f"<img src='{stop_icon_path}' width='14' height='14'/>&nbsp;Stop (TP)&nbsp;&nbsp;"
             f"<span style='color:{ModernColors.NODE_START}'>●</span> Start&nbsp;&nbsp;"
             f"<span style='color:{ModernColors.NODE_END}'>●</span> End<br>"
             f"<span style='color:{ModernColors.TRACK_ROUTE}'>▶</span> Direction of travel"
@@ -125,4 +125,3 @@ class InfrastructureViewSettings:
     # -----------
     # Interaction / event filter
     # -----------
-
