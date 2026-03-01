@@ -1,6 +1,6 @@
 # Views (UI & Rendering)
 
-Views are responsible for everything the user sees on the screen. They take data from the Models (usually via Controllers) and render it visually, providing the interactive interface.
+Views form the visual layer of the application, responsible for everything the user interacts with and sees on the screen. Following the MVC paradigm, Views do not hold core business logic or raw state; instead, they consume data provided by the Models (typically mediated via the Controllers) and render it into a comprehensive graphical interface. This layer includes the main application windows, interactive canvases, custom-drawn infrastructure items, and styling definitions, all working together to provide an intuitive and responsive user experience.
 
 ## `InfrastructureView.py`
 

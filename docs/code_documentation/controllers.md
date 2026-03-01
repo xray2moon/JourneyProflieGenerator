@@ -1,6 +1,6 @@
 # Controllers (Logic & Input)
 
-Controllers act as the middlemen. They listen to user inputs from the Views, execute the necessary logic, and update the Models accordingly.
+Controllers serve as the vital middle layer in the application's Model-View-Controller (MVC) architecture. They are responsible for listening to user inputs and interactions from the graphical interface (Views), interpreting those actions, executing the necessary underlying business logic, and subsequently updating the state of the data structures (Models). By decoupling the user interface from the raw data, the controllers ensure that the application remains modular, maintainable, and highly responsive to user commands.
 
 ## `infra_view_interaction.py`
 
@@ -37,4 +37,4 @@ Controls the visual lifecycle and layout of the scene. It rebuilds the items on 
 Bridges the application state by connecting Qt signals emitted by the `infra_backend` to updates in the UI views. Ensures that the view strictly reflects the current data state.
 
 ### Core Functions
-*(No business-critical functions > 30 lines. This component relies primarily on simple signal-slot connections established during initialization.)*
+*This module focuses entirely on wiring up Qt signals to their respective UI updates. Since its logic is straightforward and handled primarily during initialization, it does not contain large or complex core functions that require detailed documentation.*

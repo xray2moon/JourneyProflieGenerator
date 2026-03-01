@@ -185,6 +185,7 @@ class InfrastructureViewInteraction:
         Identifies interactive infrastructure items and triggers selection or routing logic.
         """
         if obj is self._scene:
+            # Handle mouse hover to highlight tracks
             if event.type() == QEvent.Type.GraphicsSceneMouseMove:
                 if self._layout_mode not in {"geographic"}:
                     self._set_hovered_track(None)
@@ -195,6 +196,7 @@ class InfrastructureViewInteraction:
 
                     hovered: Optional[str] = None
                     model = self._backend.model
+                    # Check items directly under the mouse cursor
                     for cand in self._scene.items(event.scenePos()):
                         tid = self._track_id_from_item(cand.topLevelItem())
                         if not tid:
@@ -202,17 +204,21 @@ class InfrastructureViewInteraction:
                         pts = self._polyline_points_for_track(model.tracks[tid])
                         if not pts:
                             continue
+                        # Verify the mouse is close enough to the actual track polyline
                         d = self._min_dist_sq_to_polyline(event.scenePos(), pts)
                         if d <= tol_sq:
                             hovered = tid
                             break
 
+                    # Fallback: find closest track if none directly under cursor
                     if hovered is None:
                         hovered = self._pick_track_id_near(event.scenePos(), tolerance_px=tol_px)
                     self._set_hovered_track(hovered)
 
+            # Handle mouse clicks for selection and routing
             if event.type() == QEvent.Type.GraphicsSceneMousePress:
                 item: Optional[QGraphicsItem] = None
+                # Identify the topmost interactive infrastructure element clicked
                 for cand in self._scene.items(event.scenePos()):
                     top = cand.topLevelItem()
                     if isinstance(top, (TimingPointItem, NodeItem, StoppingLocationItem)):
@@ -221,6 +227,7 @@ class InfrastructureViewInteraction:
 
                 if isinstance(item, TimingPointItem):
                     if event.button() == Qt.MouseButton.LeftButton:
+                        # Left Click on TP: Try to add it to the route
                         resolved_tp_id = self._resolve_click_tp_id(item)
                         if resolved_tp_id is None:
                             return True
@@ -228,7 +235,9 @@ class InfrastructureViewInteraction:
                         self._extend_route_with_tp(resolved_tp_id)
                         return True
                     if event.button() == Qt.MouseButton.RightButton:
+                        # Right Click on TP
                         if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+                            # Shift + Right Click: Remove TP from the route
                             selection = self._backend.selection
                             route_tp_ids = set(selection.waypoint_tp_ids)
                             if selection.start_tp_id is not None:
@@ -238,6 +247,8 @@ class InfrastructureViewInteraction:
 
                             candidate_ids = self._tp_ids_for_item(item)
                             tp_id_to_remove: Optional[int] = None
+                            
+                            # Prefer removing end, then waypoints, then start
                             for preferred_tp_id in (
                                 [selection.end_tp_id]
                                 + list(selection.waypoint_tp_ids)
@@ -248,6 +259,8 @@ class InfrastructureViewInteraction:
                                 if preferred_tp_id in route_tp_ids and preferred_tp_id in candidate_ids:
                                     tp_id_to_remove = int(preferred_tp_id)
                                     break
+                            
+                            # Fallback: remove any matched candidate that is part of the route
                             if tp_id_to_remove is None:
                                 for candidate_tp_id in candidate_ids:
                                     if candidate_tp_id in route_tp_ids:
@@ -260,6 +273,7 @@ class InfrastructureViewInteraction:
                             else:
                                 item.setSelected(False)
                         else:
+                            # Regular Right Click: Edit timing constraint
                             resolved_tp_id = self._resolve_existing_member_tp_id(item)
                             if resolved_tp_id is not None:
                                 self._edit_timing_constraint(resolved_tp_id)
@@ -273,6 +287,7 @@ class InfrastructureViewInteraction:
                     if event.button() == Qt.MouseButton.LeftButton:
                         return False # Disabled routing via Node
 
+                # If we didn't click an interactive item, check if we clicked a track to toggle its TPs
                 if event.button() == Qt.MouseButton.LeftButton:
                     track_id = self._pick_track_id_near(event.scenePos())
                 else:

@@ -1,6 +1,6 @@
 # Services (I/O & Communication)
 
-Services handle communication with the outside world, such as reading from or writing to files, and transforming external data into internal application models.
+Services in this architecture are dedicated components designed to handle communication with the outside world. This primarily involves handling file Input/Output (I/O) operations, such as reading infrastructure layouts from external JSON files or exporting generated journey profiles for use in other systems. Services encapsulate the complexities of data serialization and deserialization, ensuring that the internal models are seamlessly translated to and from external data formats without burdening the core logic or UI components with format-specific details.
 
 ## `infra_data_manager.py`
 
