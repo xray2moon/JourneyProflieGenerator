@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from PyQt6.QtCore import Qt, pyqtSignal, QTimer, QPointF
-from PyQt6.QtGui import QKeySequence, QShortcut
+from PyQt6.QtGui import QKeySequence, QShortcut, QDoubleValidator
 from PyQt6.QtWidgets import (
     QApplication,
     QWidget,
@@ -14,6 +14,10 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QPushButton,
     QLabel,
+    QFrame,
+    QFormLayout,
+    QLineEdit,
+    QMessageBox,
 )
 
 if __package__ in (None, ""):
@@ -65,6 +69,11 @@ class InfrastructureView(QWidget):
         self._legend.adjustSize()
         self._legend.move(12, 12)
         self._legend.raise_()
+        self._selected_segment_track_id: Optional[str] = None
+        self._segment_source_target_node_id: Optional[str] = None
+        self._segment_target_target_node_id: Optional[str] = None
+        self._updating_segment_speed_inputs = False
+        self._init_segment_speed_panel()
 
         # Toolbar
         self._clear_route_btn = QPushButton("Clear route")
@@ -199,6 +208,7 @@ class InfrastructureView(QWidget):
         """Called by connector when backend data changes."""
         print("DEBUG: on_model_updated called", flush=True)
         model = self._backend.model
+        self.set_selected_segment_track(None)
         self._build_graph()
         self._rebuild_scene()
         self._initial_fit_done = False
@@ -229,20 +239,16 @@ class InfrastructureView(QWidget):
 
     def _on_journey_profile_generation_requested(self, file_path: str, parameters: dict) -> None:
         if not self._backend.selection.current_route:
-            from PyQt6.QtWidgets import QMessageBox
             QMessageBox.warning(self, "No route", "Please select a route first.")
             return
         
         try:
             self._backend.generate_journey_profile(file_path, parameters)
-            from PyQt6.QtWidgets import QMessageBox
             QMessageBox.information(self, "Success", f"Journey Profile generated:\n{file_path}")
         except Exception as exc:
-            from PyQt6.QtWidgets import QMessageBox
             QMessageBox.critical(self, "Generation failed", str(exc))
 
     def _on_journey_profile_load_requested(self, file_path: str) -> None:
-        from PyQt6.QtWidgets import QMessageBox
         model = self._backend.model
         if not model.timing_points:
             QMessageBox.warning(
@@ -253,7 +259,7 @@ class InfrastructureView(QWidget):
             return
 
         try:
-            replay_tp_ids, selected_tp_ids, stop_constraints = self._importer.load_file(file_path)
+            replay_tp_ids, selected_tp_ids, stop_constraints, segment_speed_limits = self._importer.load_file(file_path)
             if not replay_tp_ids:
                 raise ValueError("No matching timing points found for this infrastructure.")
             if not selected_tp_ids:
@@ -307,6 +313,7 @@ class InfrastructureView(QWidget):
                     selection.set_timing_constraint(tp_id, None)
             for tp_id, constraint in stop_constraints.items():
                 selection.set_timing_constraint(tp_id, constraint)
+            selection.set_segment_speed_limits(segment_speed_limits)
             self.update_route_highlights_ui()
 
             self._tabs.setCurrentIndex(0)
@@ -314,6 +321,168 @@ class InfrastructureView(QWidget):
             QMessageBox.information(self, "Route loaded", f"Loaded route from:\n{file_path}")
         except Exception as exc:
             QMessageBox.critical(self, "Route load failed", str(exc))
+
+    def _init_segment_speed_panel(self) -> None:
+        panel = QFrame(self._view.viewport())
+        panel.setObjectName("segmentSpeedPanel")
+        panel.setFrameShape(QFrame.Shape.StyledPanel)
+        panel.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+        panel.setVisible(False)
+
+        title = QLabel("Segment Speed Limits", panel)
+        title.setObjectName("segmentSpeedTitle")
+        info_label = QLabel("", panel)
+        info_label.setWordWrap(True)
+
+        to_source_label = QLabel("", panel)
+        to_target_label = QLabel("", panel)
+
+        to_source_edit = QLineEdit(panel)
+        to_source_edit.setPlaceholderText("No limit")
+        to_source_edit.setClearButtonEnabled(True)
+        to_source_validator = QDoubleValidator(0.0, 9999.0, 3, to_source_edit)
+        to_source_validator.setNotation(QDoubleValidator.Notation.StandardNotation)
+        to_source_edit.setValidator(to_source_validator)
+
+        to_target_edit = QLineEdit(panel)
+        to_target_edit.setPlaceholderText("No limit")
+        to_target_edit.setClearButtonEnabled(True)
+        to_target_validator = QDoubleValidator(0.0, 9999.0, 3, to_target_edit)
+        to_target_validator.setNotation(QDoubleValidator.Notation.StandardNotation)
+        to_target_edit.setValidator(to_target_validator)
+
+        form = QFormLayout()
+        form.setContentsMargins(10, 10, 10, 10)
+        form.setHorizontalSpacing(8)
+        form.setVerticalSpacing(8)
+        form.addRow(title)
+        form.addRow(info_label)
+        form.addRow(to_source_label, to_source_edit)
+        form.addRow(to_target_label, to_target_edit)
+        panel.setLayout(form)
+
+        to_source_edit.editingFinished.connect(
+            lambda: self._on_segment_speed_limit_edited(
+                "source",
+                to_source_edit,
+            )
+        )
+        to_target_edit.editingFinished.connect(
+            lambda: self._on_segment_speed_limit_edited(
+                "target",
+                to_target_edit,
+            )
+        )
+
+        self._segment_speed_panel = panel
+        self._segment_speed_info_label = info_label
+        self._segment_speed_to_source_label = to_source_label
+        self._segment_speed_to_target_label = to_target_label
+        self._segment_speed_to_source_edit = to_source_edit
+        self._segment_speed_to_target_edit = to_target_edit
+
+    def _node_display_id(self, node_id: str) -> str:
+        node = self._backend.model.nodes.get(str(node_id))
+        numeric_id = getattr(node, "numeric_id", None) if node is not None else None
+        return str(numeric_id) if numeric_id is not None else str(node_id)
+
+    def _format_segment_speed_limit(self, value: Optional[float]) -> str:
+        if value is None:
+            return ""
+        return f"{float(value):.3f}".rstrip("0").rstrip(".")
+
+    def set_selected_segment_track(self, track_id: Optional[str]) -> None:
+        normalized: Optional[str]
+        if isinstance(track_id, str) and track_id in self._backend.model.tracks:
+            normalized = track_id
+        else:
+            normalized = None
+        if normalized == self._selected_segment_track_id:
+            return
+        self._selected_segment_track_id = normalized
+        self.refresh_segment_speed_panel()
+
+    def refresh_segment_speed_panel(self) -> None:
+        panel = getattr(self, "_segment_speed_panel", None)
+        if panel is None:
+            return
+
+        track_id = self._selected_segment_track_id
+        model = self._backend.model
+        track = model.tracks.get(track_id) if track_id else None
+        if track is None:
+            panel.setVisible(False)
+            self._segment_source_target_node_id = None
+            self._segment_target_target_node_id = None
+            return
+
+        track_display = f"Track {track.numeric_id}" if track.numeric_id is not None else str(track.id)
+        source_display = self._node_display_id(track.source)
+        target_display = self._node_display_id(track.target)
+
+        self._segment_speed_info_label.setText(
+            f"{track_display}\nID: {track.id}\nLength: {track.length_m:.1f} m"
+        )
+        self._segment_speed_to_source_label.setText(f"Toward node {source_display} (km/h)")
+        self._segment_speed_to_target_label.setText(f"Toward node {target_display} (km/h)")
+        self._segment_source_target_node_id = track.source
+        self._segment_target_target_node_id = track.target
+
+        selection = self._backend.selection
+        source_speed = selection.get_segment_speed_limit(track.id, track.source)
+        target_speed = selection.get_segment_speed_limit(track.id, track.target)
+
+        self._updating_segment_speed_inputs = True
+        try:
+            self._segment_speed_to_source_edit.setText(self._format_segment_speed_limit(source_speed))
+            self._segment_speed_to_target_edit.setText(self._format_segment_speed_limit(target_speed))
+        finally:
+            self._updating_segment_speed_inputs = False
+
+        panel.adjustSize()
+        panel.setVisible(True)
+        self._position_overlay_widgets()
+
+    def _on_segment_speed_limit_edited(self, direction_key: str, editor: QLineEdit) -> None:
+        if self._updating_segment_speed_inputs:
+            return
+
+        track_id = self._selected_segment_track_id
+        if not track_id:
+            return
+
+        if direction_key == "source":
+            target_node_id = self._segment_source_target_node_id
+        else:
+            target_node_id = self._segment_target_target_node_id
+
+        if not target_node_id:
+            return
+
+        text = editor.text().strip()
+        if not text:
+            new_limit: Optional[float] = None
+        else:
+            try:
+                new_limit = float(text)
+            except ValueError:
+                self.refresh_segment_speed_panel()
+                return
+            if new_limit < 0.0:
+                QMessageBox.warning(self, "Invalid max speed", "Max speed must be a non-negative km/h value.")
+                self.refresh_segment_speed_panel()
+                return
+
+        selection = self._backend.selection
+        old_limit = selection.get_segment_speed_limit(track_id, target_node_id)
+        if old_limit is None and new_limit is None:
+            return
+        if old_limit is not None and new_limit is not None and abs(old_limit - new_limit) <= 1e-9:
+            return
+
+        self._push_undo_snapshot()
+        selection.set_segment_speed_limit(track_id, target_node_id, new_limit)
+        self.refresh_segment_speed_panel()
 
     def export_state(self) -> dict:
         return self._exporter.export_to_dict(self._parameters)

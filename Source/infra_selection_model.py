@@ -17,6 +17,7 @@ class InfrastructureSelectionModel(QObject):
     startTpChanged = pyqtSignal(object) # Optional[int]
     endTpChanged = pyqtSignal(object)   # Optional[int]
     waypointTpsChanged = pyqtSignal(list)
+    segmentSpeedLimitsChanged = pyqtSignal(dict)
 
     def __init__(self):
         super().__init__()
@@ -28,6 +29,7 @@ class InfrastructureSelectionModel(QObject):
         self._start_tp_id: Optional[int] = None
         self._end_tp_id: Optional[int] = None
         self._waypoint_tp_ids: List[int] = []
+        self._segment_speed_limits: Dict[str, Dict[str, float]] = {}
 
     @property
     def current_route(self) -> List[str]:
@@ -100,6 +102,91 @@ class InfrastructureSelectionModel(QObject):
         self._selected_stopping_point_id = sl_id
         self.selectedStoppingPointChanged.emit(sl_id or "")
 
+    @property
+    def segment_speed_limits(self) -> Dict[str, Dict[str, float]]:
+        return self._segment_speed_limits
+
+    def get_segment_speed_limit(self, track_id: str, target_node_id: str) -> Optional[float]:
+        track_limits = self._segment_speed_limits.get(str(track_id))
+        if not isinstance(track_limits, dict):
+            return None
+        raw = track_limits.get(str(target_node_id))
+        try:
+            value = float(raw)
+        except (TypeError, ValueError):
+            return None
+        if value < 0.0:
+            return None
+        return value
+
+    def set_segment_speed_limit(
+        self,
+        track_id: str,
+        target_node_id: str,
+        speed_limit: Optional[float],
+    ) -> None:
+        track_key = str(track_id)
+        node_key = str(target_node_id)
+        current = self.get_segment_speed_limit(track_key, node_key)
+
+        normalized: Optional[float]
+        if speed_limit is None:
+            normalized = None
+        else:
+            try:
+                parsed = float(speed_limit)
+            except (TypeError, ValueError):
+                return
+            if parsed < 0.0:
+                return
+            normalized = parsed
+
+        if normalized is not None and current is not None and abs(current - normalized) <= 1e-9:
+            return
+        if normalized is None and current is None:
+            return
+
+        if normalized is None:
+            track_limits = self._segment_speed_limits.get(track_key)
+            if isinstance(track_limits, dict):
+                track_limits.pop(node_key, None)
+                if not track_limits:
+                    self._segment_speed_limits.pop(track_key, None)
+        else:
+            track_limits = self._segment_speed_limits.setdefault(track_key, {})
+            track_limits[node_key] = normalized
+
+        self.segmentSpeedLimitsChanged.emit(copy.deepcopy(self._segment_speed_limits))
+
+    def set_segment_speed_limits(self, limits: Dict[str, Dict[str, float]]) -> None:
+        cleaned: Dict[str, Dict[str, float]] = {}
+        for track_id, node_limits in (limits or {}).items():
+            if not isinstance(node_limits, dict):
+                continue
+            normalized_nodes: Dict[str, float] = {}
+            for target_node_id, raw_speed in node_limits.items():
+                try:
+                    speed = float(raw_speed)
+                except (TypeError, ValueError):
+                    continue
+                if speed < 0.0:
+                    continue
+                normalized_nodes[str(target_node_id)] = speed
+            if normalized_nodes:
+                cleaned[str(track_id)] = normalized_nodes
+
+        if cleaned == self._segment_speed_limits:
+            return
+
+        self._segment_speed_limits = cleaned
+        self.segmentSpeedLimitsChanged.emit(copy.deepcopy(self._segment_speed_limits))
+
+    def clear_segment_speed_limits(self) -> None:
+        if not self._segment_speed_limits:
+            return
+        self._segment_speed_limits = {}
+        self.segmentSpeedLimitsChanged.emit({})
+
     def clear_selection(self):
         self._current_route = []
         self._current_tracks = []
@@ -107,12 +194,14 @@ class InfrastructureSelectionModel(QObject):
         self._start_tp_id = None
         self._end_tp_id = None
         self._waypoint_tp_ids = []
+        self._segment_speed_limits = {}
         self.routeChanged.emit([])
         self.tracksChanged.emit([])
         self.selectedStoppingPointChanged.emit("")
         self.startTpChanged.emit(None)
         self.endTpChanged.emit(None)
         self.waypointTpsChanged.emit([])
+        self.segmentSpeedLimitsChanged.emit({})
 
     def snapshot_state(self) -> dict:
         return {
@@ -124,6 +213,7 @@ class InfrastructureSelectionModel(QObject):
             "start_tp_id": self._start_tp_id,
             "end_tp_id": self._end_tp_id,
             "waypoint_tp_ids": list(self._waypoint_tp_ids),
+            "segment_speed_limits": copy.deepcopy(self._segment_speed_limits),
         }
 
     def restore_state(self, state: dict) -> None:
@@ -135,6 +225,7 @@ class InfrastructureSelectionModel(QObject):
         self._start_tp_id = state.get("start_tp_id")
         self._end_tp_id = state.get("end_tp_id")
         self._waypoint_tp_ids = list(state.get("waypoint_tp_ids", []))
+        self._segment_speed_limits = copy.deepcopy(state.get("segment_speed_limits", {}))
 
         self.routeChanged.emit(list(self._current_route))
         self.tracksChanged.emit(list(self._current_tracks))
@@ -144,3 +235,4 @@ class InfrastructureSelectionModel(QObject):
         self.startTpChanged.emit(self._start_tp_id)
         self.endTpChanged.emit(self._end_tp_id)
         self.waypointTpsChanged.emit(list(self._waypoint_tp_ids))
+        self.segmentSpeedLimitsChanged.emit(copy.deepcopy(self._segment_speed_limits))

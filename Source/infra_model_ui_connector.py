@@ -22,6 +22,7 @@ class ModelUIConnector(QObject):
         self._backend.selection.startTpChanged.connect(lambda _: self._view.update_route_highlights_ui())
         self._backend.selection.endTpChanged.connect(lambda _: self._view.update_route_highlights_ui())
         self._backend.selection.waypointTpsChanged.connect(lambda _: self._view.update_route_highlights_ui())
+        self._backend.selection.segmentSpeedLimitsChanged.connect(lambda _: self._view.refresh_segment_speed_panel())
 
     def _on_infrastructure_loaded(self):
         # Notify the view to rebuild itself with new data

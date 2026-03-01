@@ -19,11 +19,21 @@ class InfrastructureViewSettings:
         return getattr(self._host, name)
 
     def _position_overlay_widgets(self) -> None:
-        if getattr(self, "_legend", None) is None:
-            return
-        self._legend.adjustSize()
-        self._legend.move(12, 12)
-        self._legend.raise_()
+        legend = getattr(self, "_legend", None)
+        if legend is not None:
+            legend.adjustSize()
+            legend.move(12, 12)
+            legend.raise_()
+
+        panel = getattr(self, "_segment_speed_panel", None)
+        if panel is not None and panel.isVisible():
+            panel.adjustSize()
+            viewport = self._view.viewport()
+            margin = 12
+            x = max(margin, viewport.width() - panel.width() - margin)
+            y = max(margin, viewport.height() - panel.height() - margin)
+            panel.move(x, y)
+            panel.raise_()
 
     def _load_settings(self) -> None:
         settings_path = Path("user_settings.json")

@@ -221,6 +221,16 @@ def get_stylesheet(theme="light"):
 
     }}
 
+    QFrame#segmentSpeedPanel {{
+        background-color: {surface};
+        border: 1px solid {border};
+        border-radius: 10px;
+    }}
+
+    QLabel#segmentSpeedTitle {{
+        font-weight: bold;
+    }}
+
         QLabel#legend {{
         background-color: {ModernColors.D_SURFACE}cc;
         border: 1px solid {ModernColors.D_BORDER};

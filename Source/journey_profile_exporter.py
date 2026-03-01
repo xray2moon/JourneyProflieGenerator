@@ -118,6 +118,82 @@ class JourneyProfileExporter:
 
         return ranges
 
+    @staticmethod
+    def _segment_speed_limit(
+        selection,
+        *,
+        track_id: Optional[str],
+        target_node_id: Optional[str],
+    ) -> float:
+        if not track_id or not target_node_id:
+            return float("inf")
+
+        getter = getattr(selection, "get_segment_speed_limit", None)
+        if callable(getter):
+            raw_value = getter(track_id, target_node_id)
+        else:
+            raw_value = None
+            all_limits = getattr(selection, "segment_speed_limits", {})
+            if isinstance(all_limits, dict):
+                node_limits = all_limits.get(str(track_id), {})
+                if isinstance(node_limits, dict):
+                    raw_value = node_limits.get(str(target_node_id))
+
+        if raw_value is None:
+            return float("inf")
+
+        try:
+            parsed_kmh = float(raw_value)
+        except (TypeError, ValueError):
+            return float("inf")
+        if parsed_kmh < 0.0:
+            return float("inf")
+        return parsed_kmh / 3.6
+
+    @staticmethod
+    def _slice_leg_by_traversals(
+        start_abs: float,
+        end_abs: float,
+        traversal_windows: List[Dict[str, Any]],
+    ) -> List[Dict[str, Any]]:
+        if end_abs <= start_abs + 1e-9:
+            return []
+
+        pieces: List[Dict[str, Any]] = []
+        cursor = start_abs
+        for window in traversal_windows:
+            win_start = float(window.get("start_abs", 0.0))
+            win_end = float(window.get("end_abs", 0.0))
+            if win_end <= cursor + 1e-9:
+                continue
+            if win_start >= end_abs - 1e-9:
+                break
+
+            piece_start = max(cursor, win_start)
+            piece_end = min(end_abs, win_end)
+            if piece_end <= piece_start + 1e-9:
+                continue
+
+            pieces.append({
+                "start_abs": piece_start,
+                "distance": piece_end - piece_start,
+                "track_id": window.get("track_id"),
+                "target_node_id": window.get("target_node_id"),
+            })
+            cursor = piece_end
+            if cursor >= end_abs - 1e-9:
+                break
+
+        if cursor < end_abs - 1e-9:
+            pieces.append({
+                "start_abs": cursor,
+                "distance": end_abs - cursor,
+                "track_id": None,
+                "target_node_id": None,
+            })
+
+        return pieces
+
     def _is_tp_stop_event(
         self,
         *,
@@ -332,6 +408,7 @@ class JourneyProfileExporter:
         curr_route_pos = 0.0
         last_track_dir = None
         reversal_tp_ids = set()
+        traversal_windows: List[Dict[str, Any]] = []
 
         start_tp_id = selection.start_tp_id
         end_tp_id = selection.end_tp_id
@@ -353,6 +430,16 @@ class JourneyProfileExporter:
             u = selection.current_route[i]
             v = selection.current_route[i+1]
             s_pct, e_pct = traversal_ranges[i] if i < len(traversal_ranges) else (0.0, 1.0)
+            traversal_length = abs(e_pct - s_pct) * track.length_m
+            traversal_start_abs = curr_route_pos
+            traversal_end_abs = traversal_start_abs + traversal_length
+            if traversal_length > 1e-9:
+                traversal_windows.append({
+                    "start_abs": traversal_start_abs,
+                    "end_abs": traversal_end_abs,
+                    "track_id": tid,
+                    "target_node_id": v,
+                })
             
             # Absolute direction on this track relative to its definition
             # Swapped as per user request: if track.target == v, it was NOMINAL, now REVERSE
@@ -484,7 +571,7 @@ class JourneyProfileExporter:
             
             events.extend(track_tps_aug)
             
-            curr_route_pos += abs(e_pct - s_pct) * track.length_m
+            curr_route_pos = traversal_end_abs
             
             last_track_dir = curr_track_dir
 
@@ -568,8 +655,6 @@ class JourneyProfileExporter:
                     next_stop_pos = sp
                     break
             
-            distance_to_stop = next_stop_pos - last_pos
-
             leg_start_time = current_time
             current_user_arrival_time = None
             user_departure_time = None
@@ -639,14 +724,41 @@ class JourneyProfileExporter:
                 if target_is_stop:
                     break
 
-            travel_time = simulate_travel(
-                train_type,
-                distance_delta,
-                train_state,
-                mode="accel",
-                speed_restriction=speed_restriction,
-                distance_to_stop=distance_to_stop,
+            travel_time = 0.0
+            leg_pieces = self._slice_leg_by_traversals(
+                last_pos,
+                abs_pos,
+                traversal_windows,
             )
+            if not leg_pieces and distance_delta > 1e-9:
+                leg_pieces = [{
+                    "start_abs": last_pos,
+                    "distance": distance_delta,
+                    "track_id": None,
+                    "target_node_id": None,
+                }]
+
+            for piece in leg_pieces:
+                piece_dist = float(piece.get("distance", 0.0))
+                if piece_dist <= 1e-9:
+                    continue
+
+                piece_start_abs = float(piece.get("start_abs", last_pos))
+                piece_to_stop = max(0.0, next_stop_pos - piece_start_abs)
+                piece_cap = self._segment_speed_limit(
+                    selection,
+                    track_id=piece.get("track_id"),
+                    target_node_id=piece.get("target_node_id"),
+                )
+                effective_speed_restriction = min(speed_restriction, piece_cap)
+                travel_time += simulate_travel(
+                    train_type,
+                    piece_dist,
+                    train_state,
+                    mode="accel",
+                    speed_restriction=effective_speed_restriction,
+                    distance_to_stop=piece_to_stop,
+                )
             current_time += timedelta(seconds=travel_time)
             
             if etype == "TP":
@@ -732,6 +844,26 @@ class JourneyProfileExporter:
             
             last_pos = abs_pos
 
+        segment_speed_limits_payload: List[Dict[str, Any]] = []
+        raw_segment_limits = getattr(selection, "segment_speed_limits", {})
+        if isinstance(raw_segment_limits, dict):
+            for track_id in sorted(raw_segment_limits.keys()):
+                node_limits = raw_segment_limits.get(track_id, {})
+                if not isinstance(node_limits, dict):
+                    continue
+                for target_node_id in sorted(node_limits.keys()):
+                    try:
+                        max_speed = float(node_limits[target_node_id])
+                    except (TypeError, ValueError):
+                        continue
+                    if max_speed < 0.0:
+                        continue
+                    segment_speed_limits_payload.append({
+                        "trackId": str(track_id),
+                        "targetNodeId": str(target_node_id),
+                        "maxSpeedKilometersPerHour": max_speed,
+                    })
+
         # 3. Build full JSON structure
         profile = {
             "meta": {
@@ -766,6 +898,7 @@ class JourneyProfileExporter:
                 for tp_id, constraint in sorted(selection.timing_constraints.items(), key=lambda x: int(x[0]))
                 if isinstance(constraint, dict)
             ],
+            "generatorSegmentSpeedLimits": segment_speed_limits_payload,
             "segmentProfileReferences": profile_segments
         }
         
