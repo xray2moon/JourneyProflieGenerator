@@ -186,6 +186,10 @@ class InfrastructureView(QWidget):
             redo_btn.setEnabled(can_redo)
 
     def load_infrastructure(self, json_path: str):
+        """
+        Triggers the loading of an infrastructure file, updates the window title,
+        and calls upon the backend to process the new data.
+        """
         print(f"DEBUG: load_infrastructure requested for {json_path}", flush=True)
         try:
             self._backend.load_infrastructure(json_path)
@@ -213,6 +217,9 @@ class InfrastructureView(QWidget):
         )
 
     def update_route_highlights(self, nodes: List[str]):
+        """
+        Updates the visual highlighting of tracks and nodes based on the currently calculated route.
+        """
         self.update_route_highlights_ui()
         self.routeChanged.emit(list(nodes))
 

@@ -22,6 +22,10 @@ class JourneyProfileImporter:
         return self.load_dict(raw)
 
     def load_dict(self, raw: dict) -> Tuple[List[int], List[int], Dict[int, dict]]:
+        """
+        Reads a parsed Journey Profile dictionary, identifying the route sequence,
+        constraints, and metadata for the backend to replay the route.
+        """
         model = self._backend.model
         replay_tp_ids: List[int] = []
         stop_constraints: Dict[int, dict] = self._extract_generator_timing_constraints(raw)
@@ -53,6 +57,10 @@ class JourneyProfileImporter:
         return replay_tp_ids, selected_tp_ids, stop_constraints
 
     def _extract_selected_tp_ids(self, raw: dict, replay_tp_ids: List[int]) -> List[int]:
+        """
+        Parses the timing point sequence from the raw JSON and matches it against
+        the loaded infrastructure to rebuild the exact sequence of waypoints.
+        """
         model = self._backend.model
         payload = raw.get("generatorRouteSelection", {})
         if not isinstance(payload, dict):

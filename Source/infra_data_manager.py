@@ -45,6 +45,10 @@ class InfrastructureParser:
 
     @staticmethod
     def parse_dict(raw: dict) -> InfrastructureModel:
+        """
+        Parses raw infrastructure dictionary data into a structured InfrastructureModel,
+        extracting and validating nodes, tracks, timing points, and stopping locations.
+        """
         model = InfrastructureModel()
         
         # Nodes

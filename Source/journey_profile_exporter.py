@@ -34,6 +34,10 @@ class JourneyProfileExporter:
         return max(0.0, min(1.0, pct))
 
     def _compute_traversal_ranges(self, selection, model) -> List[tuple[float, float]]:
+        """
+        Computes the exact [start_m, end_m] distance ranges for each track traversed,
+        accounting for track direction and necessary reversals.
+        """
         ranges: List[tuple[float, float]] = []
         directions: List[str] = []
         route_tracks = selection.current_tracks
@@ -135,6 +139,10 @@ class JourneyProfileExporter:
         return False
 
     def export_journey_profile(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        The primary orchestration method for export. Gathers the sequence of tracks
+        and timing points from the selection and structures the final JSON dictionary.
+        """
         selection = self._backend.selection
         model = self._backend.model
         
@@ -519,6 +527,10 @@ class JourneyProfileExporter:
         return profile
 
     def export_to_file(self, file_path: str, parameters: Dict[str, Any]):
+        """
+        Handles the final file I/O, writing the generated journey profile dictionary
+        out to a designated JSON file on disk.
+        """
         data = self.export_journey_profile(parameters)
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)

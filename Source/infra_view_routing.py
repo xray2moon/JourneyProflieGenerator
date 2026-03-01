@@ -776,6 +776,10 @@ class InfrastructureViewRouting:
             selection.set_route(new_nodes, new_tracks)
 
     def _replay_tp_sequence(self, start_tp_id: int, ordered_targets: List[int]) -> bool:
+        """
+        Rebuilds the entire internal route sequence from a list of Timing Points.
+        Crucial for undo/redo actions and importing an existing journey profile.
+        """
         selection = self._backend.selection
         old_route = list(selection.current_route)
         old_tracks = list(selection.current_tracks)

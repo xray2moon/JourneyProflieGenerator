@@ -33,6 +33,10 @@ class InfrastructureViewScene:
     # -----------
 
     def _rebuild_scene(self) -> None:
+        """
+        Clears the current canvas and triggers the scene builder to place nodes,
+        tracks, and timing points according to the most up-to-date model data.
+        """
         self._scene_builder.clear()
         self._host._node_items.clear()
         self._host._track_items.clear()

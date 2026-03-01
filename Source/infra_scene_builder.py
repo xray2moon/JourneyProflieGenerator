@@ -43,7 +43,8 @@ class InfrastructureSceneBuilder:
         waypoint_tp_ids: Optional[Set[int]] = None,
     ) -> Dict[str, any]:
         """
-        Builds the geographic representation.
+        Translates logical nodes, tracks, and timing points into visual representations
+        based on their geographic coordinates, placing them accurately on the scene.
         Returns a dictionary of created items for the View to keep track of.
         """
         results = {

@@ -104,6 +104,10 @@ class InfrastructureViewInteraction:
         self._hover_track_id = track_id
 
     def _can_start_background_pan(self, scene_pos: QPointF) -> bool:
+        """
+        Determines if a mouse drag operation should initiate a canvas pan
+        based on the clicked location and items under the cursor.
+        """
         if self._layout_mode == "topological":
             return True
 
@@ -176,6 +180,10 @@ class InfrastructureViewInteraction:
             track_item.set_timing_points_visible(visible)
 
     def eventFilter(self, obj, event):
+        """
+        Core event handler intercepting Qt events on the graphics scene.
+        Identifies interactive infrastructure items and triggers selection or routing logic.
+        """
         if obj is self._scene:
             if event.type() == QEvent.Type.GraphicsSceneMouseMove:
                 if self._layout_mode not in {"geographic"}:
@@ -319,6 +327,10 @@ class InfrastructureViewInteraction:
             tpi.setSelected(False)
 
     def update_route_highlights_ui(self) -> None:
+        """
+        Updates the visual representation of the currently selected route.
+        Synchronizes UI states like start, end, and waypoints with the view layer.
+        """
         selection = self._backend.selection
         model = self._backend.model
         route_nodes = selection.current_route
