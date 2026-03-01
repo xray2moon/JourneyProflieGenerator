@@ -380,7 +380,10 @@ class InfrastructureViewInteraction:
                     track_id = None
 
                 if self._layout_mode == "geographic" and track_id and event.button() == Qt.MouseButton.LeftButton:
-                    self.set_selected_segment_track(track_id)
+                    if getattr(self, "_selected_segment_track_id", None) == track_id:
+                        self.set_selected_segment_track(None)
+                    else:
+                        self.set_selected_segment_track(track_id)
                     self._toggle_track_timing_points(track_id)
                     return True
 
