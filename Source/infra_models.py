@@ -6,6 +6,8 @@ from typing import List, Optional, Tuple
 
 @dataclass(frozen=True)
 class Node:
+    """Infrastructure graph node with optional human-readable numeric identifier."""
+
     id: str
     x: float
     y: float
@@ -14,6 +16,8 @@ class Node:
 
 @dataclass(frozen=True)
 class Track:
+    """Directed infrastructure connection between two nodes."""
+
     id: str
     source: str
     target: str
@@ -24,6 +28,8 @@ class Track:
 
 @dataclass(frozen=True)
 class TimingPoint:
+    """Operational point on a track, defined by distance to a target node."""
+
     id: int  # integer ID
     track_id: str
     target_node_id: str
@@ -34,6 +40,8 @@ class TimingPoint:
 
 @dataclass(frozen=True)
 class StoppingLocation:
+    """Stopping/platform metadata anchored on a track and reference node."""
+
     id: str
     track_id: str
     reference_node_id: str
@@ -57,4 +65,3 @@ class SchematicSegment:
     node_path: List[str]
     track_ids: List[str]
     length_m: float
-

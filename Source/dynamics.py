@@ -33,6 +33,8 @@ train_data = {
 
 @dataclass
 class TrainState:
+    """Mutable simulation state carried across sequential travel segments."""
+
     velocity: float = 0.0
     elapsed_time: float = 0.0
     total_distance: float = 0.0
@@ -183,8 +185,10 @@ def simulate_travel(
 
 # Backward compatibility wrappers
 def travel_time_for_distance(train: str, distance: float, speed_restriction: float = np.inf, time_diff: float = 0.1) -> float:
+    """Return travel time for one segment starting from a fresh train state."""
     state = TrainState()
     return simulate_travel(train, distance, state, mode="accel", speed_restriction=speed_restriction, time_step=time_diff)
 
 def time_till_end_node(train: str, distance: float, speed_restriction: float = np.inf, time_diff: float = 0.1) -> float:
+    """Compatibility alias for `travel_time_for_distance`."""
     return travel_time_for_distance(train, distance, speed_restriction, time_diff)
