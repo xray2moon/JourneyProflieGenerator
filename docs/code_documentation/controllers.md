@@ -25,7 +25,7 @@ The central logic component for route building. It calculates the shortest paths
 ## `infra_view_scene.py`
 
 ### Overview/Description
-Controls the visual lifecycle and layout of the scene. It rebuilds the items on the canvas based on the underlying infrastructure models and the active layout mode (e.g., geographic vs. schematic).
+Controls the visual life cycle and layout of the scene. It rebuilds the items on the canvas based on the underlying infrastructure models and the active layout mode (e.g., geographic vs. schematic).
 
 ### Core Functions
 *   **`_rebuild_scene(self)`**: The main orchestration function. It clears the current canvas and triggers the scene builder to place nodes, tracks, and timing points according to the most up-to-date model data.
@@ -34,7 +34,7 @@ Controls the visual lifecycle and layout of the scene. It rebuilds the items on 
 ## `infra_model_ui_connector.py`
 
 ### Overview/Description
-Bridges the application state by connecting Qt signals emitted by the `infra_backend` to updates in the UI views. Ensures that the view strictly reflects the current data state.
+Bridges the application state by connecting Qt signals emitted by the `infra_backend` to updates in the UI views. Ensures that the view reflects the current data state.
 
 ### Core Functions
-*This module focuses entirely on wiring up Qt signals to their respective UI updates. Since its logic is straightforward and handled primarily during initialization, it does not contain large or complex core functions that require detailed documentation.*
+(This module focuses entirely on wiring up Qt signals to their respective UI updates. Since its logic is straightforward and handled primarily during initialization, it does not contain large or complex core functions that require detailed documentation.)
